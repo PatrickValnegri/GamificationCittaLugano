@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11542" systemVersion="16B2555" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AppUser" representedClassName=".AppUser" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="first_name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="last_name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tel" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userId" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Beacon" representedClassName=".Beacon" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isMissing" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="major" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="minor" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sent" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <fetchedProperty name="fetchedProperty" optional="YES" syncable="YES">
+            <fetchRequest name="fetchedPropertyFetchRequest" entity="Beacon"/>
+        </fetchedProperty>
+    </entity>
+    <elements>
+        <element name="AppUser" positionX="-54" positionY="27" width="128" height="120"/>
+        <element name="Beacon" positionX="-63" positionY="-18" width="128" height="149"/>
+    </elements>
+</model>
