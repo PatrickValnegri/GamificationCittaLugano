@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/pavo/Documents/Scuola/SUPSI/3_Anno/6_Semestre/Progetto_di_semestre/GamificationCittaLugano/ForgetMeNot-Starter/clickFinder.xcodeproj">
+      location = "group:clickFinder.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">

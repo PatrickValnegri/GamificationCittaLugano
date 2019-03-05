@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_ForgetMeNotVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_ForgetMeNotVersionString[];
+FOUNDATION_EXPORT double Pods_clickFinderVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_clickFinderVersionString[];
 
