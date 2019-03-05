@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5C40CA40222E9C970095417C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5C40CA3F222E9C970095417C /* GoogleService-Info.plist */; };
 		5C910CEE222C744A00DF1C9F /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C910CED222C744A00DF1C9F /* NetworkHelper.swift */; };
 		B77203F5853D9444254509DB /* Pods_clickFinder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91DC680B328DB50A93A20D46 /* Pods_clickFinder.framework */; };
 		C00360541E39747F00234FCD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C00360531E39747F00234FCD /* LaunchScreen.storyboard */; };
@@ -17,13 +16,13 @@
 		C00360941E3EA86500234FCD /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C003608F1E3EA86500234FCD /* AddItemViewController.swift */; };
 		C00360951E3EA86500234FCD /* ItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00360901E3EA86500234FCD /* ItemsViewController.swift */; };
 		C00360971E3EA88F00234FCD /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00360961E3EA88F00234FCD /* IconCell.swift */; };
+		CDD91318222EB15300595B41 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDD91317222EB15300595B41 /* GoogleService-Info.plist */; };
 		FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9CC95B1AD701910038DF33 /* AppDelegate.swift */; };
 		FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9621AD701910038DF33 /* Images.xcassets */; };
 		FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9891AD702CC0038DF33 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5C40CA3F222E9C970095417C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5C910CED222C744A00DF1C9F /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		91DC680B328DB50A93A20D46 /* Pods_clickFinder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_clickFinder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C00360531E39747F00234FCD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -33,6 +32,7 @@
 		C003608F1E3EA86500234FCD /* AddItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
 		C00360901E3EA86500234FCD /* ItemsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemsViewController.swift; sourceTree = "<group>"; };
 		C00360961E3EA88F00234FCD /* IconCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCell.swift; sourceTree = "<group>"; };
+		CDD91317222EB15300595B41 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.release.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.release.xcconfig"; sourceTree = "<group>"; };
 		F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.debug.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.debug.xcconfig"; sourceTree = "<group>"; };
 		FB9CC9561AD701910038DF33 /* clickFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = clickFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,7 +125,7 @@
 		FB9CC9581AD701910038DF33 /* ForgetMeNot */ = {
 			isa = PBXGroup;
 			children = (
-				5C40CA3F222E9C970095417C /* GoogleService-Info.plist */,
+				CDD91317222EB15300595B41 /* GoogleService-Info.plist */,
 				C00360891E3EA86500234FCD /* Classes */,
 				C003608C1E3EA86500234FCD /* Custom Cells */,
 				C003608E1E3EA86500234FCD /* ViewControllers */,
@@ -180,7 +180,7 @@
 				TargetAttributes = {
 					FB9CC9551AD701910038DF33 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 365RTTM259;
+						DevelopmentTeam = 72DF978V5W;
 						LastSwiftMigration = 1010;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -214,7 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C00360541E39747F00234FCD /* LaunchScreen.storyboard in Resources */,
-				5C40CA40222E9C970095417C /* GoogleService-Info.plist in Resources */,
+				CDD91318222EB15300595B41 /* GoogleService-Info.plist in Resources */,
 				FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */,
 				FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */,
 			);
@@ -253,6 +253,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-clickFinder/Pods-clickFinder-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
@@ -260,6 +261,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
@@ -396,7 +398,7 @@
 			baseConfigurationReference = F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 365RTTM259;
+				DEVELOPMENT_TEAM = 72DF978V5W;
 				INFOPLIST_FILE = ForgetMeNot/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -412,7 +414,7 @@
 			baseConfigurationReference = D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 365RTTM259;
+				DEVELOPMENT_TEAM = 72DF978V5W;
 				INFOPLIST_FILE = ForgetMeNot/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -23,6 +23,7 @@
 import UIKit
 import CoreLocation
 import FirebaseDatabase
+import FirebaseAuth
 
 let storedItemsKey = "storedItems"
 
@@ -109,10 +110,21 @@ class ItemsViewController: UIViewController {
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
         locationManager.delegate = self
         
+        authenticate()
+        
         loadItems()
         
         //registerUser()
         getUsers()
+    }
+    
+    func authenticate() {
+        Auth.auth().signIn(withEmail: "info@stouch.ch", password: "ora9013d") { (AuthDataResult, Error) in
+            
+            if let email = AuthDataResult?.user.email{
+                print(email)
+            }
+        }
     }
     
     func registerUser(){
@@ -122,7 +134,7 @@ class ItemsViewController: UIViewController {
     func getUsers(){
         
         
-        self.ref.child("users").queryOrdered(byChild: "Name").observe(.childAdded, with: { (snapshot) in
+        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
             
             if snapshot.exists() {
                 print("data found")
@@ -131,7 +143,7 @@ class ItemsViewController: UIViewController {
                 let email = value?["email"] as? String ?? "nope"
                 let tiposchermo = value?["tiposchermo"] as? String ?? "nope"
                 print(email)
-                print(tiposchermo)
+                print(tiposchermo.size)
             }else{
                 print("no data found")
             }
