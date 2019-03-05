@@ -22,6 +22,7 @@
 
 import UIKit
 import CoreLocation
+import FirebaseDatabase
 
 let storedItemsKey = "storedItems"
 
@@ -87,11 +88,17 @@ class ItemsViewController: UIViewController {
     
     var items = [Item]()
     
+    //Firebase database reference
+    var ref: DatabaseReference!
+    var databaseHandle: DatabaseHandle?
+    
     //Entry point into core location
     let locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        ref = Database.database().reference()
         
         //prompt the user for access to location services if they haven’t granted it already
         //user grants Always allow app run in foreground and background
@@ -103,6 +110,37 @@ class ItemsViewController: UIViewController {
         locationManager.delegate = self
         
         loadItems()
+        
+        //registerUser()
+        getUsers()
+    }
+    
+    func registerUser(){
+        self.ref.child("users").childByAutoId().setValue(["name": "Pavo","surname": "Pacio", "age": 15])
+    }
+    
+    func getUsers(){
+        
+        
+        self.ref.child("users").queryOrdered(byChild: "Name").observe(.childAdded, with: { (snapshot) in
+            
+            if snapshot.exists() {
+                print("data found")
+                
+                let value = snapshot.value as? NSDictionary
+                let email = value?["email"] as? String ?? "nope"
+                let tiposchermo = value?["tiposchermo"] as? String ?? "nope"
+                print(email)
+                print(tiposchermo)
+            }else{
+                print("no data found")
+            }
+        })
+//        self.ref.child("users").observe(.childAdded) { (snapshot) in
+//            let user = snapshot.value as? String
+//
+//            print(user)
+//        }
     }
     
     func loadItems() {

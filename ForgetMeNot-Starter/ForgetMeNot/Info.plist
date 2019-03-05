@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>clickFinder</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,6 +24,10 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This application monitors your location to show you promotional offers in shops you're passing by.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This application uses your location to determine which table you're at when ordering your coffee.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -34,9 +40,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This application uses your location to determine which table you're at when ordering your coffee.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>This application monitors your location to show you promotional offers in shops you're passing by.</string>
 </dict>
 </plist>
