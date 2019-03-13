@@ -155,6 +155,7 @@
                             <constraint firstItem="lvh-qG-Pvo" firstAttribute="leading" secondItem="Xpc-OV-jHZ" secondAttribute="leading" id="ItD-76-zze"/>
                             <constraint firstItem="xmN-h3-Bwd" firstAttribute="top" secondItem="lvh-qG-Pvo" secondAttribute="bottom" constant="47" id="JPQ-5M-8pw"/>
                             <constraint firstItem="lvh-qG-Pvo" firstAttribute="top" secondItem="vnj-R4-fTE" secondAttribute="bottom" constant="8" id="JRI-uW-Brp"/>
+                            <constraint firstItem="rot-ae-0lZ" firstAttribute="height" secondItem="lvh-qG-Pvo" secondAttribute="height" id="MBK-0p-UIA"/>
                             <constraint firstItem="OGq-0J-rwC" firstAttribute="centerY" secondItem="Xpc-OV-jHZ" secondAttribute="centerY" id="PYM-AE-x9l"/>
                             <constraint firstAttribute="trailing" secondItem="lvh-qG-Pvo" secondAttribute="trailing" id="Pdr-5S-Wv4"/>
                             <constraint firstItem="rot-ae-0lZ" firstAttribute="leading" secondItem="lvh-qG-Pvo" secondAttribute="leading" id="ShZ-1L-S5d"/>
