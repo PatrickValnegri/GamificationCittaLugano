@@ -16,6 +16,11 @@
 		C00360941E3EA86500234FCD /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C003608F1E3EA86500234FCD /* AddItemViewController.swift */; };
 		C00360951E3EA86500234FCD /* ItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00360901E3EA86500234FCD /* ItemsViewController.swift */; };
 		C00360971E3EA88F00234FCD /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00360961E3EA88F00234FCD /* IconCell.swift */; };
+		CD2A72B922356FE8009EF5EB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72B822356FE8009EF5EB /* Constants.swift */; };
+		CD2A72BC223570BF009EF5EB /* FormButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72BB223570BF009EF5EB /* FormButton.swift */; };
+		CD2A72BE223572CE009EF5EB /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72BD223572CE009EF5EB /* AuthTextField.swift */; };
+		CD2A72C0223575B5009EF5EB /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72BF223575B5009EF5EB /* AuthViewController.swift */; };
+		CD2A72C22237E451009EF5EB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72C12237E451009EF5EB /* User.swift */; };
 		CDD91318222EB15300595B41 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDD91317222EB15300595B41 /* GoogleService-Info.plist */; };
 		FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9CC95B1AD701910038DF33 /* AppDelegate.swift */; };
 		FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9621AD701910038DF33 /* Images.xcassets */; };
@@ -32,6 +37,11 @@
 		C003608F1E3EA86500234FCD /* AddItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
 		C00360901E3EA86500234FCD /* ItemsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemsViewController.swift; sourceTree = "<group>"; };
 		C00360961E3EA88F00234FCD /* IconCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCell.swift; sourceTree = "<group>"; };
+		CD2A72B822356FE8009EF5EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		CD2A72BB223570BF009EF5EB /* FormButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormButton.swift; sourceTree = "<group>"; };
+		CD2A72BD223572CE009EF5EB /* AuthTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextField.swift; sourceTree = "<group>"; };
+		CD2A72BF223575B5009EF5EB /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
+		CD2A72C12237E451009EF5EB /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CDD91317222EB15300595B41 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.release.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.release.xcconfig"; sourceTree = "<group>"; };
 		F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.debug.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.debug.xcconfig"; sourceTree = "<group>"; };
@@ -82,6 +92,7 @@
 			children = (
 				C003608A1E3EA86500234FCD /* Icons.swift */,
 				C003608B1E3EA86500234FCD /* Item.swift */,
+				CD2A72C12237E451009EF5EB /* User.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -100,8 +111,26 @@
 			children = (
 				C003608F1E3EA86500234FCD /* AddItemViewController.swift */,
 				C00360901E3EA86500234FCD /* ItemsViewController.swift */,
+				CD2A72BF223575B5009EF5EB /* AuthViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		CD2A72B722356FB7009EF5EB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				CD2A72B822356FE8009EF5EB /* Constants.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		CD2A72BA2235709A009EF5EB /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				CD2A72BB223570BF009EF5EB /* FormButton.swift */,
+				CD2A72BD223572CE009EF5EB /* AuthTextField.swift */,
+			);
+			path = CustomViews;
 			sourceTree = "<group>";
 		};
 		FB9CC94D1AD701910038DF33 = {
@@ -125,6 +154,8 @@
 		FB9CC9581AD701910038DF33 /* ForgetMeNot */ = {
 			isa = PBXGroup;
 			children = (
+				CD2A72BA2235709A009EF5EB /* CustomViews */,
+				CD2A72B722356FB7009EF5EB /* Utilities */,
 				CDD91317222EB15300595B41 /* GoogleService-Info.plist */,
 				C00360891E3EA86500234FCD /* Classes */,
 				C003608C1E3EA86500234FCD /* Custom Cells */,
@@ -282,10 +313,15 @@
 				C00360941E3EA86500234FCD /* AddItemViewController.swift in Sources */,
 				C00360971E3EA88F00234FCD /* IconCell.swift in Sources */,
 				C00360951E3EA86500234FCD /* ItemsViewController.swift in Sources */,
+				CD2A72C0223575B5009EF5EB /* AuthViewController.swift in Sources */,
 				C00360931E3EA86500234FCD /* ItemCell.swift in Sources */,
+				CD2A72BC223570BF009EF5EB /* FormButton.swift in Sources */,
 				C00360911E3EA86500234FCD /* Icons.swift in Sources */,
 				C00360921E3EA86500234FCD /* Item.swift in Sources */,
 				FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */,
+				CD2A72C22237E451009EF5EB /* User.swift in Sources */,
+				CD2A72B922356FE8009EF5EB /* Constants.swift in Sources */,
+				CD2A72BE223572CE009EF5EB /* AuthTextField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,64 +24,9 @@ import UIKit
 import CoreLocation
 import FirebaseDatabase
 import FirebaseAuth
+import Firebase
 
 let storedItemsKey = "storedItems"
-
-//extends itemsviewcontroller functionalities
-extension ItemsViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        print("Failed monitoring region: \(error.localizedDescription)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location manager failed: \(error.localizedDescription)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        
-        // Find the same beacons in the table.
-        var indexPaths = [IndexPath]()
-        for beacon in beacons {
-            for row in 0..<items.count {
-                if items[row] == beacon {
-                    items[row].beacon = beacon
-                    indexPaths += [IndexPath(row: row, section: 0)]
-                }
-            }
-        }
-        
-        // Update beacon locations of visible rows.
-        if let visibleRows = tableView.indexPathsForVisibleRows {
-            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
-            for row in rowsToUpdate {
-                let cell = tableView.cellForRow(at: row) as! ItemCell
-                cell.refreshLocation()
-            }
-        }
-    }
-    
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined:
-            locationManager.requestAlwaysAuthorization()
-            break
-        case .authorizedWhenInUse:
-            locationManager.startUpdatingLocation()
-            break
-        case .authorizedAlways:
-            locationManager.startUpdatingLocation()
-            break
-        case .restricted:
-            // restricted by e.g. parental controls. User can't enable Location Services
-            break
-        case .denied:
-            // user denied your app access to Location Services, but can grant access from Settings.app
-            break
-        default:
-            break
-        }
-    }
-}
 
 class ItemsViewController: UIViewController {
     
@@ -106,53 +51,91 @@ class ItemsViewController: UIViewController {
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
         
-        print("Authorization requested")
+       
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
         locationManager.delegate = self
         
-        authenticate()
-        
         loadItems()
+        
+        print("Authorization requested")
+        authenticate() //TODO non serve a nulla ? le letture si possono fare senza autenticarsi
         
         //registerUser()
         getUsers()
     }
     
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
+        // Override point for customization after application launch. Here you can out the code you want.
+        
+        
+        
+        return true
+    }
+    
     func authenticate() {
-        Auth.auth().signIn(withEmail: "info@stouch.ch", password: "ora9013d") { (AuthDataResult, Error) in
-            
-            if let email = AuthDataResult?.user.email{
-                print(email)
+        
+        Auth.auth().createUser(withEmail: "prova@supsi.ch", password: "123456") { authResult, error in
+            if let error = error {
+                print("Sign in failed:", error.localizedDescription)
+            } else {
+                print ("Signi in successfully")
             }
         }
+        
+        /*
+        Auth.auth().signInAnonymously { (user, error) in
+            if let error = error {
+                print("Sign in failed:", error.localizedDescription)
+                
+            } else {
+                print ("*********************************************************")
+                print ("New user ?:", user!.additionalUserInfo?.isNewUser as Any)
+            }
+        }
+        */
+        
     }
     
     func registerUser(){
-        self.ref.child("users").childByAutoId().setValue(["name": "Pavo","surname": "Pacio", "age": 15])
+        print ("---------------------------------------------------------")
+        self.ref.child("users").childByAutoId().setValue(["name": "Test", "email": "prova@test.ch", "type": "chiavi"])
     }
     
     func getUsers(){
         
-        
-        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
+        Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
+            guard let strongSelf = self else { return }
             
-            if snapshot.exists() {
-                print("data found")
+            self!.ref.child("users").observe(.childAdded, with: { (snapshot) in
                 
-                let value = snapshot.value as? NSDictionary
-                let email = value?["email"] as? String ?? "nope"
-                let tiposchermo = value?["tiposchermo"] as? String ?? "nope"
-                print(email)
-                print(tiposchermo.size)
-            }else{
-                print("no data found")
-            }
-        })
-//        self.ref.child("users").observe(.childAdded) { (snapshot) in
-//            let user = snapshot.value as? String
-//
-//            print(user)
-//        }
+                if snapshot.exists() {
+                    //print("data found")
+                    
+                    let value = snapshot.value as? NSDictionary
+                    
+                    let address = value?["address"] as? String ?? ""
+                    let data = value?["data"] as? String ?? ""
+                    let latid = value?["latid"] as? String ?? ""
+                    let longit = value?["longit"] as? String ?? ""
+                    let mac = value?["mac"] as? String ?? ""
+                    let name = value?["name"] as? String ?? ""
+                    let owner = value?["owner"] as? String ?? ""
+                    let phone = value?["phone"] as? String ?? ""
+                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
+                    let tiposchermo = value?["tiposchermo"] as? String ?? ""
+                    let type = value?["type"] as? String ?? ""
+                    
+                    print(name)
+                    //print(tiposchermo.size)
+                }else{
+                    print("no data found")
+                }
+            })
+            
+        }
+        
+        
     }
     
     func loadItems() {
@@ -208,6 +191,63 @@ extension ItemsViewController: AddBeacon {
         startMonitoringItem(item)
         
         persistItems()
+    }
+}
+
+
+//extends itemsviewcontroller functionalities
+extension ItemsViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        print("Failed monitoring region: \(error.localizedDescription)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Location manager failed: \(error.localizedDescription)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        
+        // Find the same beacons in the table.
+        var indexPaths = [IndexPath]()
+        for beacon in beacons {
+            for row in 0..<items.count {
+                if items[row] == beacon {
+                    items[row].beacon = beacon
+                    indexPaths += [IndexPath(row: row, section: 0)]
+                }
+            }
+        }
+        
+        // Update beacon locations of visible rows.
+        if let visibleRows = tableView.indexPathsForVisibleRows {
+            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
+            for row in rowsToUpdate {
+                let cell = tableView.cellForRow(at: row) as! ItemCell
+                cell.refreshLocation()
+            }
+        }
+    }
+    
+    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined:
+            locationManager.requestAlwaysAuthorization()
+            break
+        case .authorizedWhenInUse:
+            locationManager.startUpdatingLocation()
+            break
+        case .authorizedAlways:
+            locationManager.startUpdatingLocation()
+            break
+        case .restricted:
+            // restricted by e.g. parental controls. User can't enable Location Services
+            break
+        case .denied:
+            // user denied your app access to Location Services, but can grant access from Settings.app
+            break
+        default:
+            break
+        }
     }
 }
 

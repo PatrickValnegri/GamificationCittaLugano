@@ -47,6 +47,8 @@ class AddItemViewController: UIViewController {
         
         btnAdd.isEnabled = false
         imgIcon.image = icon.image()
+        
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

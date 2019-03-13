@@ -90,9 +90,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITabBarContr
     }
     
     
-    
     // MARK: location manager
-    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == CLAuthorizationStatus.authorizedAlways{
             print("status authorized")
