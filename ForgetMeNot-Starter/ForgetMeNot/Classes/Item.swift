@@ -112,6 +112,18 @@ class Item: NSObject, NSCoding {
 
 func ==(item: Item, beacon: CLBeacon) -> Bool {
     return ((beacon.proximityUUID.uuidString == item.uuid.uuidString)
-        && (Int(beacon.major) == Int(item.majorValue))
-        && (Int(beacon.minor) == Int(item.minorValue)))
+        && (Int(truncating: beacon.major) == Int(item.majorValue))
+        && (Int(truncating: beacon.minor) == Int(item.minorValue)))
+}
+
+func printBeacon(beacon: CLBeacon?){
+    print("Beacon: \(beacon!.proximityUUID.uuidString) (minor: \(Int(truncating: beacon!.major)), major: \(Int(truncating: beacon!.minor)))")
+}
+
+func printItem(item: Item){
+    print("Item: \(item.uuid.uuidString); \(Int(item.majorValue)); \(Int(item.minorValue))")
+}
+
+func itemAsString(item: Item) -> String{
+    return "UUID: \(item.uuid.uuidString)\nMajor:\(Int(item.majorValue))\nMinor:\(Int(item.minorValue))\n"
 }

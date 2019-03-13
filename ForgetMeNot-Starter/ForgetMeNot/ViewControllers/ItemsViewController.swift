@@ -22,8 +22,6 @@
 
 import UIKit
 import CoreLocation
-import FirebaseDatabase
-import FirebaseAuth
 
 let storedItemsKey = "storedItems"
 
@@ -38,16 +36,55 @@ extension ItemsViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        
-        // Find the same beacons in the table.
+
         var indexPaths = [IndexPath]()
+        var newBeacon : CLBeacon?
+        
         for beacon in beacons {
+//            print(beacon)
+            if items.isEmpty {
+                if Int(truncating: beacon.major) > 32000{
+                    newBeacon = beacon
+                }
+            }
             for row in 0..<items.count {
                 if items[row] == beacon {
                     items[row].beacon = beacon
                     indexPaths += [IndexPath(row: row, section: 0)]
+                } else {
+                    //Once a beacon that it's still not in the list has been found
+                    //check its major value to see if a pairing has been requested
+                    if Int(truncating: beacon.major) > 32000{
+                        newBeacon = beacon
+                    }
                 }
             }
+        }
+        
+//        print()
+        
+        if pairingIsOn == true {
+            
+            if(newBeacon != nil){
+                let major = Int(truncating: newBeacon!.major)-32000 //Pairing done
+                
+                let item = Item(name: "New", icon: 4, uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor))
+                
+                var flag = false
+                
+                for itemN in items{
+                    if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
+                        flag = true
+                    }
+                }
+                
+                if flag == false{
+                    createAlert(title: "New beacon found!", message: itemAsString(item: item), item: item)
+                }
+                
+                flag = true
+            }
+            
         }
         
         // Update beacon locations of visible rows.
@@ -60,7 +97,7 @@ extension ItemsViewController: CLLocationManagerDelegate {
         }
     }
     
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    private func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         switch status {
         case .notDetermined:
             locationManager.requestAlwaysAuthorization()
@@ -88,81 +125,54 @@ class ItemsViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var items = [Item]()
+    var nrOfItems = 0;
     
-    //Firebase database reference
-    var ref: DatabaseReference!
-    var databaseHandle: DatabaseHandle?
+    var pairingIsOn = false
+    @IBOutlet weak var pair: UILabel!
     
     //Entry point into core location
     let locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        ref = Database.database().reference()
+    
+        pair.text = "Off ❌"
         
         //prompt the user for access to location services if they haven’t granted it already
         //user grants Always allow app run in foreground and background
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
-        
         print("Authorization requested")
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
         locationManager.delegate = self
         
-        authenticate()
-        
         loadItems()
-        
-        //registerUser()
-        getUsers()
+        startMonitoringStandardRegion()
     }
     
-    func authenticate() {
-        Auth.auth().signIn(withEmail: "info@stouch.ch", password: "ora9013d") { (AuthDataResult, Error) in
-            
-            if let email = AuthDataResult?.user.email{
-                print(email)
-            }
+    func startMonitoringStandardRegion(){
+        locationManager.startRangingBeacons(in: AppConstants.region)
+    }
+    
+    @IBAction func pairBeacon(_ sender: UIButton) {
+        pairingIsOn = !pairingIsOn
+        
+        if pairingIsOn == true {
+            pair.text = "On ✅"
+        } else {
+            pair.text = "Off ❌"
         }
-    }
-    
-    func registerUser(){
-        self.ref.child("users").childByAutoId().setValue(["name": "Pavo","surname": "Pacio", "age": 15])
-    }
-    
-    func getUsers(){
-        
-        
-        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
-            
-            if snapshot.exists() {
-                print("data found")
-                
-                let value = snapshot.value as? NSDictionary
-                let email = value?["email"] as? String ?? "nope"
-                let tiposchermo = value?["tiposchermo"] as? String ?? "nope"
-                print(email)
-                print(tiposchermo.size)
-            }else{
-                print("no data found")
-            }
-        })
-//        self.ref.child("users").observe(.childAdded) { (snapshot) in
-//            let user = snapshot.value as? String
-//
-//            print(user)
-//        }
     }
     
     func loadItems() {
         guard let storedItems = UserDefaults.standard.array(forKey: storedItemsKey) as? [Data] else { return }
+        
+        nrOfItems = 0
         for itemData in storedItems {
             guard let item = NSKeyedUnarchiver.unarchiveObject(with: itemData) as? Item else { continue }
             items.append(item)
-            
-            startMonitoringItem(item)
-            
+            nrOfItems = nrOfItems + 1
+            //startMonitoringItem(item)
         }
     }
     
@@ -181,31 +191,63 @@ class ItemsViewController: UIViewController {
             viewController.delegate = self
         }
     }
-    
-    //This method takes an Item instance and creates a CLBeaconRegion using asBeaconRegion
-    func startMonitoringItem(_ item: Item) {
-        let beaconRegion = item.asBeaconRegion()
-        locationManager.startMonitoring(for: beaconRegion)
-        locationManager.startRangingBeacons(in: beaconRegion)
+}
+
+//Allerts
+extension ItemsViewController{
+    func createAlert(title: String, message: String, item: Item){
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        //Annulla il pairing
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+        
+            alertController.dismiss(animated: true, completion: nil)
+        }))
+        
+        //TODO aprire la pagina di registrazione con i campi inerenti il beacon già compilati
+        alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
+            
+            self.addBeacon(item: item)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
-    func stopMonitoringItem(_ item: Item) {
-        let beaconRegion = item.asBeaconRegion()
-        locationManager.stopMonitoring(for: beaconRegion)
-        locationManager.stopRangingBeacons(in: beaconRegion)
-    }
+    //    override func viewDidAppear(_ animated: Bool) {
+    //        let aivc = AddItemViewController()
+    //
+    //
+    //        //aivc.txtUUID.text =  beacon.proximityUUID.uuidString
+    //        //aivc.txtMajor.text = String( (Int(truncating: beacon.major) - 32000 ) )
+    //        //aivc.txtMinor.text = beacon.minor.stringValue
+    //
+    ////        aivc.txtUUID.text = "Beacon UUID"
+    ////        aivc.txtMajor.text = "Beacon major"
+    ////        aivc.txtMinor.text = "Beacon minor"
+    //
+    //        self.navigationController?.pushViewController(aivc, animated: true)
+    //    }
+    
+    //    func displayToast(distance: String) {
+    //        self.view.makeToast(distance, duration: 3.0, position: .center)
+    //    }
 }
 
 extension ItemsViewController: AddBeacon {
     func addBeacon(item: Item) {
         items.append(item)
         
+        nrOfItems = nrOfItems + 1
+        
         tableView.beginUpdates()
-        let newIndexPath = IndexPath(row: items.count - 1, section: 0)
+        let newIndexPath = IndexPath(row: nrOfItems - 1, section: 0)
         tableView.insertRows(at: [newIndexPath], with: .automatic)
         tableView.endUpdates()
         
-        startMonitoringItem(item)
+        tableView.reloadData()
+        
+        //startMonitoringItem(item)
         
         persistItems()
     }
@@ -214,7 +256,7 @@ extension ItemsViewController: AddBeacon {
 // MARK: UITableViewDataSource
 extension ItemsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return nrOfItems
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -231,14 +273,18 @@ extension ItemsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
         if editingStyle == .delete {
-            stopMonitoringItem(items[indexPath.row])
-            
+            locationManager.stopRangingBeacons(in: AppConstants.region)
             tableView.beginUpdates()
             items.remove(at: indexPath.row)
+            nrOfItems = nrOfItems - 1
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.endUpdates()
             
+            tableView.reloadData()
+            
             persistItems()
+            
+            locationManager.startRangingBeacons(in: AppConstants.region)
         }
     }
 }

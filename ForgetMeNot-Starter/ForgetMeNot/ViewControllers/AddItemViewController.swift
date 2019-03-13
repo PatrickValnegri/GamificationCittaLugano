@@ -35,6 +35,8 @@ class AddItemViewController: UIViewController {
     @IBOutlet weak var imgIcon: UIImageView!
     @IBOutlet weak var btnAdd: UIButton!
     
+    private let notificationPublisher = NotificationPublisher()
+    
     let uuidRegex = try! NSRegularExpression(pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", options: .caseInsensitive)
     
     var delegate: AddBeacon?
@@ -82,6 +84,11 @@ class AddItemViewController: UIViewController {
         
         delegate?.addBeacon(item: newItem)
         dismiss(animated: true, completion: nil)
+        
+        notificationPublisher.sendNotification(title: "Added a new iBeacon",
+                                               subtitle: "Monitoring started",
+                                               body: "clickFinderApp",
+                                               badge: 1, delayInterval: nil)
     }
     
     @IBAction func btnCancel_Pressed(_ sender: UIButton) {

@@ -29,12 +29,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
+    private func requestNotificationAuthorization(application: UIApplication){
+        let center = UNUserNotificationCenter.current()
+        let options: UNAuthorizationOptions = UNAuthorizationOptions([.alert, .badge, .sound])
+        
+        center.requestAuthorization(options: options) { granted, error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         // Use Firebase library to configure APIs
         FirebaseApp.configure()
+        requestNotificationAuthorization(application: application);
+        
         
         return true
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
     
 }
