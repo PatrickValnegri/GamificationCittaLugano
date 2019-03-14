@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Auth View Controller-->
+        <scene sceneID="mGA-PT-5SR">
+            <objects>
+                <viewController id="Ric-It-boL" customClass="AuthViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8PR-rb-qaq"/>
+                        <viewControllerLayoutGuide type="bottom" id="1X9-Iw-WrX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="szB-3c-tg0">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="usernameField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="M7y-Jm-PKz" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="50" y="68" width="275" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="iLD-RV-sFR"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="username"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="loginButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vzu-HR-9BU" customClass="FormButton" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="75" y="552" width="225" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Lyh-b6-z8x"/>
+                                </constraints>
+                                <state key="normal" title="Register"/>
+                                <connections>
+                                    <action selector="loginTapped:" destination="Ric-It-boL" eventType="touchUpInside" id="uVi-oX-SmG"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="passwordField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Surname" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eg5-de-Ccx" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="50" y="126" width="273" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="EfJ-9n-vb5"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="password"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="phonenumberField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Phone number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="clB-SB-dL0" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="50" y="184" width="275" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="cRk-MI-Vgb"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="tel"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="emailField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VH9-xs-TCU" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="50" y="242" width="275" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="H4S-Ye-SZi"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="tel"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="streetField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Street" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9aV-ot-kCQ" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="50" y="300" width="275" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="mlm-sR-wnn"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="tel"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="cityField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="City" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="c9w-zq-GHC" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
+                                <rect key="frame" x="50" y="358" width="275" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="lbq-AU-coK"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="tel"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="c9w-zq-GHC" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leading" constant="50" id="38g-gP-b9r"/>
+                            <constraint firstAttribute="trailing" secondItem="VH9-xs-TCU" secondAttribute="trailing" constant="50" id="6To-Ka-0JF"/>
+                            <constraint firstItem="eg5-de-Ccx" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leading" constant="50" id="7sL-De-snr"/>
+                            <constraint firstItem="c9w-zq-GHC" firstAttribute="top" secondItem="9aV-ot-kCQ" secondAttribute="bottom" constant="8" id="DaP-rq-0sl"/>
+                            <constraint firstItem="Vzu-HR-9BU" firstAttribute="centerX" secondItem="szB-3c-tg0" secondAttribute="centerX" id="FMg-Kf-u09"/>
+                            <constraint firstItem="9aV-ot-kCQ" firstAttribute="top" secondItem="VH9-xs-TCU" secondAttribute="bottom" constant="8" id="FpW-5c-Ji4"/>
+                            <constraint firstItem="9aV-ot-kCQ" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leading" constant="50" id="G66-1J-vyA"/>
+                            <constraint firstItem="VH9-xs-TCU" firstAttribute="top" secondItem="clB-SB-dL0" secondAttribute="bottom" constant="8" id="KGS-WC-Upo"/>
+                            <constraint firstItem="M7y-Jm-PKz" firstAttribute="top" secondItem="8PR-rb-qaq" secondAttribute="bottom" constant="48" id="KgX-wv-zYl"/>
+                            <constraint firstAttribute="trailing" secondItem="c9w-zq-GHC" secondAttribute="trailing" constant="50" id="NGy-PR-TyA"/>
+                            <constraint firstItem="eg5-de-Ccx" firstAttribute="top" secondItem="M7y-Jm-PKz" secondAttribute="bottom" constant="8" id="RC4-dD-WsD"/>
+                            <constraint firstAttribute="trailing" secondItem="eg5-de-Ccx" secondAttribute="trailing" constant="52" id="UYz-iv-Pc2"/>
+                            <constraint firstAttribute="trailing" secondItem="9aV-ot-kCQ" secondAttribute="trailing" constant="50" id="VOd-gi-cYk"/>
+                            <constraint firstItem="VH9-xs-TCU" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leading" constant="50" id="Vb8-Mt-OqR"/>
+                            <constraint firstAttribute="trailing" secondItem="clB-SB-dL0" secondAttribute="trailing" constant="50" id="X6S-Lb-J5k"/>
+                            <constraint firstItem="Vzu-HR-9BU" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leadingMargin" constant="59" id="hED-bL-4Oy"/>
+                            <constraint firstItem="M7y-Jm-PKz" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leading" constant="50" id="iqP-Y1-BYP"/>
+                            <constraint firstItem="clB-SB-dL0" firstAttribute="top" secondItem="eg5-de-Ccx" secondAttribute="bottom" constant="8" id="jC6-nf-208"/>
+                            <constraint firstAttribute="trailing" secondItem="M7y-Jm-PKz" secondAttribute="trailing" constant="50" id="sbF-b5-sQd"/>
+                            <constraint firstItem="1X9-Iw-WrX" firstAttribute="top" secondItem="Vzu-HR-9BU" secondAttribute="bottom" constant="75" id="wUj-7e-TEo"/>
+                            <constraint firstItem="clB-SB-dL0" firstAttribute="leading" secondItem="szB-3c-tg0" secondAttribute="leading" constant="50" id="xNh-PJ-aI1"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="mX9-D6-oIb"/>
+                    </view>
+                    <connections>
+                        <outlet property="cityField" destination="c9w-zq-GHC" id="8ao-Ue-Jbg"/>
+                        <outlet property="emailField" destination="VH9-xs-TCU" id="soA-6M-Bgm"/>
+                        <outlet property="loginButton" destination="Vzu-HR-9BU" id="NQf-Ha-Rqg"/>
+                        <outlet property="phonenumberField" destination="clB-SB-dL0" id="p3y-Fq-nat"/>
+                        <outlet property="streetField" destination="9aV-ot-kCQ" id="psd-aI-eXD"/>
+                        <outlet property="surnameField" destination="eg5-de-Ccx" id="GfB-LH-v2I"/>
+                        <outlet property="usernameField" destination="M7y-Jm-PKz" id="iTw-ly-YT5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dyw-zn-iAO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1875" y="1850"/>
+        </scene>
+    </scenes>
+</document>
