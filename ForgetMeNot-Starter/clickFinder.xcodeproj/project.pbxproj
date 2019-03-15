@@ -19,6 +19,11 @@
 		C00360941E3EA86500234FCD /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C003608F1E3EA86500234FCD /* AddItemViewController.swift */; };
 		C00360951E3EA86500234FCD /* ItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00360901E3EA86500234FCD /* ItemsViewController.swift */; };
 		C00360971E3EA88F00234FCD /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00360961E3EA88F00234FCD /* IconCell.swift */; };
+		CD2A72CA223C08B8009EF5EB /* FormButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72C9223C08B8009EF5EB /* FormButton.swift */; };
+		CD2A72CC223C08C8009EF5EB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CB223C08C8009EF5EB /* User.swift */; };
+		CD2A72CE223C08E2009EF5EB /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */; };
+		CD2A72D0223C0900009EF5EB /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */; };
+		CD2A72D2223C092B009EF5EB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72D1223C092B009EF5EB /* Constants.swift */; };
 		FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9CC95B1AD701910038DF33 /* AppDelegate.swift */; };
 		FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9621AD701910038DF33 /* Images.xcassets */; };
 		FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9891AD702CC0038DF33 /* Main.storyboard */; };
@@ -37,6 +42,11 @@
 		C003608F1E3EA86500234FCD /* AddItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
 		C00360901E3EA86500234FCD /* ItemsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemsViewController.swift; sourceTree = "<group>"; };
 		C00360961E3EA88F00234FCD /* IconCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCell.swift; sourceTree = "<group>"; };
+		CD2A72C9223C08B8009EF5EB /* FormButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormButton.swift; path = ForgetMeNot/FormButton.swift; sourceTree = SOURCE_ROOT; };
+		CD2A72CB223C08C8009EF5EB /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthTextField.swift; path = ForgetMeNot/AuthTextField.swift; sourceTree = SOURCE_ROOT; };
+		CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
+		CD2A72D1223C092B009EF5EB /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = ForgetMeNot/Constants.swift; sourceTree = SOURCE_ROOT; };
 		D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.release.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.release.xcconfig"; sourceTree = "<group>"; };
 		F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.debug.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.debug.xcconfig"; sourceTree = "<group>"; };
 		FB9CC9561AD701910038DF33 /* clickFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = clickFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				C003608A1E3EA86500234FCD /* Icons.swift */,
+				CD2A72CB223C08C8009EF5EB /* User.swift */,
 				C003608B1E3EA86500234FCD /* Item.swift */,
 			);
 			path = Classes;
@@ -93,6 +104,8 @@
 		C003608C1E3EA86500234FCD /* Custom Cells */ = {
 			isa = PBXGroup;
 			children = (
+				CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */,
+				CD2A72C9223C08B8009EF5EB /* FormButton.swift */,
 				C003608D1E3EA86500234FCD /* ItemCell.swift */,
 				C00360961E3EA88F00234FCD /* IconCell.swift */,
 			);
@@ -102,10 +115,18 @@
 		C003608E1E3EA86500234FCD /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */,
 				C003608F1E3EA86500234FCD /* AddItemViewController.swift */,
 				C00360901E3EA86500234FCD /* ItemsViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		CD2A72C5223C0434009EF5EB /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Constants;
 			sourceTree = "<group>";
 		};
 		FB9CC94D1AD701910038DF33 = {
@@ -129,6 +150,8 @@
 		FB9CC9581AD701910038DF33 /* ForgetMeNot */ = {
 			isa = PBXGroup;
 			children = (
+				CD2A72D1223C092B009EF5EB /* Constants.swift */,
+				CD2A72C5223C0434009EF5EB /* Constants */,
 				5C40CA432230790F0095417C /* GoogleService-Info.plist */,
 				C00360891E3EA86500234FCD /* Classes */,
 				C003608C1E3EA86500234FCD /* Custom Cells */,
@@ -289,8 +312,13 @@
 				C00360971E3EA88F00234FCD /* IconCell.swift in Sources */,
 				5CF5E7812231B63E005590D7 /* NotificationPublisher.swift in Sources */,
 				C00360951E3EA86500234FCD /* ItemsViewController.swift in Sources */,
+				CD2A72D2223C092B009EF5EB /* Constants.swift in Sources */,
+				CD2A72CA223C08B8009EF5EB /* FormButton.swift in Sources */,
 				C00360931E3EA86500234FCD /* ItemCell.swift in Sources */,
 				C00360911E3EA86500234FCD /* Icons.swift in Sources */,
+				CD2A72CE223C08E2009EF5EB /* AuthTextField.swift in Sources */,
+				CD2A72CC223C08C8009EF5EB /* User.swift in Sources */,
+				CD2A72D0223C0900009EF5EB /* AuthViewController.swift in Sources */,
 				C00360921E3EA86500234FCD /* Item.swift in Sources */,
 				FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */,
 				5CF88E162235B8A500572BD4 /* AppConstants.swift in Sources */,

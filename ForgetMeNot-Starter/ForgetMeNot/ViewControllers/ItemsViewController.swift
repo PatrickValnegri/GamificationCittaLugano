@@ -22,6 +22,9 @@
 
 import UIKit
 import CoreLocation
+import FirebaseDatabase
+import FirebaseAuth
+import Firebase
 
 let storedItemsKey = "storedItems"
 
@@ -133,10 +136,16 @@ class ItemsViewController: UIViewController {
     //Entry point into core location
     let locationManager = CLLocationManager()
     
+    //Firebase database reference
+    var ref: DatabaseReference!
+    var databaseHandle: DatabaseHandle?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
         pair.text = "Off ❌"
+        
+        ref = Database.database().reference()
         
         //prompt the user for access to location services if they haven’t granted it already
         //user grants Always allow app run in foreground and background
@@ -148,6 +157,77 @@ class ItemsViewController: UIViewController {
         
         loadItems()
         startMonitoringStandardRegion()
+        
+        print("Authorization requested")
+        authenticate() //TODO non serve a nulla ? le letture si possono fare senza autenticarsi
+        
+        //registerUser()
+        getUsers()
+    }
+    
+    func authenticate() {
+        
+        Auth.auth().createUser(withEmail: "prova@supsi.ch", password: "123456") { authResult, error in
+            if let error = error {
+                print("Sign in failed:", error.localizedDescription)
+            } else {
+                print ("Signi in successfully")
+            }
+        }
+        
+        /*
+         Auth.auth().signInAnonymously { (user, error) in
+         if let error = error {
+         print("Sign in failed:", error.localizedDescription)
+         
+         } else {
+         print ("*********************************************************")
+         print ("New user ?:", user!.additionalUserInfo?.isNewUser as Any)
+         }
+         }
+         */
+        
+    }
+    
+    func registerUser(){
+        print ("---------------------------------------------------------")
+        self.ref.child("users").childByAutoId().setValue(["name": "Test", "email": "prova@test.ch", "type": "chiavi"])
+    }
+    
+    func getUsers(){
+        
+        Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
+            guard let strongSelf = self else { return }
+            
+            self!.ref.child("users").observe(.childAdded, with: { (snapshot) in
+                
+                if snapshot.exists() {
+                    //print("data found")
+                    
+                    let value = snapshot.value as? NSDictionary
+                    
+                    let address = value?["address"] as? String ?? ""
+                    let data = value?["data"] as? String ?? ""
+                    let latid = value?["latid"] as? String ?? ""
+                    let longit = value?["longit"] as? String ?? ""
+                    let mac = value?["mac"] as? String ?? ""
+                    let name = value?["name"] as? String ?? ""
+                    let owner = value?["owner"] as? String ?? ""
+                    let phone = value?["phone"] as? String ?? ""
+                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
+                    let tiposchermo = value?["tiposchermo"] as? String ?? ""
+                    let type = value?["type"] as? String ?? ""
+                    
+                    print(name)
+                    //print(tiposchermo.size)
+                }else{
+                    print("no data found")
+                }
+            })
+            
+        }
+        
+        
     }
     
     func startMonitoringStandardRegion(){
