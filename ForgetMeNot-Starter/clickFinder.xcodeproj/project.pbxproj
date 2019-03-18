@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5C40CA442230790F0095417C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5C40CA432230790F0095417C /* GoogleService-Info.plist */; };
 		5C910CEE222C744A00DF1C9F /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C910CED222C744A00DF1C9F /* NetworkHelper.swift */; };
+		5CC3FA50223E9AF5001ACF74 /* clickFinder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5CC3FA4E223E9AF5001ACF74 /* clickFinder.xcdatamodeld */; };
 		5CF5E7812231B63E005590D7 /* NotificationPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF5E7802231B63E005590D7 /* NotificationPublisher.swift */; };
 		5CF88E162235B8A500572BD4 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF88E152235B8A500572BD4 /* AppConstants.swift */; };
 		B77203F5853D9444254509DB /* Pods_clickFinder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91DC680B328DB50A93A20D46 /* Pods_clickFinder.framework */; };
@@ -32,6 +33,7 @@
 /* Begin PBXFileReference section */
 		5C40CA432230790F0095417C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5C910CED222C744A00DF1C9F /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
+		5CC3FA4F223E9AF5001ACF74 /* clickFinder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = clickFinder.xcdatamodel; sourceTree = "<group>"; };
 		5CF5E7802231B63E005590D7 /* NotificationPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPublisher.swift; sourceTree = "<group>"; };
 		5CF88E152235B8A500572BD4 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		91DC680B328DB50A93A20D46 /* Pods_clickFinder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_clickFinder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +73,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5CC3FA4D223E9ADE001ACF74 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5CC3FA4E223E9AF5001ACF74 /* clickFinder.xcdatamodeld */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		64F76E9655735D2039DB651E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -132,6 +142,7 @@
 		FB9CC94D1AD701910038DF33 = {
 			isa = PBXGroup;
 			children = (
+				5CC3FA4D223E9ADE001ACF74 /* Model */,
 				FB9CC9581AD701910038DF33 /* ForgetMeNot */,
 				FB9CC9571AD701910038DF33 /* Products */,
 				C00360521E3973ED00234FCD /* Frameworks */,
@@ -321,6 +332,7 @@
 				CD2A72D0223C0900009EF5EB /* AuthViewController.swift in Sources */,
 				C00360921E3EA86500234FCD /* Item.swift in Sources */,
 				FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */,
+				5CC3FA50223E9AF5001ACF74 /* clickFinder.xcdatamodeld in Sources */,
 				5CF88E162235B8A500572BD4 /* AppConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -483,6 +495,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		5CC3FA4E223E9AF5001ACF74 /* clickFinder.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5CC3FA4F223E9AF5001ACF74 /* clickFinder.xcdatamodel */,
+			);
+			currentVersion = 5CC3FA4F223E9AF5001ACF74 /* clickFinder.xcdatamodel */;
+			path = clickFinder.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = FB9CC94E1AD701910038DF33 /* Project object */;
 }

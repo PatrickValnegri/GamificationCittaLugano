@@ -25,6 +25,7 @@ import CoreLocation
 import FirebaseDatabase
 import FirebaseAuth
 import Firebase
+import CoreData
 
 let storedItemsKey = "storedItems"
 
@@ -130,6 +131,8 @@ class ItemsViewController: UIViewController {
     var items = [Item]()
     var nrOfItems = 0;
     
+    //CORE DATA
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
     var pairingIsOn = false
     @IBOutlet weak var pair: UILabel!
     
@@ -147,6 +150,9 @@ class ItemsViewController: UIViewController {
         
         ref = Database.database().reference()
         
+        //CORE DATA
+        //let context = appDelegate.persistentContainer.viewContext //get the context from appDelegate
+        
         //prompt the user for access to location services if they haven’t granted it already
         //user grants Always allow app run in foreground and background
         locationManager.requestAlwaysAuthorization()
@@ -159,10 +165,10 @@ class ItemsViewController: UIViewController {
         startMonitoringStandardRegion()
         
         print("Authorization requested")
-        authenticate() //TODO non serve a nulla ? le letture si possono fare senza autenticarsi
+        //authenticate() //TODO non serve a nulla ? le letture si possono fare senza autenticarsi
         
         //registerUser()
-        getUsers()
+        //getUsers()
     }
     
     func authenticate() {
@@ -245,25 +251,27 @@ class ItemsViewController: UIViewController {
     }
     
     func loadItems() {
-        guard let storedItems = UserDefaults.standard.array(forKey: storedItemsKey) as? [Data] else { return }
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
+        let context = appDelegate.persistentContainer.viewContext
         
         nrOfItems = 0
-        for itemData in storedItems {
-            guard let item = NSKeyedUnarchiver.unarchiveObject(with: itemData) as? Item else { continue }
-            items.append(item)
-            nrOfItems = nrOfItems + 1
-            //startMonitoringItem(item)
+        
+        request.returnsObjectsAsFaults = false
+        do {
+            let result = try context.fetch(request)
+            for data in result as! [NSManagedObject] {
+                let item = Item(name: data.value(forKey: "name") as! String,
+                                icon: data.value(forKey: "icon") as! Int,
+                                uuid: UUID(uuidString: data.value(forKey: "uuid") as! String)!,
+                                majorValue: data.value(forKey: "major") as! Int,
+                                minorValue: data.value(forKey: "minor") as! Int)
+                items.append(item)
+                nrOfItems = nrOfItems + 1
+                print(data.value(forKey: "uuid") as! String)
+            }
+        } catch {
+            print("Failed")
         }
-    }
-    
-    func persistItems() {
-        var itemsData = [Data]()
-        for item in items {
-            let itemData = NSKeyedArchiver.archivedData(withRootObject: item)
-            itemsData.append(itemData)
-        }
-        UserDefaults.standard.set(itemsData, forKey: storedItemsKey)
-        UserDefaults.standard.synchronize()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -287,37 +295,30 @@ extension ItemsViewController{
         
         //TODO aprire la pagina di registrazione con i campi inerenti il beacon già compilati
         alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
-            
             self.addBeacon(item: item)
         }))
         
         self.present(alertController, animated: true, completion: nil)
     }
-    
-    //    override func viewDidAppear(_ animated: Bool) {
-    //        let aivc = AddItemViewController()
-    //
-    //
-    //        //aivc.txtUUID.text =  beacon.proximityUUID.uuidString
-    //        //aivc.txtMajor.text = String( (Int(truncating: beacon.major) - 32000 ) )
-    //        //aivc.txtMinor.text = beacon.minor.stringValue
-    //
-    ////        aivc.txtUUID.text = "Beacon UUID"
-    ////        aivc.txtMajor.text = "Beacon major"
-    ////        aivc.txtMinor.text = "Beacon minor"
-    //
-    //        self.navigationController?.pushViewController(aivc, animated: true)
-    //    }
-    
-    //    func displayToast(distance: String) {
-    //        self.view.makeToast(distance, duration: 3.0, position: .center)
-    //    }
 }
 
 extension ItemsViewController: AddBeacon {
     func addBeacon(item: Item) {
         items.append(item)
         
+        let context = appDelegate.persistentContainer.viewContext
+        
+        //Create a new Entity of type Item
+        let entity = NSEntityDescription.entity(forEntityName: "Items", in: context)
+        let newItem = NSManagedObject(entity: entity!, insertInto: context)
+        
+        newItem.setValue(item.uuid.uuidString, forKey: "uuid")
+        newItem.setValue(item.name, forKey: "name")
+        newItem.setValue(item.icon, forKey: "icon")
+        newItem.setValue(Int(item.majorValue), forKey: "major")
+        newItem.setValue(Int(item.minorValue), forKey: "minor")
+        
+        //Update the table view
         nrOfItems = nrOfItems + 1
         
         tableView.beginUpdates()
@@ -327,16 +328,19 @@ extension ItemsViewController: AddBeacon {
         
         tableView.reloadData()
         
-        //startMonitoringItem(item)
-        
-        persistItems()
+        //save the context with new data
+        do{
+            try context.save()
+        } catch {
+            print("Failed to save context");
+        }
     }
 }
 
 // MARK: UITableViewDataSource
 extension ItemsViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return nrOfItems
+        return nrOfItems //the current number of items
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -354,15 +358,44 @@ extension ItemsViewController : UITableViewDataSource {
         
         if editingStyle == .delete {
             locationManager.stopRangingBeacons(in: AppConstants.region)
+            
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
+            let context = appDelegate.persistentContainer.viewContext
+            
+            request.returnsObjectsAsFaults = false
+            do {
+                let result = try context.fetch(request)
+                for data in result as! [NSManagedObject] {
+                    if (data.value(forKey: "name") as! String).elementsEqual(items[indexPath.row].name)
+                        && data.value(forKey: "icon") as! Int == items[indexPath.row].icon
+                        && (data.value(forKey: "uuid") as! String).elementsEqual(items[indexPath.row].uuid.uuidString)
+                        && (data.value(forKey: "major") as! Int) == Int(items[indexPath.row].majorValue)
+                        && (data.value(forKey: "minor") as! Int) == Int(items[indexPath.row].minorValue){
+                        
+                        print(data.value(forKey: "name") as! String)
+                        context.delete(data)
+                    }
+                }
+            } catch {
+                print("Failed")
+            }
+            
+            //Update items list &
             tableView.beginUpdates()
             items.remove(at: indexPath.row)
             nrOfItems = nrOfItems - 1
+            
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.endUpdates()
             
             tableView.reloadData()
             
-            persistItems()
+            //save the context with updated data
+            do{
+                try context.save()
+            } catch {
+                print("Failed to save context");
+            }
             
             locationManager.startRangingBeacons(in: AppConstants.region)
         }
