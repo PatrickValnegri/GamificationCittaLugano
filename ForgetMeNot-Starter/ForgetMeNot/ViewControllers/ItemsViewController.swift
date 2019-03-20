@@ -64,6 +64,8 @@ extension ItemsViewController: CLLocationManagerDelegate {
                     if Int(truncating: beacon.major) > 32000{
                         newBeacon = beacon
                     }
+                    //@TODO implement a 20 minutes cache to avoid backend overloading
+                    checkIfLost(item: items[row])
                 }
             }
         }
@@ -169,9 +171,9 @@ class ItemsViewController: UIViewController {
         
         authenticate()
     
-        getUsers()
+        //getUsers()
         
-        //registerUser()
+        registerUser()
     }
     
     func authenticate() {
@@ -221,42 +223,84 @@ class ItemsViewController: UIViewController {
         }
     }
     
-    func getUsers(){
-
-        //Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
-           // guard let strongSelf = self else { return }
+//    func getUsers(){
+//
+//        //Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
+//           // guard let strongSelf = self else { return }
+//
+//        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
+//
+//            if snapshot.exists() {
+//                //print("data found")
+//
+//                var value = snapshot.value as? NSDictionary
+//
+//                var address = value?["address"] as? String ?? ""
+//                var data = value?["data"] as? String ?? ""
+//                var latid = value?["latid"] as? String ?? ""
+//                var longit = value?["longit"] as? String ?? ""
+//                var mac = value?["mac"] as? String ?? ""
+//                var name = value?["name"] as? String ?? ""
+//                var owner = value?["owner"] as? String ?? ""
+//                var phone = value?["phone"] as? String ?? ""
+//                var switch_hdd = value?["switch_hdd"] as? String ?? ""
+//                var tiposchermo = value?["tiposchermo"] as? String ?? ""
+//                var type = value?["type"] as? String ?? ""
+//
+//                print(mac)
+//                //print(tiposchermo.size)
+//            }else{
+//                print("no data found")
+//            }
+//        })
+//    }
+    
+    func registerBeacon(item: Item){
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
         
-        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
-            
-            if snapshot.exists() {
-                //print("data found")
-                
-                var value = snapshot.value as? NSDictionary
-                
-                var address = value?["address"] as? String ?? ""
-                var data = value?["data"] as? String ?? ""
-                var latid = value?["latid"] as? String ?? ""
-                var longit = value?["longit"] as? String ?? ""
-                var mac = value?["mac"] as? String ?? ""
-                var name = value?["name"] as? String ?? ""
-                var owner = value?["owner"] as? String ?? ""
-                var phone = value?["phone"] as? String ?? ""
-                var switch_hdd = value?["switch_hdd"] as? String ?? ""
-                var tiposchermo = value?["tiposchermo"] as? String ?? ""
-                var type = value?["type"] as? String ?? ""
-                
-                print(mac)
-                //print(tiposchermo.size)
-            }else{
-                print("no data found")
+        self.ref.child("users").child(beaconID).setValue(
+            [
+                "latid":"0",
+                "longit":"0",
+                "mac":beaconID,
+                "name":item.name,
+                "owner":iphoneID!,
+                "switch_hdd": "0",
+                "tiposchermo": "Beacon-\(iphoneID!)",
+                "type":""
+            ]
+        ){(error:Error?, ref:DatabaseReference) in
+            if let error = error {
+                print("Data could not be saved: \(error).")
+            } else {
+                print("Data saved successfully!")
             }
-        })
-        
+        }
     }
     
-    
-    
-    
+    //cycles the users table and checks if the passed beacon has been lost by someone
+    func checkIfLost(item: Item){
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+        
+        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
+            if snapshot.exists() {
+                var value = snapshot.value as? NSDictionary
+                var mac = value?["mac"] as? String ?? ""
+                var switch_hdd = value?["switch_hdd"] as? String ?? ""
+                
+                if mac == beaconID{
+                    if switch_hdd == "1"{
+                        print("get location")
+                        print("set current beacon location")
+                        print("send notification")
+                    }
+                }else{
+                    print("no data found")
+                }
+            }
+        })
+    }
     
     func startMonitoringStandardRegion(){
         locationManager.startRangingBeacons(in: AppConstants.region)
@@ -353,6 +397,7 @@ extension ItemsViewController: AddBeacon {
         //save the context with new data
         do{
             try context.save()
+            registerBeacon(item: item)
         } catch {
             print("Failed to save context");
         }
