@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5C910CEE222C744A00DF1C9F /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C910CED222C744A00DF1C9F /* NetworkHelper.swift */; };
 		5CC3FA50223E9AF5001ACF74 /* clickFinder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5CC3FA4E223E9AF5001ACF74 /* clickFinder.xcdatamodeld */; };
-		5CC3FA552240EE25001ACF74 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5CC3FA542240EE25001ACF74 /* GoogleService-Info.plist */; };
 		5CF5E7812231B63E005590D7 /* NotificationPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF5E7802231B63E005590D7 /* NotificationPublisher.swift */; };
 		5CF88E162235B8A500572BD4 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF88E152235B8A500572BD4 /* AppConstants.swift */; };
 		B77203F5853D9444254509DB /* Pods_clickFinder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91DC680B328DB50A93A20D46 /* Pods_clickFinder.framework */; };
@@ -25,6 +24,7 @@
 		CD2A72CE223C08E2009EF5EB /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */; };
 		CD2A72D0223C0900009EF5EB /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */; };
 		CD2A72D2223C092B009EF5EB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72D1223C092B009EF5EB /* Constants.swift */; };
+		CD2A9F562242850A0091C5B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD2A9F552242850A0091C5B7 /* GoogleService-Info.plist */; };
 		FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9CC95B1AD701910038DF33 /* AppDelegate.swift */; };
 		FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9621AD701910038DF33 /* Images.xcassets */; };
 		FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9891AD702CC0038DF33 /* Main.storyboard */; };
@@ -33,7 +33,6 @@
 /* Begin PBXFileReference section */
 		5C910CED222C744A00DF1C9F /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		5CC3FA4F223E9AF5001ACF74 /* clickFinder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = clickFinder.xcdatamodel; sourceTree = "<group>"; };
-		5CC3FA542240EE25001ACF74 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Documents/Certificates/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5CF5E7802231B63E005590D7 /* NotificationPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPublisher.swift; sourceTree = "<group>"; };
 		5CF88E152235B8A500572BD4 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		91DC680B328DB50A93A20D46 /* Pods_clickFinder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_clickFinder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -49,6 +48,8 @@
 		CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthTextField.swift; path = ForgetMeNot/AuthTextField.swift; sourceTree = SOURCE_ROOT; };
 		CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		CD2A72D1223C092B009EF5EB /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = ForgetMeNot/Constants.swift; sourceTree = SOURCE_ROOT; };
+		CD2A9F54224263840091C5B7 /* clickFinder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = clickFinder.entitlements; sourceTree = "<group>"; };
+		CD2A9F552242850A0091C5B7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.release.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.release.xcconfig"; sourceTree = "<group>"; };
 		F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.debug.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.debug.xcconfig"; sourceTree = "<group>"; };
 		FB9CC9561AD701910038DF33 /* clickFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = clickFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,6 +143,7 @@
 		FB9CC94D1AD701910038DF33 = {
 			isa = PBXGroup;
 			children = (
+				CD2A9F54224263840091C5B7 /* clickFinder.entitlements */,
 				5CC3FA4D223E9ADE001ACF74 /* Model */,
 				FB9CC9581AD701910038DF33 /* ForgetMeNot */,
 				FB9CC9571AD701910038DF33 /* Products */,
@@ -181,7 +183,7 @@
 		FB9CC9591AD701910038DF33 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				5CC3FA542240EE25001ACF74 /* GoogleService-Info.plist */,
+				CD2A9F552242850A0091C5B7 /* GoogleService-Info.plist */,
 				FB9CC95A1AD701910038DF33 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -220,11 +222,15 @@
 				TargetAttributes = {
 					FB9CC9551AD701910038DF33 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = W695C2P9TL;
+						DevelopmentTeam = 365RTTM259;
 						LastSwiftMigration = 1010;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 1;
 							};
 						};
 					};
@@ -254,7 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C00360541E39747F00234FCD /* LaunchScreen.storyboard in Resources */,
-				5CC3FA552240EE25001ACF74 /* GoogleService-Info.plist in Resources */,
+				CD2A9F562242850A0091C5B7 /* GoogleService-Info.plist in Resources */,
 				FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */,
 				FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */,
 			);
@@ -446,12 +452,16 @@
 			baseConfigurationReference = F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = W695C2P9TL;
+				CODE_SIGN_ENTITLEMENTS = clickFinder.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 365RTTM259;
 				INFOPLIST_FILE = ForgetMeNot/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = ch.supsi.clickFinder;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.stouch.lac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.2;
 			};
@@ -462,12 +472,16 @@
 			baseConfigurationReference = D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = W695C2P9TL;
+				CODE_SIGN_ENTITLEMENTS = clickFinder.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 365RTTM259;
 				INFOPLIST_FILE = ForgetMeNot/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = ch.supsi.clickFinder;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.stouch.lac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.2;
 			};

@@ -27,6 +27,9 @@ import FirebaseAuth
 import Firebase
 import CoreData
 
+import FirebaseInstanceID
+import UserNotifications
+
 let storedItemsKey = "storedItems"
 
 //extends itemsviewcontroller functionalities
@@ -157,84 +160,103 @@ class ItemsViewController: UIViewController {
         //user grants Always allow app run in foreground and background
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
-        print("Authorization requested")
+        
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
         locationManager.delegate = self
         
         loadItems()
         startMonitoringStandardRegion()
         
-        print("Authorization requested")
-        //authenticate() //TODO non serve a nulla ? le letture si possono fare senza autenticarsi
+        authenticate()
+    
+        getUsers()
         
         //registerUser()
-        //getUsers()
     }
     
     func authenticate() {
-        
-        Auth.auth().createUser(withEmail: "prova@supsi.ch", password: "123456") { authResult, error in
-            if let error = error {
-                print("Sign in failed:", error.localizedDescription)
-            } else {
-                print ("Signi in successfully")
-            }
-        }
-        
-        /*
          Auth.auth().signInAnonymously { (user, error) in
-         if let error = error {
-         print("Sign in failed:", error.localizedDescription)
-         
-         } else {
-         print ("*********************************************************")
-         print ("New user ?:", user!.additionalUserInfo?.isNewUser as Any)
+             if let error = error {
+             print("Sign in failed:", error.localizedDescription)
+             
+             } else {
+             print ("New user ?:", user!.user.isAnonymous as Any)
+             }
          }
-         }
-         */
         
     }
     
     func registerUser(){
-        print ("---------------------------------------------------------")
-        self.ref.child("users").childByAutoId().setValue(["name": "Test", "email": "prova@test.ch", "type": "chiavi"])
+         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+
+        getToken { (token: String) in
+            let tokenID: String = token
+            let tipoSchermo: String = "iOS_LAC"+"_"+tokenID
+            print("TOKEN", tokenID)
+            print("IPHONE ID",iphoneID!)
+            
+            self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
+                (error:Error?, ref:DatabaseReference) in
+                if let error = error {
+                    print("Data could not be saved: \(error).")
+                } else {
+                    print("Data saved successfully!")
+                }
+            }
+        }
+    }
+    
+    //ompletion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
+    func getToken(completion: @escaping(String)->()) {
+        InstanceID.instanceID().instanceID { (result, error) in
+            var tokenID: String = ""
+            if let error = error {
+                print("Error fetching remote instance ID: \(error)")
+               
+            } else if let result = result {
+                print("Remote instance ID token: \(result.token)")
+                tokenID = result.token
+            }
+            completion(tokenID);
+        }
     }
     
     func getUsers(){
+
+        //Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
+           // guard let strongSelf = self else { return }
         
-        Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
-            guard let strongSelf = self else { return }
+        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
             
-            self!.ref.child("users").observe(.childAdded, with: { (snapshot) in
+            if snapshot.exists() {
+                //print("data found")
                 
-                if snapshot.exists() {
-                    //print("data found")
-                    
-                    let value = snapshot.value as? NSDictionary
-                    
-                    let address = value?["address"] as? String ?? ""
-                    let data = value?["data"] as? String ?? ""
-                    let latid = value?["latid"] as? String ?? ""
-                    let longit = value?["longit"] as? String ?? ""
-                    let mac = value?["mac"] as? String ?? ""
-                    let name = value?["name"] as? String ?? ""
-                    let owner = value?["owner"] as? String ?? ""
-                    let phone = value?["phone"] as? String ?? ""
-                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
-                    let tiposchermo = value?["tiposchermo"] as? String ?? ""
-                    let type = value?["type"] as? String ?? ""
-                    
-                    print(name)
-                    //print(tiposchermo.size)
-                }else{
-                    print("no data found")
-                }
-            })
-            
-        }
-        
+                var value = snapshot.value as? NSDictionary
+                
+                var address = value?["address"] as? String ?? ""
+                var data = value?["data"] as? String ?? ""
+                var latid = value?["latid"] as? String ?? ""
+                var longit = value?["longit"] as? String ?? ""
+                var mac = value?["mac"] as? String ?? ""
+                var name = value?["name"] as? String ?? ""
+                var owner = value?["owner"] as? String ?? ""
+                var phone = value?["phone"] as? String ?? ""
+                var switch_hdd = value?["switch_hdd"] as? String ?? ""
+                var tiposchermo = value?["tiposchermo"] as? String ?? ""
+                var type = value?["type"] as? String ?? ""
+                
+                print(mac)
+                //print(tiposchermo.size)
+            }else{
+                print("no data found")
+            }
+        })
         
     }
+    
+    
+    
+    
     
     func startMonitoringStandardRegion(){
         locationManager.startRangingBeacons(in: AppConstants.region)

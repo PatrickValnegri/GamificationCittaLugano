@@ -26,7 +26,7 @@ import Firebase
 import CoreData
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     var window: UIWindow?
     
@@ -47,16 +47,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         requestNotificationAuthorization(application: application);
         
+        //UserNotification
+        UIApplication.shared.registerForRemoteNotifications()
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        application.registerForRemoteNotifications()
+        
+        center.requestAuthorization(options: [.alert, .sound, .badge]) {
+            (granted, error) in
+            // Enable or disable features based on authorization.
+            if granted {
+                // update application settings
+            }
+        }
+        
         return true
     }
     
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        UIApplication.shared.applicationIconBadgeNumber = 0
+    
+    //UserNotifiation method
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent: UNNotification,
+                                withCompletionHandler: @escaping (UNNotificationPresentationOptions)->()) {
+        withCompletionHandler([.alert, .sound, .badge])
+    }
+
+    //UserNotifiation method
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive: UNNotificationResponse,
+                                withCompletionHandler: @escaping ()->()) {
+        withCompletionHandler()
     }
     
-    func applicationWillTerminate(_ application: UIApplication) {
-        saveContext()
+    
+    
+    //Getting device token
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        
+        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+        print("DEVICE TOKEN",deviceTokenString)
     }
+    
+    //In case of error
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("i am not available in simulator \(error)")
+    }
+    
     
     // MARK: - Core Data stack
     
