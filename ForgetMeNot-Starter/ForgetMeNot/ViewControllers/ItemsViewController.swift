@@ -43,32 +43,77 @@ extension ItemsViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-
         var indexPaths = [IndexPath]()
-        var newBeacon : CLBeacon?
         
+        //Handling of the found beacons
         for beacon in beacons {
-//            print(beacon)
+            
             if items.isEmpty {
-                if Int(truncating: beacon.major) > 32000{
-                    newBeacon = beacon
-                }
-            }
-            for row in 0..<items.count {
-                if items[row] == beacon {
-                    items[row].beacon = beacon
-                    indexPaths += [IndexPath(row: row, section: 0)]
-                } else {
-                    //Once a beacon that it's still not in the list has been found
-                    //check its major value to see if a pairing has been requested
-                    if Int(truncating: beacon.major) > 32000{
-                        newBeacon = beacon
+                handleUnknownIBeacons(beacon: beacon)
+            }else{
+                for row in 0..<items.count {
+                    if items[row] == beacon {
+                        items[row].beacon = beacon
+                        indexPaths += [IndexPath(row: row, section: 0)]
+                    } else {
+                        handleUnknownIBeacons(beacon: beacon)
                     }
                 }
             }
+            
         }
         
-//        print()
+        // Update beacon locations of visible rows.
+        if let visibleRows = tableView.indexPathsForVisibleRows {
+            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
+            for row in rowsToUpdate {
+                let cell = tableView.cellForRow(at: row) as! ItemCell
+                cell.refreshLocation()
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else { return }
+        
+        self.currentLocation.latitude = locValue.latitude
+        self.currentLocation.longitude = locValue.longitude
+        print(locValue.latitude)
+        print(locValue.longitude)
+    }
+    
+    private func handleUnknownIBeacons(beacon: CLBeacon){
+        var newBeacon : CLBeacon?
+        
+        //major value > 32000 -> the pairing button has been pressed
+        if Int(truncating: beacon.major) > 32000{
+            newBeacon = beacon
+        } else {
+            let item = Item(name: "New", icon: 4, uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor))
+            let endDate = Date()
+            let elapsed = Int(endDate.timeIntervalSince(startDate))
+            
+            //print("\(elapsed) + \(beacon.major) + \(beacon.minor)")
+            
+            if  elapsed > 60 { // delay to avoid backend overloading
+                //print("alreadyRangedItems array cleaned")
+                startDate = Date()
+                alreadyRangedItems.removeAll(keepingCapacity: false)
+            }
+            
+            var found = false
+            for itemN in alreadyRangedItems{
+                if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
+                    found = true
+                }
+            }
+            
+            if found == false{
+                alreadyRangedItems.append(item)
+                print(alreadyRangedItems)
+                checkIfLost(item: item)
+            }
+        }
         
         if pairingIsOn == true {
             
@@ -92,15 +137,6 @@ extension ItemsViewController: CLLocationManagerDelegate {
                 flag = true
             }
             
-        }
-        
-        // Update beacon locations of visible rows.
-        if let visibleRows = tableView.indexPathsForVisibleRows {
-            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
-            for row in rowsToUpdate {
-                let cell = tableView.cellForRow(at: row) as! ItemCell
-                cell.refreshLocation()
-            }
         }
     }
     
@@ -131,50 +167,73 @@ class ItemsViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
+    //list of known items
     var items = [Item]()
     var nrOfItems = 0;
+    //used to cache already ranged unkown iBeacons -> avoid backend overloading
+    var alreadyRangedItems = [Item]()
+    var startDate = Date()
     
     //CORE DATA
     let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
     var pairingIsOn = false
     @IBOutlet weak var pair: UILabel!
     
+    //CORE LOCATION
     //Entry point into core location
     let locationManager = CLLocationManager()
+    //current location coordinates
+    var currentLocation = Coordinate(latitude: 0, longitude: 0)
     
-    //Firebase database reference
+    //FIREBASE REALTIME DATABASE
     var ref: DatabaseReference!
     var databaseHandle: DatabaseHandle?
+    
+    //Local notifications
+    private let notificationPublisher = NotificationPublisher()
     
     override func viewDidLoad() {
         super.viewDidLoad()
     
         pair.text = "Off ❌"
         
+        //FIREBASE REALTIME DATABASE REFERENCE
         ref = Database.database().reference()
         
-        //CORE DATA
-        //let context = appDelegate.persistentContainer.viewContext //get the context from appDelegate
+        //CLBEACON REAGION
+        //Allow beacon reagion to notify if the device entered or exited from it
+        AppConstants.region.notifyEntryStateOnDisplay = true
+        AppConstants.region.notifyOnEntry = true
+        AppConstants.region.notifyOnExit = true
         
+        //CORE LOCATION
+        setUpLocationManager()
+        
+        loadItems()
+        startMonitoringAndRangingStandardRegion()
+        
+        //authenticate()
+    
+        //getUsers()
+        
+        registerUser()
+        
+        //sendNotification()
+        
+    }
+    
+    func setUpLocationManager(){
         //prompt the user for access to location services if they haven’t granted it already
         //user grants Always allow app run in foreground and background
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
         
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
-        locationManager.delegate = self
-        
-        loadItems()
-        startMonitoringStandardRegion()
-        
-        authenticate()
-    
-        getUsers()
-        
-        registerUser()
-        
-        //sendNotification()
-        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+        }
     }
     
     func authenticate() {
@@ -187,6 +246,28 @@ class ItemsViewController: UIViewController {
              }
          }
         
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        //print("Entered region")
+        notificationPublisher.sendNotification(
+            title: "Entered region",
+            subtitle: region.identifier,
+            body: "This is a background test local notification",
+            badge: 1,
+            delayInterval: nil
+        )
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        //print("Left region")
+        notificationPublisher.sendNotification(
+            title: "Left region",
+            subtitle: region.identifier,
+            body: "This is a background test local notification",
+            badge: 1,
+            delayInterval: nil
+        )
     }
     
     func registerUser(){
@@ -248,7 +329,30 @@ class ItemsViewController: UIViewController {
                 }
             }
         })
+    }
+    
+    func registerBeacon(item: Item){
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
         
+        self.ref.child("users").child(beaconID).setValue(
+            [
+                "latid":"0",
+                "longit":"0",
+                "mac":beaconID,
+                "name":item.name,
+                "owner":iphoneID!,
+                "switch_hdd": "0",
+                "tiposchermo": "Beacon-\(iphoneID!)",
+                "type":""
+            ]
+        ){(error:Error?, ref:DatabaseReference) in
+            if let error = error {
+                print("Data could not be saved: \(error).")
+            } else {
+                print("Data saved successfully!")
+            }
+        }
     }
     
     func sendNotification() {
@@ -265,9 +369,41 @@ class ItemsViewController: UIViewController {
                                           timeToLive: 1000) //tempo che il server ha per rispondere
         
     }
+
+    //cycles the users table and checks if the passed beacon has been lost by someone
+    func checkIfLost(item: Item){
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+        
+        let iBeaconsRef = self.ref.child("users")
+        
+        iBeaconsRef.observe(.value, with: { (snapshot) in
+            for child in snapshot.children {
+                if let childSnapshot = child as? DataSnapshot{
+                    let value = childSnapshot.value as? NSDictionary
+                    let mac = value?["mac"] as? String ?? ""
+                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
+                    
+                    if mac == beaconID && switch_hdd == "1"{
+                        self.notificationPublisher.sendNotification(
+                            title: "UUID: \(item.uuid.uuidString)",
+                            subtitle: "Major: \(Int(item.majorValue)), Minor: \(Int(item.minorValue))",
+                            body: "Current location: lat=\(self.currentLocation.latitude), long=\(self.currentLocation.longitude)",
+                            badge: 1,
+                            delayInterval: nil
+                        )
+                        print("Current location: lat=\(self.currentLocation.latitude), long=\(self.currentLocation.longitude)")
+                        print("set current beacon location")
+                        print("send notification")
+                    }
+                }
+            }
+        })
+    }
     
-    
-    func startMonitoringStandardRegion(){
+    func startMonitoringAndRangingStandardRegion(){
+        NSLog("ALWAYS AUTHORIZATION REQUESTED")
+        locationManager.requestAlwaysAuthorization()
+        locationManager.startMonitoring(for: AppConstants.region)
         locationManager.startRangingBeacons(in: AppConstants.region)
     }
     
@@ -362,6 +498,7 @@ extension ItemsViewController: AddBeacon {
         //save the context with new data
         do{
             try context.save()
+            registerBeacon(item: item)
         } catch {
             print("Failed to save context");
         }

@@ -39,6 +39,7 @@ extension AppDelegate: MessagingDelegate {
     
     func messaging(_ messaging: Messaging, didReceive remoteMessage: MessagingRemoteMessage) {
         print("Message data: ", remoteMessage.appData)
+        UIApplication.shared.applicationIconBadgeNumber += 1
     }
     
 }
@@ -152,7 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         // Print full message.
-        print(userInfo)
+        print("USER INFO: ", userInfo)
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
@@ -170,7 +171,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         // Print full message.
-        print(userInfo)
+        print("USER INFO: ", userInfo)
         
         completionHandler(UIBackgroundFetchResult.newData)
     }
@@ -182,6 +183,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return;
         }
         Messaging.messaging().shouldEstablishDirectChannel = true
+    }
+    
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0 //reset icon badge number to 0 when app is opened
     }
     
     /*
