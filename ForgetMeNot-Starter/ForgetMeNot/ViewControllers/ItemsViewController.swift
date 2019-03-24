@@ -171,7 +171,7 @@ class ItemsViewController: UIViewController {
     
         getUsers()
         
-        //registerUser()
+        registerUser()
         
         //sendNotification()
         
