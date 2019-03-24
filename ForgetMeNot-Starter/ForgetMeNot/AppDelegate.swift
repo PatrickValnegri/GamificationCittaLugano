@@ -79,7 +79,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         withCompletionHandler()
     }
     
-    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0 //reset icon badge number to 0 when app is opened
+    }
     
     //Getting device token
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

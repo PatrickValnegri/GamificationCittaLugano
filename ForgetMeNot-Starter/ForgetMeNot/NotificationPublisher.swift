@@ -63,6 +63,7 @@ extension NotificationPublisher: UNUserNotificationCenterDelegate{
             completionHandler()
         case UNNotificationDefaultActionIdentifier:
             print("The user opened the app with the notification")
+            UIApplication.shared.applicationIconBadgeNumber = 0
             completionHandler()
         default:
             print("The default case has been called")

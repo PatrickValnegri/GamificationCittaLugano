@@ -31,7 +31,6 @@ struct ItemConstant {
     static let minorKey = "minor"
 }
 
-
 class Item: NSObject, NSCoding {
     let name: String
     let icon: Int
