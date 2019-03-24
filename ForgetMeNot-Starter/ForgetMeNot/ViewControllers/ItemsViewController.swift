@@ -190,7 +190,7 @@ class ItemsViewController: UIViewController {
     }
     
     func registerUser(){
-         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
 
         getToken { (token: String) in
             let tokenID: String = token
