@@ -26,7 +26,7 @@ import FirebaseDatabase
 import FirebaseAuth
 import Firebase
 import CoreData
-
+import Alamofire
 import FirebaseInstanceID
 import UserNotifications
 
@@ -172,6 +172,9 @@ class ItemsViewController: UIViewController {
         getUsers()
         
         //registerUser()
+        
+        //sendNotification()
+        
     }
     
     func authenticate() {
@@ -191,7 +194,7 @@ class ItemsViewController: UIViewController {
 
         getToken { (token: String) in
             let tokenID: String = token
-            let tipoSchermo: String = "iOS_LAC"+"_"+tokenID
+            let tipoSchermo: String = "iOS_LAC_regId_"+tokenID
             print("TOKEN", tokenID)
             print("IPHONE ID",iphoneID!)
             
@@ -206,7 +209,7 @@ class ItemsViewController: UIViewController {
         }
     }
     
-    //ompletion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
+    //completion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
     func getToken(completion: @escaping(String)->()) {
         InstanceID.instanceID().instanceID { (result, error) in
             var tokenID: String = ""
@@ -222,40 +225,46 @@ class ItemsViewController: UIViewController {
     }
     
     func getUsers(){
-
-        //Auth.auth().signIn(withEmail: "prova@supsi.ch", password: "123456") { [weak self] user, error in
-           // guard let strongSelf = self else { return }
-        
-        self.ref.child("users").observe(.childAdded, with: { (snapshot) in
+        self.ref.child("users").observe(.value, with: { (snapshot) in
             
-            if snapshot.exists() {
-                //print("data found")
+            for child in snapshot.children {
+                if let childSnapshot = child as? DataSnapshot {
                 
-                var value = snapshot.value as? NSDictionary
-                
-                var address = value?["address"] as? String ?? ""
-                var data = value?["data"] as? String ?? ""
-                var latid = value?["latid"] as? String ?? ""
-                var longit = value?["longit"] as? String ?? ""
-                var mac = value?["mac"] as? String ?? ""
-                var name = value?["name"] as? String ?? ""
-                var owner = value?["owner"] as? String ?? ""
-                var phone = value?["phone"] as? String ?? ""
-                var switch_hdd = value?["switch_hdd"] as? String ?? ""
-                var tiposchermo = value?["tiposchermo"] as? String ?? ""
-                var type = value?["type"] as? String ?? ""
-                
-                print(mac)
-                //print(tiposchermo.size)
-            }else{
-                print("no data found")
+                    let value = childSnapshot.value as? NSDictionary
+                    
+                    let address = value?["address"] as? String ?? ""
+                    let data = value?["data"] as? String ?? ""
+                    let latid = value?["latid"] as? String ?? ""
+                    let longit = value?["longit"] as? String ?? ""
+                    let mac = value?["mac"] as? String ?? ""
+                    let name = value?["name"] as? String ?? ""
+                    let owner = value?["owner"] as? String ?? ""
+                    let phone = value?["phone"] as? String ?? ""
+                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
+                    let tiposchermo = value?["tiposchermo"] as? String ?? ""
+                    let type = value?["type"] as? String ?? ""
+                    
+                    print(mac)
+                }
             }
         })
         
     }
     
-    
-    
+    func sendNotification() {
+        let urlString: String = "https://fcm.googleapis.com/fcm/send"
+        let destination: String = "245070747207@gcm.googleapis.com"
+        let messageId = UUID().uuidString
+        
+        let message: [String: String] = [ "title": "titolo"
+        ]
+        
+        Messaging.messaging().sendMessage(message,
+                                          to: destination,
+                                          withMessageID: messageId,
+                                          timeToLive: 1000) //tempo che il server ha per rispondere
+        
+    }
     
     
     func startMonitoringStandardRegion(){
