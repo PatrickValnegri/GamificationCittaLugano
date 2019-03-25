@@ -36,19 +36,18 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Program requires iBeacons monitoring</string>
+	<string>This app needs permissions to always monitor and range iBeacons</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Program requires iBeacons monitoring</string>
+	<string>This app needs permissions to always monitor and range iBeacons</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Program requires iBeacons monitoring</string>
+	<string>This app needs permissions to always monitor and range iBeacons</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>
-		<string>bluetooth-peripheral</string>
 		<string>external-accessory</string>
+		<string>fetch</string>
 		<string>location</string>
-        <string>fetch</string>
-        <string>remote-notification</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

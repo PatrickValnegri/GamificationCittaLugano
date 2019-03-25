@@ -210,13 +210,12 @@ class ItemsViewController: UIViewController {
         setUpLocationManager()
         
         loadItems()
-        startMonitoringAndRangingStandardRegion()
         
         //authenticate()
     
         //getUsers()
         
-        registerUser()
+        //registerUser()
         
         //sendNotification()
         
@@ -224,15 +223,15 @@ class ItemsViewController: UIViewController {
     
     func setUpLocationManager(){
         //prompt the user for access to location services if they haven’t granted it already
-        //user grants Always allow app run in foreground and background
         locationManager.requestAlwaysAuthorization()
-        locationManager.requestWhenInUseAuthorization()
         
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
-        if CLLocationManager.locationServicesEnabled() {
+        if CLLocationManager.locationServicesEnabled() && CLLocationManager.isRangingAvailable() && CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
             locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.startUpdatingLocation()
+            locationManager.startMonitoring(for: AppConstants.region)
+            locationManager.startRangingBeacons(in: AppConstants.region)
         }
     }
     
@@ -398,13 +397,6 @@ class ItemsViewController: UIViewController {
                 }
             }
         })
-    }
-    
-    func startMonitoringAndRangingStandardRegion(){
-        NSLog("ALWAYS AUTHORIZATION REQUESTED")
-        locationManager.requestAlwaysAuthorization()
-        locationManager.startMonitoring(for: AppConstants.region)
-        locationManager.startRangingBeacons(in: AppConstants.region)
     }
     
     @IBAction func pairBeacon(_ sender: UIButton) {
