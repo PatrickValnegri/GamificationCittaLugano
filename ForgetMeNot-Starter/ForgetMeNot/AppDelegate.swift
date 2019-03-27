@@ -91,8 +91,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let gcmMessageIDKey = "gcm.message_id"
     
-    
-    
     private func requestNotificationAuthorization(application: UIApplication){
         let center = UNUserNotificationCenter.current()
         let options: UNAuthorizationOptions = UNAuthorizationOptions([.alert, .badge, .sound])
@@ -138,44 +136,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+
+    //TODO controllare
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         // If you are receiving a notification message while your app is in the background,
         // this callback will not be fired till the user taps on the notification launching the application.
         // TODO: Handle data of notification
-        
+
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
-        
+
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
             print("Message ID: \(messageID)")
         }
-        
+
         // Print full message.
         print(userInfo)
     }
     
+    //TODO controllare con quella sopra
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         // If you are receiving a notification message while your app is in the background,
         // this callback will not be fired till the user taps on the notification launching the application.
         // TODO: Handle data of notification
-        
+
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
-        
+
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
             print("Message ID: \(messageID)")
         }
-        
+
         // Print full message.
         print(userInfo)
-        
+
         completionHandler(UIBackgroundFetchResult.newData)
     }
     
-    //Abilita l'invio di messaggi
+    //Abilita l'invio di messaggi upstream al server
     func connectToFcm() {
         // Won't connect since there is no token
         guard InstanceID.instanceID().instanceID != nil else {
