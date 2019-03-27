@@ -218,7 +218,8 @@ class ItemsViewController: UIViewController {
         
         //registerUser()
         
-        //sendNotification()
+        sendNotification(titolo: "Titolo", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "1", gps: "lat_long", command: "CHECK ALARM", regiID: "d9vDnMtbmWY:APA91bHTplWYzwbvUIDpGyFVEcD86QIBoGiX-QLN3tZs97KD43HU48za8SmeRNu0zbEN_BkUKgpHCFnDmbLAFmGRMnzorgsQCX8p-MwEqWY1mDzRnrqIW8fOCZ-yyK3-degq9YlZwI1A")
+
         
     }
     
@@ -356,18 +357,43 @@ class ItemsViewController: UIViewController {
         }
     }
     
-    func sendNotification() {
+    func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String) {
+        print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
-        let destination: String = "245070747207@gcm.googleapis.com"
-        let messageId = UUID().uuidString
-        
-        let message: [String: String] = [ "title": "titolo"
+        let time: String = "3600"
+        let message: [String: Any] = [ //"body": titolo,
+            "priority": "high",
+            "content_available": true,
+            //"url": urlString,
+            //"body": mac,
+            "time": time,
+            //"command": command,//"CHECK_ALARM"
+            //"param": beacon_id,
+            //"value": gps, //GPS latitude + "_" + longitude
+            "to": regiID, //token destinatario
+            "notification":[
+                "title":"Beacon trovato",
+                "body":"ivan ha trovato il tuo beacon"
+            ]
         ]
         
-        Messaging.messaging().sendMessage(message,
-                                          to: destination,
-                                          withMessageID: messageId,
-                                          timeToLive: 1000) //tempo che il server ha per rispondere
+        
+        let header: HTTPHeaders = [ "Content-Type": "application/json",
+                                    "Accept": "application/json",
+                                    "Authorization": "key=AIzaSyCu-EtxJSmRGA2ll2W66ugs5Rfy1oa3vZs"
+        ]
+        
+        AF.request(urlString, method: .post, parameters: message, encoding: JSONEncoding.default, headers: header).responseString {
+            response in
+            switch response.result {
+            case .success:
+                print("SUCCESS: ", response.description)
+                
+                break
+            case .failure(let error):
+                print("FAILURE: ", error)
+            }
+        }
         
     }
 
