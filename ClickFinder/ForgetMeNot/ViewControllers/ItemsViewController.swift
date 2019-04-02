@@ -212,13 +212,15 @@ class ItemsViewController: UIViewController {
         
         loadItems()
         
-        //authenticate()
+        authenticate()
     
         //getUsers()
         
         //registerUser()
         
-        sendNotification(titolo: "Titolo", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "1", gps: "lat_long", command: "CHECK ALARM", regiID: "d9vDnMtbmWY:APA91bHTplWYzwbvUIDpGyFVEcD86QIBoGiX-QLN3tZs97KD43HU48za8SmeRNu0zbEN_BkUKgpHCFnDmbLAFmGRMnzorgsQCX8p-MwEqWY1mDzRnrqIW8fOCZ-yyK3-degq9YlZwI1A")
+        sendNotification(titolo: "Titolo", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_32_32", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Patrick", antenna_phone: "0000000000")
+        
+        //regiID: APA91bEEJKPJ4VODFC1dPski0pk3B9_xd0oet678MC90nfVQN_KvDK29MzSSdfoTTsRTgSLsmewgrlFtNxYnRf_oIaXlFRheoX21GqYnn-TjmM6s2Pj8HgRwIsDp9yvxjylh2TAQkFI_
 
         
     }
@@ -357,24 +359,34 @@ class ItemsViewController: UIViewController {
         }
     }
     
-    func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String) {
+    func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String, antenna_name: String, antenna_phone: String) {
         print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
-        let time: String = "3600"
-        let message: [String: Any] = [ //"body": titolo,
+        let time_to_live = 3600
+        
+        let notification: [String: Any] = [
+            "title": titolo,
+            "body": mac,
+            //"url": urlString,
+            "command": command,//"CHECK_ALARM"
+            "param": beacon_id,
+            "value": gps, //GPS latitude + "_" + longitude
+            "from": regiID, //token destinatario
+            "antenna_name": antenna_name,
+            "antenna_phone": antenna_phone
+        ]
+        
+        
+        let message: [String: Any] = [
             "priority": "high",
             "content_available": true,
-            //"url": urlString,
-            //"body": mac,
-            "time": time,
-            //"command": command,//"CHECK_ALARM"
-            //"param": beacon_id,
-            //"value": gps, //GPS latitude + "_" + longitude
-            "to": regiID, //token destinatario
-            "notification":[
-                "title":"Beacon trovato",
-                "body":"ivan ha trovato il tuo beacon"
-            ]
+            "time_to_live": time_to_live,
+            //"collapse_key": min,
+            
+            "to": regiID,
+            "notification": notification
+                //"title":"Beacon trovato",
+               //"body":"ivan ha trovato il tuo beacon"
         ]
         
         
@@ -387,7 +399,7 @@ class ItemsViewController: UIViewController {
             response in
             switch response.result {
             case .success:
-                print("SUCCESS: ", response.description)
+                print("SUCCESS: ", response)
                 
                 break
             case .failure(let error):

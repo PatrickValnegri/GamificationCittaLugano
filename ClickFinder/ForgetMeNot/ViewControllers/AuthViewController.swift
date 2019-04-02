@@ -90,8 +90,9 @@ class AuthViewController: UIViewController {
         users.append(User(name: username, surname: surname, email: email, phonenumber: phonenumber, street: street, city: city))
         
         persistUser()
-        
         loadUser()
+        
+        //TODO l'utente al primo login viene salvato nel DB (con i valori di base) e quando aggiunge i valori username, city, telephone, ... vanno ad aggiornare il DB
         
         dismiss(animated: true, completion: nil)
 
@@ -107,21 +108,6 @@ class AuthViewController: UIViewController {
         self.dismiss(animated: false, completion: nil)
     }
 }
-
-    /*
-    @IBAction func fieldChanged(_ sender: UITextField) {
-    let validName: String = usernameField.text!
-    let validPswd: String = usernameField.text!
-
-
-    if (validName.isEmpty || validPswd.isEmpty) {
-    loginButton.isEnabled = false
-    } else {
-    loginButton.isEnabled = true
-    }
-
-    }
-    */
 
 extension AuthViewController : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
