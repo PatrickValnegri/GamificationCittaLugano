@@ -21,7 +21,6 @@
  */
 
 import UIKit
-import CoreLocation
 import FirebaseDatabase
 import FirebaseAuth
 import Firebase
@@ -29,187 +28,60 @@ import CoreData
 import Alamofire
 import FirebaseInstanceID
 import UserNotifications
-
-let storedItemsKey = "storedItems"
-
-//extends itemsviewcontroller functionalities
-extension ItemsViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        print("Failed monitoring region: \(error.localizedDescription)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location manager failed: \(error.localizedDescription)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        var indexPaths = [IndexPath]()
-        
-        //Handling of the found beacons
-        for beacon in beacons {
-            
-            if items.isEmpty {
-                handleUnknownIBeacons(beacon: beacon)
-            }else{
-                for row in 0..<items.count {
-                    if items[row] == beacon {
-                        items[row].beacon = beacon
-                        indexPaths += [IndexPath(row: row, section: 0)]
-                    } else {
-                        handleUnknownIBeacons(beacon: beacon)
-                    }
-                }
-            }
-            
-        }
-        
-        // Update beacon locations of visible rows.
-        if let visibleRows = tableView.indexPathsForVisibleRows {
-            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
-            for row in rowsToUpdate {
-                let cell = tableView.cellForRow(at: row) as! ItemCell
-                cell.refreshLocation()
-            }
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else { return }
-        
-        self.currentLocation.latitude = locValue.latitude
-        self.currentLocation.longitude = locValue.longitude
-        print(locValue.latitude)
-        print(locValue.longitude)
-    }
-    
-    private func handleUnknownIBeacons(beacon: CLBeacon){
-        var newBeacon : CLBeacon?
-        
-        //major value > 32000 -> the pairing button has been pressed
-        if Int(truncating: beacon.major) > 32000{
-            newBeacon = beacon
-        } else {
-            let item = Item(name: "New", icon: 4, uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor))
-            let endDate = Date()
-            let elapsed = Int(endDate.timeIntervalSince(startDate))
-            
-            //print("\(elapsed) + \(beacon.major) + \(beacon.minor)")
-            
-            if  elapsed > 60 { // delay to avoid backend overloading
-                //print("alreadyRangedItems array cleaned")
-                startDate = Date()
-                alreadyRangedItems.removeAll(keepingCapacity: false)
-            }
-            
-            var found = false
-            for itemN in alreadyRangedItems{
-                if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
-                    found = true
-                }
-            }
-            
-            if found == false{
-                alreadyRangedItems.append(item)
-                print(alreadyRangedItems)
-                checkIfLost(item: item)
-            }
-        }
-        
-        if pairingIsOn == true {
-            
-            if(newBeacon != nil){
-                let major = Int(truncating: newBeacon!.major)-32000 //Pairing done
-                
-                let item = Item(name: "New", icon: 4, uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor))
-                
-                var flag = false
-                
-                for itemN in items{
-                    if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
-                        flag = true
-                    }
-                }
-                
-                if flag == false{
-                    createAlert(title: "New beacon found!", message: itemAsString(item: item), item: item)
-                }
-                
-                flag = true
-            }
-            
-        }
-    }
-    
-    private func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined:
-            locationManager.requestAlwaysAuthorization()
-            break
-        case .authorizedWhenInUse:
-            locationManager.startUpdatingLocation()
-            break
-        case .authorizedAlways:
-            locationManager.startUpdatingLocation()
-            break
-        case .restricted:
-            // restricted by e.g. parental controls. User can't enable Location Services
-            break
-        case .denied:
-            // user denied your app access to Location Services, but can grant access from Settings.app
-            break
-        default:
-            break
-        }
-    }
-}
+import CoreLocation
 
 class ItemsViewController: UIViewController {
-    
-    @IBOutlet weak var tableView: UITableView!
-    
-    //list of known items
-    var items = [Item]()
-    var nrOfItems = 0;
-    //used to cache already ranged unkown iBeacons -> avoid backend overloading
-    var alreadyRangedItems = [Item]()
-    var startDate = Date()
-    
-    //CORE DATA
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
-    var pairingIsOn = false
-    
-    @IBOutlet weak var pair: UILabel!
     
     //CORE LOCATION
     //Entry point into core location
     let locationManager = CLLocationManager()
-    //current location coordinates
-    var currentLocation = Coordinate(latitude: 0, longitude: 0)
+    
+    //UI LIST OF ITEMS
+    @IBOutlet weak var tableView: UITableView!
+    
+    //list of known items
+    var items = [Item]()
+    var itemsToBeAdded = [Item]()
+    
+    var nrOfItems = 0;
+    
+    @IBOutlet weak var status: UILabel!
+    
+    //CORE DATA
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
+    
     
     //FIREBASE REALTIME DATABASE
     var ref: DatabaseReference!
     var databaseHandle: DatabaseHandle?
     
-    //Local notifications
-    private let notificationPublisher = NotificationPublisher()
+    //flags
+    var pairingIsOn = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-        pair.text = "Off ❌"
+        
+        print("LOADING ITEMS VIEW CONTROLLER")
+        //status.text = "Off ❌"
         
         //FIREBASE REALTIME DATABASE REFERENCE
         ref = Database.database().reference()
         
-        //CLBEACON REAGION
-        //Allow beacon reagion to notify if the device entered or exited from it
-        AppConstants.region.notifyEntryStateOnDisplay = true
-        AppConstants.region.notifyOnEntry = true
-        AppConstants.region.notifyOnExit = true
         
-        //CORE LOCATION
-        setUpLocationManager()
+        /********** ADD THE LAST PAIRED IBEACONS **********/
+        loadItemsToBeAdded()
         
+        for item in itemsToBeAdded{
+            addBeacon(item: item)
+            printItem(item: item)
+        }
+        
+        itemsToBeAdded = [Item]()
+        
+        deleteItemsToBeAdded()
+        /**************************************************/
+        
+        //Update the list of items, new beacons may have been paired
         loadItems()
         
         authenticate()
@@ -217,27 +89,21 @@ class ItemsViewController: UIViewController {
         //getUsers()
         
         //registerUser()
-        
-        sendNotification(titolo: "Titolo", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_32_32", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Patrick", antenna_phone: "0000000000")
-        
-        //regiID: APA91bEEJKPJ4VODFC1dPski0pk3B9_xd0oet678MC90nfVQN_KvDK29MzSSdfoTTsRTgSLsmewgrlFtNxYnRf_oIaXlFRheoX21GqYnn-TjmM6s2Pj8HgRwIsDp9yvxjylh2TAQkFI_
-
-        
     }
     
-    func setUpLocationManager(){
-        //prompt the user for access to location services if they haven’t granted it already
-        locationManager.requestAlwaysAuthorization()
-        
-        //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
-        if CLLocationManager.locationServicesEnabled() && CLLocationManager.isRangingAvailable() && CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.startUpdatingLocation()
-            locationManager.startMonitoring(for: AppConstants.region)
-            locationManager.startRangingBeacons(in: AppConstants.region)
-        }
-    }
+//    @IBAction func pairIBeacon(_ sender: Any) {
+//        pairingIsOn = !pairingIsOn
+//
+//        if pairingIsOn == true {
+//            status.text = "On ✅"
+//            locationManager.startRangingBeacons(in: AppConstants.region)
+//            print("PAIRING ON")
+//        } else {
+//            status.text = "Off ❌"
+//            locationManager.stopRangingBeacons(in: AppConstants.region)
+//            print("PAIRING OFF")
+//        }
+//    }
     
     func authenticate() {
          Auth.auth().signInAnonymously { (user, error) in
@@ -248,65 +114,6 @@ class ItemsViewController: UIViewController {
              print ("New user ?:", user!.user.isAnonymous as Any)
              }
          }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        print("Entered region")
-//        notificationPublisher.sendNotification(
-//            title: "Entered region",
-//            subtitle: region.identifier,
-//            body: "This is a background test local notification",
-//            badge: 1,
-//            delayInterval: nil,
-//            identifier: "enter notification"
-//        )
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        print("Left region")
-//        notificationPublisher.sendNotification(
-//            title: "Left region",
-//            subtitle: region.identifier,
-//            body: "This is a background test local notification",
-//            badge: 1,
-//            delayInterval: nil,
-//            identifier: "exit notification"
-//        )
-    }
-    
-    func registerUser(){
-        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
-
-        getToken { (token: String) in
-            let tokenID: String = token
-            let tipoSchermo: String = "iOS_LAC_regId_"+tokenID
-            print("TOKEN", tokenID)
-            print("IPHONE ID",iphoneID!)
-            
-            self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
-                (error:Error?, ref:DatabaseReference) in
-                if let error = error {
-                    print("Data could not be saved: \(error).")
-                } else {
-                    print("Data saved successfully!")
-                }
-            }
-        }
-    }
-    
-    //completion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
-    func getToken(completion: @escaping(String)->()) {
-        InstanceID.instanceID().instanceID { (result, error) in
-            var tokenID: String = ""
-            if let error = error {
-                print("Error fetching remote instance ID: \(error)")
-               
-            } else if let result = result {
-                print("Remote instance ID token: \(result.token)")
-                tokenID = result.token
-            }
-            completion(tokenID);
-        }
     }
     
     func getUsers(){
@@ -408,48 +215,6 @@ class ItemsViewController: UIViewController {
         }
         
     }
-
-    //cycles the users table and checks if the passed beacon has been lost by someone
-    func checkIfLost(item: Item){
-        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
-        
-        let iBeaconsRef = self.ref.child("users")
-        
-        iBeaconsRef.observe(.value, with: { (snapshot) in
-            for child in snapshot.children {
-                if let childSnapshot = child as? DataSnapshot{
-                    let value = childSnapshot.value as? NSDictionary
-                    let mac = value?["mac"] as? String ?? ""
-                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
-                    
-                    if mac == beaconID && switch_hdd == "1"{
-                        self.notificationPublisher.sendNotification(
-                            title: "UUID: \(item.uuid.uuidString)",
-                            subtitle: "Major: \(Int(item.majorValue)), Minor: \(Int(item.minorValue))",
-                            body: "Current location: lat=\(self.currentLocation.latitude), long=\(self.currentLocation.longitude)",
-                            badge: 1,
-                            delayInterval: nil,
-                            identifier: "found new beacon"
-                        )
-                        
-                        print("Current location: lat=\(self.currentLocation.latitude), long=\(self.currentLocation.longitude)")
-                        print("set current beacon location")
-                        print("send notification")
-                    }
-                }
-            }
-        })
-    }
-    
-    @IBAction func pairBeacon(_ sender: UIButton) {
-        pairingIsOn = !pairingIsOn
-        
-        if pairingIsOn == true {
-            pair.text = "On ✅"
-        } else {
-            pair.text = "Off ❌"
-        }
-    }
     
     func loadItems() {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
@@ -475,14 +240,56 @@ class ItemsViewController: UIViewController {
         }
     }
     
+    func loadItemsToBeAdded() {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ItemsToBeAdded")
+        let context = appDelegate.persistentContainer.viewContext
+        
+        request.returnsObjectsAsFaults = false
+        do {
+            let result = try context.fetch(request)
+            for data in result as! [NSManagedObject] {
+                let item = Item(name: data.value(forKey: "name") as! String,
+                                icon: data.value(forKey: "icon") as! Int,
+                                uuid: UUID(uuidString: data.value(forKey: "uuid") as! String)!,
+                                majorValue: data.value(forKey: "major") as! Int,
+                                minorValue: data.value(forKey: "minor") as! Int)
+                itemsToBeAdded.append(item)
+                print(data.value(forKey: "uuid") as! String)
+            }
+        } catch {
+            print("Failed")
+        }
+    }
+    
+    func addItemToBeAdded(item: Item){
+        let context = appDelegate.persistentContainer.viewContext
+        
+        //Create a new Entity of type Item
+        let entity = NSEntityDescription.entity(forEntityName: "Items", in: context)
+        let newItem = NSManagedObject(entity: entity!, insertInto: context)
+        
+        newItem.setValue(item.uuid.uuidString, forKey: "uuid")
+        newItem.setValue(item.name, forKey: "name")
+        newItem.setValue(item.icon, forKey: "icon")
+        newItem.setValue(Int(item.majorValue), forKey: "major")
+        newItem.setValue(Int(item.minorValue), forKey: "minor")
+        
+        //save the context with new data
+        do{
+            try context.save()
+        } catch {
+            print("Failed to save context");
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "segueAdd", let viewController = segue.destination as? AddItemViewController {
             viewController.delegate = self
         }
     }
     
-    func deleteVisitedBeacoons(){
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "VisitedItems")
+    func deleteItemsToBeAdded(){
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ItemsToBeAdded")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         
         let context = appDelegate.persistentContainer.viewContext
@@ -492,27 +299,6 @@ class ItemsViewController: UIViewController {
         }catch {
             print("Error while trying to delete objects in VisitedItems Entity.")
         }
-    }
-}
-
-//Allerts
-extension ItemsViewController{
-    func createAlert(title: String, message: String, item: Item){
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        //Annulla il pairing
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-        
-            alertController.dismiss(animated: true, completion: nil)
-        }))
-        
-        //TODO aprire la pagina di registrazione con i campi inerenti il beacon già compilati
-        alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
-            self.addBeacon(item: item)
-        }))
-        
-        self.present(alertController, animated: true, completion: nil)
     }
 }
 

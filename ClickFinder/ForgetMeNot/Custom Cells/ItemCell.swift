@@ -33,7 +33,7 @@ class ItemCell: UITableViewCell {
             if let item = item {
                 imgIcon.image = Icons(rawValue: item.icon)?.image()
                 lblName.text = item.name
-                lblLocation.text = item.locationString()
+                lblLocation.text = "Major: \(item.majorValue), Minor: \(item.minorValue)"
                 
             } else {
                 imgIcon.image = nil

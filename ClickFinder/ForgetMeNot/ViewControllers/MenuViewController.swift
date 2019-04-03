@@ -18,7 +18,6 @@ class MenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-
     
     @IBAction func openMenu(_ sender: Any) {
         if (menuShowing) {

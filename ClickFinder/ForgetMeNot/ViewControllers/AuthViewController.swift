@@ -50,8 +50,8 @@ class AuthViewController: UIViewController {
     }
     
     func persistUser() {
-       // let userData = NSKeyedArchiver.archivedData(withRootObject: user!)
-    
+        // let userData = NSKeyedArchiver.archivedData(withRootObject: user!)
+        
         //UserDefaults.standard.set(userData, forKey: storedUserKey)
         //UserDefaults.standard.synchronize()
         
@@ -66,7 +66,7 @@ class AuthViewController: UIViewController {
     
     
     func loadUser() {
-       // guard let storedUser = UserDefaults.standard.data(forKey: storedUserKey) else { return }
+        // guard let storedUser = UserDefaults.standard.data(forKey: storedUserKey) else { return }
         //guard let userTmp = NSKeyedUnarchiver.unarchiveObject(with: storedUser) as? User else { return }
         
         guard let storedUsers = UserDefaults.standard.array(forKey: storedUserKey) as? [Data] else { return }
@@ -95,7 +95,7 @@ class AuthViewController: UIViewController {
         //TODO l'utente al primo login viene salvato nel DB (con i valori di base) e quando aggiunge i valori username, city, telephone, ... vanno ad aggiornare il DB
         
         dismiss(animated: true, completion: nil)
-
+        
     }
     
     @IBAction func cancelRegistration(_ sender: Any) {
