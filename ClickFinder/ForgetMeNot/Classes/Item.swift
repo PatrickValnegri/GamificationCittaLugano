@@ -85,11 +85,11 @@ class Item: NSObject, NSCoding {
         case .unknown:
             return "Unknown"
         case .immediate:
-            return "Immediate"
+            return "<10cm"
         case .near:
-            return "Near"
+            return "<10m"
         case .far:
-            return "Far"
+            return ">10m"
         }
     }
     
@@ -106,7 +106,6 @@ class Item: NSObject, NSCoding {
         
         return location
     }
-    
 }
 
 func ==(item: Item, beacon: CLBeacon) -> Bool {
