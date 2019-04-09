@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,7 +13,7 @@
         <!--Items View Controller-->
         <scene sceneID="4ht-gZ-6ag">
             <objects>
-                <viewController id="DrD-we-v90" customClass="ItemsViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Items" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DrD-we-v90" customClass="ItemsViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ecM-Jk-Gw9"/>
                         <viewControllerLayoutGuide type="bottom" id="0wD-kp-5MZ"/>
@@ -23,7 +23,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="OGq-0J-rwC">
-                                <rect key="frame" x="179.5" y="325.5" width="16" height="16"/>
+                                <rect key="frame" x="45.5" y="74" width="284" height="519"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BackgroundBlue" translatesAutoresizingMaskIntoConstraints="NO" id="OVv-Tb-G8Y">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="130"/>
@@ -587,15 +587,22 @@
                                     <segue destination="DrD-we-v90" kind="show" id="z2g-rR-nA7"/>
                                 </connections>
                             </button>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rZs-gJ-5Hm">
+                                <rect key="frame" x="0.0" y="225" width="375" height="216"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </pickerView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="a9E-0I-nc7" firstAttribute="trailing" secondItem="Zhg-Hr-QAQ" secondAttribute="trailing" id="2wr-wK-jrS"/>
+                            <constraint firstItem="rZs-gJ-5Hm" firstAttribute="trailing" secondItem="GAE-RD-8t8" secondAttribute="trailing" id="3Ml-Yl-XhI"/>
                             <constraint firstItem="a9E-0I-nc7" firstAttribute="top" secondItem="gAi-9i-jFp" secondAttribute="bottom" constant="490" id="9Zn-UI-4om"/>
                             <constraint firstItem="GAE-RD-8t8" firstAttribute="leading" secondItem="IOh-T3-rek" secondAttribute="leading" id="Gia-DO-unS"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Zhg-Hr-QAQ" secondAttribute="trailing" constant="5" id="MzC-qX-r5L"/>
                             <constraint firstItem="SQN-nO-6oV" firstAttribute="top" secondItem="Zhg-Hr-QAQ" secondAttribute="bottom" constant="19" id="QNd-o1-c0l"/>
                             <constraint firstItem="Zhg-Hr-QAQ" firstAttribute="top" secondItem="a9E-0I-nc7" secondAttribute="bottom" constant="8" symbolic="YES" id="Qwg-oe-2cU"/>
+                            <constraint firstItem="rZs-gJ-5Hm" firstAttribute="centerY" secondItem="GAE-RD-8t8" secondAttribute="centerY" constant="-10.5" id="Rr2-eY-kUC"/>
+                            <constraint firstItem="rZs-gJ-5Hm" firstAttribute="centerX" secondItem="GAE-RD-8t8" secondAttribute="centerX" id="Rr8-Nr-HhM"/>
                             <constraint firstItem="GAE-RD-8t8" firstAttribute="top" secondItem="gAi-9i-jFp" secondAttribute="bottom" id="dRQ-as-bHL"/>
                             <constraint firstItem="a9E-0I-nc7" firstAttribute="leading" secondItem="Zhg-Hr-QAQ" secondAttribute="leading" id="gRE-2k-ZJ3"/>
                             <constraint firstAttribute="trailing" secondItem="GAE-RD-8t8" secondAttribute="trailing" id="hLn-Oy-ZfN"/>
@@ -603,6 +610,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="iBeaconPicker" destination="rZs-gJ-5Hm" id="n0g-Fm-Teb"/>
                         <outlet property="mainPage" destination="GAE-RD-8t8" id="9lf-3T-U8d"/>
                         <outlet property="search" destination="Zhg-Hr-QAQ" id="1vt-E7-NgD"/>
                     </connections>

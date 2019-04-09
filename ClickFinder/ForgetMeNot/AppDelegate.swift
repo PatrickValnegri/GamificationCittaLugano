@@ -92,8 +92,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let gcmMessageIDKey = "gcm.message_id"
     
-    
-    
     private func requestNotificationAuthorization(application: UIApplication){
         let center = UNUserNotificationCenter.current()
         let options: UNAuthorizationOptions = UNAuthorizationOptions([.alert, .badge, .sound])

@@ -69,6 +69,9 @@ class ItemsViewController: UIViewController {
         
         
         /********** ADD THE LAST PAIRED IBEACONS **********/
+        //Clear
+        itemsToBeAdded = [Item]()
+        
         loadItemsToBeAdded()
         
         for item in itemsToBeAdded{
@@ -84,7 +87,7 @@ class ItemsViewController: UIViewController {
         //Update the list of items, new beacons may have been paired
         loadItems()
         
-        authenticate()
+        //authenticate()
     
         //getUsers()
         
@@ -140,30 +143,6 @@ class ItemsViewController: UIViewController {
                 }
             }
         })
-    }
-    
-    func registerBeacon(item: Item){
-        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
-        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
-        
-        self.ref.child("users").child(beaconID).setValue(
-            [
-                "latid":"0",
-                "longit":"0",
-                "mac":beaconID,
-                "name":item.name,
-                "owner":iphoneID!,
-                "switch_hdd": "0",
-                "tiposchermo": "Beacon-\(iphoneID!)",
-                "type":""
-            ]
-        ){(error:Error?, ref:DatabaseReference) in
-            if let error = error {
-                print("Data could not be saved: \(error).")
-            } else {
-                print("Data saved successfully!")
-            }
-        }
     }
     
     func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String, antenna_name: String, antenna_phone: String) {
@@ -331,7 +310,6 @@ extension ItemsViewController: AddBeacon {
         //save the context with new data
         do{
             try context.save()
-            registerBeacon(item: item)
         } catch {
             print("Failed to save context");
         }
