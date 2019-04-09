@@ -312,9 +312,8 @@ class MainViewController: UIViewController, WKNavigationDelegate{
         
         registerUser() //first time registration or only update token
     
-        sendNotification(titolo: "Ritrovamento beacon", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_32_32", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
-        
-        //regiID: APA91bEEJKPJ4VODFC1dPski0pk3By9_xd0oet678MC90nfVQN_KvDK29MzSSdfoTTsRTgSLsmewgrlFtNxYnRf_oIaXlFRheoX21GqYnn-TjmM6s2Pj8HgRwIsDp9yvxjylh2TAQkFI_
+        sendNotification(titolo: "Ritrovamento beacon", mac: "C0D1AD35-1D5A-46C7-9495-31299AFC57D5", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
+
 
     }
     
@@ -345,9 +344,18 @@ class MainViewController: UIViewController, WKNavigationDelegate{
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         
         let url = AppConstants.mainPageURL!
+        mainPage.load(URLRequest(url: URL(string: "https://gporetti.drivehq.com/alarm/owner_alarm.html?iduser=5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45&_time=09/Apr/2019%2014:50:05&_lat=0.0&_long=0.0&antenna=C0D1AD35-1D5A-46C7-9495-31299AFC57D5&_mac=5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45")!))
+        mainPage.allowsBackForwardNavigationGestures = true
+    }
+    
+    func loadURL(notificationURL: String){
+        mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
+        
+        let url = URL(string: notificationURL)!
         mainPage.load(URLRequest(url: url))
         mainPage.allowsBackForwardNavigationGestures = true
     }
+    
     
     /*
      This function creates a new toast with the given message
@@ -508,7 +516,7 @@ class MainViewController: UIViewController, WKNavigationDelegate{
     func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String, antenna_name: String, antenna_phone: String) {
         print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
-        let time_to_live = 3600
+        let time_to_live = 36000
         
         let notification: [String: Any] = [
             "title": titolo,
@@ -522,7 +530,6 @@ class MainViewController: UIViewController, WKNavigationDelegate{
             "antenna_phone": antenna_phone
         ]
         
-        
         let message: [String: Any] = [
             "priority": "high",
             "content_available": true,
@@ -535,10 +542,10 @@ class MainViewController: UIViewController, WKNavigationDelegate{
             //"body":"ivan ha trovato il tuo beacon"
         ]
         
-        
         let header: HTTPHeaders = [ "Content-Type": "application/json",
                                     "Accept": "application/json",
-                                    "Authorization": "key=AIzaSyCu-EtxJSmRGA2ll2W66ugs5Rfy1oa3vZs"
+                                    //"Authorization": "key=AIzaSyCu-EtxJSmRGA2ll2W66ugs5Rfy1oa3vZs"
+                                    "Authorization": "key=AAAAOQ9a1kc:APA91bFU3g7xfVMLAO7FOQepL1jLQnWqUZ0cU77efNoYoW5eIMiVDVidPOqswqlGetQZjVsq-FGpWDpo_VRtI2mFn4hrt6jp9opDRAa8mfZjrHqzw8SOTYxeXA9VB13xdH-y_8oRUp2jHOF2Az1BTOV6Z-BHjrbJkQ"
         ]
         
         AF.request(urlString, method: .post, parameters: message, encoding: JSONEncoding.default, headers: header).responseString {
