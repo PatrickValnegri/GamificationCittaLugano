@@ -212,6 +212,7 @@ extension MainViewController: CLLocationManagerDelegate {
 }
 
 class MainViewController: UIViewController, WKNavigationDelegate{
+    
 
     //Instance of ItemsViewController
     let ivc = ItemsViewController(nibName: nil, bundle: nil)
@@ -246,8 +247,29 @@ class MainViewController: UIViewController, WKNavigationDelegate{
     @IBOutlet weak var search: UIButton!
     @IBOutlet weak var mainPage: WKWebView!
     
+    //SideBar menu
+    @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    
+    var menuShowing = false
+    
+    @IBAction func openMenu(_ sender: Any) {
+        
+        if (menuShowing) {
+            leadingConstraint.constant = -85
+        } else {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseIn, animations: {
+                self.view.layoutIfNeeded()
+            })
+            leadingConstraint.constant = 0
+        }
+        menuShowing = !menuShowing
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        leadingConstraint.constant = -85
         
         loadMainPage()
         
@@ -288,9 +310,9 @@ class MainViewController: UIViewController, WKNavigationDelegate{
         //FIREBASE REALTIME DATABASE REFERENCE
         ref = Database.database().reference()
         
-        registerUser()
+        registerUser() //first time registration or only update token
     
-        sendNotification(titolo: "Titolo", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_32_32", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Patrick", antenna_phone: "0000000000")
+        sendNotification(titolo: "Ritrovamento beacon", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_32_32", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
         
         //regiID: APA91bEEJKPJ4VODFC1dPski0pk3By9_xd0oet678MC90nfVQN_KvDK29MzSSdfoTTsRTgSLsmewgrlFtNxYnRf_oIaXlFRheoX21GqYnn-TjmM6s2Pj8HgRwIsDp9yvxjylh2TAQkFI_
 
@@ -389,16 +411,32 @@ class MainViewController: UIViewController, WKNavigationDelegate{
             print("TOKEN", tokenID)
             print("IPHONE ID",iphoneID!)
             
-            self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
-                (error:Error?, ref:DatabaseReference) in
-                if let error = error {
-                    print("Data could not be saved: \(error).")
-                } else {
-                    print("Data saved successfully!")
+            self.ref.child("users").observe(.value, with: { (snapshot) in
+                
+                if (snapshot.hasChild(iphoneID!)) { //se l'utente esiste già nel database
+                    self.ref.child("users").child(iphoneID!).updateChildValues(["tiposchermo":tipoSchermo]) {
+                        (error:Error?, ref:DatabaseReference) in
+                        if let error = error {
+                            print("Token not updated: \(error).")
+                        } else {
+                            print("Token updated successfully!")
+                        }
+                    }
+                } else { //se l'utente non esiste nel database
+                    
+                    self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
+                        (error:Error?, ref:DatabaseReference) in
+                        if let error = error {
+                            print("Data could not be saved: \(error).")
+                        } else {
+                            print("Data saved successfully!")
+                        }
+                    }
                 }
-            }
+            })
         }
     }
+    
     
     /*********************************************
      IBEACON MANAGING

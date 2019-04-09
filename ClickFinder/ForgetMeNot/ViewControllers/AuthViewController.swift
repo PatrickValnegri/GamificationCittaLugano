@@ -14,12 +14,13 @@ let storedUserKey = "storedUser"
 
 class AuthViewController: UIViewController {
     
+    
     @IBOutlet weak var usernameField: UITextField!
-    @IBOutlet weak var surnameField: UITextField!
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var phonenumberField: UITextField!
     @IBOutlet weak var streetField: UITextField!
     @IBOutlet weak var cityField: UITextField!
+    @IBOutlet weak var capField: UITextField!
     
     @IBOutlet weak var loginButton: UIButton!
     
@@ -35,8 +36,6 @@ class AuthViewController: UIViewController {
         
         usernameField.delegate = self
         usernameField.backgroundColor = Colors.background
-        surnameField.delegate = self
-        surnameField.backgroundColor = Colors.background
         emailField.delegate = self
         emailField.backgroundColor = Colors.background
         phonenumberField.delegate = self
@@ -45,6 +44,8 @@ class AuthViewController: UIViewController {
         streetField.backgroundColor = Colors.background
         cityField.delegate = self
         cityField.backgroundColor = Colors.background
+        capField.delegate = self
+        capField.backgroundColor = Colors.background
         
         loginButton.isEnabled = true;
     }
@@ -73,29 +74,67 @@ class AuthViewController: UIViewController {
         for userData in storedUsers {
             guard let item = NSKeyedUnarchiver.unarchiveObject(with: userData) as? User else { continue }
             users.append(item)
-            print("trovato")
+            print("Nome user: ",item.name)
             
         }
     }
     
     
     @IBAction func loginTapped(_ sender: UIButton) {
+        
         let username: String = usernameField.text!
-        let surname: String = surnameField.text!
         let email: String = emailField.text!
         let phonenumber: String = phonenumberField.text!
         let street: String = streetField.text!
         let city: String = cityField.text!
+        let cap: String = capField.text!
         
-        users.append(User(name: username, surname: surname, email: email, phonenumber: phonenumber, street: street, city: city))
+        users.append(User(name: username, email: email, phonenumber: phonenumber, street: street, city: city, cap: cap))
         
-        persistUser()
-        loadUser()
+        persistUser() //salvato in locale
+        //loadUser()
         
-        //TODO l'utente al primo login viene salvato nel DB (con i valori di base) e quando aggiunge i valori username, city, telephone, ... vanno ad aggiornare il DB
+        updateUserInfo() //salvato nel database di firebase
         
         dismiss(animated: true, completion: nil)
         
+    }
+    
+    func updateUserInfo(){
+        
+        //FIREBASE REALTIME DATABASE REFERENCE
+        ref = Database.database().reference()
+        
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString //usato per identificare lo user
+        
+        let name = usernameField.text
+        let phone_number = phonenumberField.text
+        let email = emailField.text
+        let address = "\(streetField.text!) \(capField.text!) \(cityField.text!)"
+
+        print("Name", name!)
+        print("Phone_number", phone_number!)
+        print("email", email!)
+        print("Address", address)
+    
+        self.ref.child("users").child(iphoneID!).setValue(
+            [
+                "name":name!,
+                "phone": phone_number!,
+                "email": email!,
+                "address": address,
+                "latid": "0",
+                "longid": "0",
+            ]
+        ){(error:Error?, ref:DatabaseReference) in
+            if let error = error {
+                print("User could not be saved: \(error).")
+            } else {
+                print("User saved successfully!")
+            }
+        }
+    
+    
     }
     
     @IBAction func cancelRegistration(_ sender: Any) {
