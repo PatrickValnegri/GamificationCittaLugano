@@ -340,18 +340,22 @@ class MainViewController: UIViewController, WKNavigationDelegate{
         start()
     }
     
+    //Funzione che carica la view principale
     func loadMainPage(){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         
         let url = AppConstants.mainPageURL!
-        mainPage.load(URLRequest(url: URL(string: "https://gporetti.drivehq.com/alarm/owner_alarm.html?iduser=5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45&_time=09/Apr/2019%2014:50:05&_lat=0.0&_long=0.0&antenna=C0D1AD35-1D5A-46C7-9495-31299AFC57D5&_mac=5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45")!))
+        
+        mainPage.load(URLRequest(url: url))
         mainPage.allowsBackForwardNavigationGestures = true
     }
     
+    //Funzione per caricare url di inviato nella risposta del server
     func loadURL(notificationURL: String){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         
         let url = URL(string: notificationURL)!
+        AppConstants.mainPageURL = url
         mainPage.load(URLRequest(url: url))
         mainPage.allowsBackForwardNavigationGestures = true
     }
@@ -410,6 +414,7 @@ class MainViewController: UIViewController, WKNavigationDelegate{
         }
     }
     
+    //Funzione per registrare lo user nel database
     func registerUser(){
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
         
@@ -435,16 +440,15 @@ class MainViewController: UIViewController, WKNavigationDelegate{
                     self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
                         (error:Error?, ref:DatabaseReference) in
                         if let error = error {
-                            print("Data could not be saved: \(error).")
+                            print("User could not be saved: \(error).")
                         } else {
-                            print("Data saved successfully!")
+                            print("User saved successfully!")
                         }
                     }
                 }
             })
         }
     }
-    
     
     /*********************************************
      IBEACON MANAGING
