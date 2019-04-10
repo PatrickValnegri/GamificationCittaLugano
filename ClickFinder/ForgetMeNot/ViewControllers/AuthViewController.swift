@@ -14,7 +14,6 @@ let storedUserKey = "storedUser"
 
 class AuthViewController: UIViewController {
     
-    
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var phonenumberField: UITextField!

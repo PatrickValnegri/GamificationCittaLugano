@@ -25,7 +25,7 @@
 		CD2A72CC223C08C8009EF5EB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CB223C08C8009EF5EB /* User.swift */; };
 		CD2A72CE223C08E2009EF5EB /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */; };
 		CD2A72D0223C0900009EF5EB /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */; };
-		CD8F77CD225531C700951557 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD8F77CC225531C700951557 /* GoogleService-Info.plist */; };
+		CD891523225E28D7002449C8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD891522225E28D7002449C8 /* GoogleService-Info.plist */; };
 		FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9CC95B1AD701910038DF33 /* AppDelegate.swift */; };
 		FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9621AD701910038DF33 /* Images.xcassets */; };
 		FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9891AD702CC0038DF33 /* Main.storyboard */; };
@@ -51,7 +51,7 @@
 		CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthTextField.swift; path = ForgetMeNot/AuthTextField.swift; sourceTree = SOURCE_ROOT; };
 		CD2A72CF223C08FF009EF5EB /* AuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		CD2A9F54224263840091C5B7 /* clickFinder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = clickFinder.entitlements; sourceTree = "<group>"; };
-		CD8F77CC225531C700951557 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CD891522225E28D7002449C8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.release.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.release.xcconfig"; sourceTree = "<group>"; };
 		F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.debug.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.debug.xcconfig"; sourceTree = "<group>"; };
 		FB9CC9561AD701910038DF33 /* clickFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = clickFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -186,7 +186,7 @@
 		FB9CC9591AD701910038DF33 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				CD8F77CC225531C700951557 /* GoogleService-Info.plist */,
+				CD891522225E28D7002449C8 /* GoogleService-Info.plist */,
 				FB9CC95A1AD701910038DF33 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -264,8 +264,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C00360541E39747F00234FCD /* LaunchScreen.storyboard in Resources */,
+				CD891523225E28D7002449C8 /* GoogleService-Info.plist in Resources */,
 				FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */,
-				CD8F77CD225531C700951557 /* GoogleService-Info.plist in Resources */,
 				FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

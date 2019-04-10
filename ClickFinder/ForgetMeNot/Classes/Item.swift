@@ -32,7 +32,7 @@ struct ItemConstant {
 }
 
 class Item: NSObject, NSCoding {
-    let name: String
+    var name: String
     let icon: Int
     let uuid: UUID
     let majorValue: CLBeaconMajorValue
