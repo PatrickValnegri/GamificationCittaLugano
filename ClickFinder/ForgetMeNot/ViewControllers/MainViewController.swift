@@ -65,6 +65,7 @@ extension MainViewController: CLLocationManagerDelegate {
 //        for item in ivc.items {
 //            printItem(item: item)
 //        }
+        
         if(!checkIfActive()){
             notificationPublisher.sendNotification(
                 title: "Entered region",
@@ -72,7 +73,8 @@ extension MainViewController: CLLocationManagerDelegate {
                 body: "This is a background test local notification",
                 badge: 1,
                 delayInterval: nil,
-                identifier: "exit notification"
+                identifier: "exit notification",
+                ring: false
             )
             
             print("Entered region")
@@ -90,7 +92,8 @@ extension MainViewController: CLLocationManagerDelegate {
                 body: "This is a background test local notification",
                 badge: 1,
                 delayInterval: nil,
-                identifier: "exit notification"
+                identifier: "exit notification",
+                ring: false
             )
             
             print("Left region")
@@ -103,9 +106,26 @@ extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         print("ranging")
         
-        
         //Handling of the found beacons
         for beacon in beacons {
+            if(Int(truncating: beacon.major) > AppConstants.pairingValue){
+                
+                let major = UInt16(truncating: beacon.major)-UInt16(AppConstants.pairingValue)
+                let minor = UInt16(truncating: beacon.minor)
+                if let known = ivc.items.first(where:{$0.majorValue == major && $0.minorValue == minor}){
+                    print("PHONE FOUND")
+                    notificationPublisher.sendNotification(
+                        title: "Left region",
+                        subtitle: region.identifier,
+                        body: "This is a background test local notification",
+                        badge: 1,
+                        delayInterval: nil,
+                        identifier: "exit notification",
+                        ring: true
+                    )
+                }
+            }
+            
             if ivc.items.isEmpty {
                 print("Unknown iBeacon found")
                 handleUnknownIBeacons(beacon: beacon)
@@ -199,11 +219,11 @@ extension MainViewController: CLLocationManagerDelegate {
         var newBeacon : CLBeacon?
         
         //major value > 32000 -> the pairing button has been pressed
-        if Int(truncating: beacon.major) > 32000{
+        if Int(truncating: beacon.major) > AppConstants.pairingValue{
             print("Pairing iBeacon found")
             newBeacon = beacon
         } else {
-            let item = Item(name: "New", icon: 4, uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor))
+            let item = Item(name: "New", photo: UIImage(), uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor))
             let endDate = Date()
             let elapsed = Int(endDate.timeIntervalSince(startDate))
             
@@ -237,9 +257,9 @@ extension MainViewController: CLLocationManagerDelegate {
             if(newBeacon != nil){
                 self.pairingIsOn = false
                 
-                let major = Int(truncating: newBeacon!.major)-32000 //Pairing done
+                let major = Int(truncating: newBeacon!.major)-AppConstants.pairingValue //Pairing done
                 
-                let item = Item(name: "New", icon: 4, uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor))
+                let item = Item(name: "New", photo: UIImage(), uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor))
                 
                 var flag = false
                 
@@ -309,7 +329,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     var foundDate = Date()
     
     //CORE DATA
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     //CORE LOCATION
     //Entry point into core location
@@ -359,6 +379,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         
         //LOAD DATA
         ivc.loadItems()
+        
+        for itemN in ivc.items{
+            let region = CLBeaconRegion(proximityUUID: AppConstants.uuid, major: itemN.majorValue + UInt16(AppConstants.pairingValue), minor: itemN.minorValue, identifier: AppConstants.uuid.uuidString)
+            
+            locationManager.startMonitoring(for: region)
+        }
+        
+//        let region = CLBeaconRegion(proximityUUID: AppConstants.uuid, major: CLBeaconMajorValue(majorValue), minor: CLBeaconMinorValue(minorValue), identifier: AppConstants.uuid.uuidString)
         
         locationManager.startUpdatingLocation()
         locationManager.startMonitoring(for: AppConstants.region)
@@ -451,7 +479,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     func loadMainPage(){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         
-        let url = AppConstants.mainPageURL!
+        _ = AppConstants.mainPageURL!
         mainPage.load(URLRequest(url: URL(string: "https://gporetti.drivehq.com/alarm/owner_alarm.html?iduser=5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45&_time=09/Apr/2019%2014:50:05&_lat=0.0&_long=0.0&antenna=C0D1AD35-1D5A-46C7-9495-31299AFC57D5&_mac=5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45")!))
         mainPage.allowsBackForwardNavigationGestures = true
     }
@@ -515,7 +543,136 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         })
     }
     
+    func createAlert(title: String, message: String, item: Item){
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+//        let beaconImageView: UIImageView = {
+//            let imageView = UIImageView()
+//            imageView.translatesAutoresizingMaskIntoConstraints = false
+//            imageView.contentMode = .scaleAspectFit
+//
+//            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectBeaconImageView)))
+//            imageView.isUserInteractionEnabled = true
+//
+//            return imageView
+//        }()
+//
+//        alertController.view.addSubview(beaconImageView)
+        
+        //Textfield for the beacon name
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Insert beacon name here"
+        }
+        
+        //Deny pairing
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+            alertController.dismiss(animated: true, completion: nil)
+        }))
+        
+        //Save the paired beacon
+        alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
+            item.name = alertController.textFields![0].text ?? "New"
+            
+            //self.registerBeacon(item: item)
+            
+//            let aivc = AddItemViewController()
+            
+//            aivc.txtName.text = item.name
+//            aivc.txtUUID.text = item.uuid.uuidString
+//            aivc.txtMajor.text = "\(item.majorValue)"
+//            aivc.txtMinor.text = "\(item.majorValue)"
+            
+//            let viewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Items") as UIViewController
+            
+            detailItem = item
+            flag = true
+            
+            let addItemViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addItem") as UIViewController
+            
+            self.locationManager.stopRangingBeacons(in: AppConstants.region)
+            
+            //self.navigationController?.pushViewController(aivc, animated: true)
+            self.present(addItemViewController, animated: false, completion: nil)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc func handleSelectBeaconImageView(){
+        print(123)
+    }
+    
     /*********************************************/
+    
+    /*********************************************
+     IBEACON MANAGING
+     *********************************************/
+    
+    /*
+     Cycles the users table and checks if the passed beacon has been lost by someone.
+     If the passed item is owned by the user, it swtich_hdd value is reset.
+     Else, the app notificates the main server that a lost item has been found in the current location.
+     */
+    
+    func checkIfLost(item: Item, known: Bool){
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+
+        let iBeaconsRef = self.ref.child("users")
+        
+        iBeaconsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            for child in snapshot.children {
+                if let childSnapshot = child as? DataSnapshot{
+                    let value = childSnapshot.value as? NSDictionary
+                    let mac = value?["mac"] as? String ?? ""
+                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
+                    
+                    if mac == beaconID && switch_hdd == "1" && !known{
+                        self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
+                        
+                        print("UNKNOWN BEACON FOUND, send notification")
+                    } else if mac == beaconID && switch_hdd == "1" && known{
+                        //Known lost iBeacon found while app was in background
+                        //Request the server to send a notification so that the user is aware of
+                        if !self.checkIfActive(){
+                           self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
+                            self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                            //self.updateBeaconStatus(beaconID: beaconID, lost: false)
+                        }else{
+                            print("Found known \(beaconID), set switch_hdd to 0")
+                            self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                            self.updateBeaconStatus(beaconID: beaconID, lost: false)
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    /*
+     This function updates the iBeacon status on the database.
+     Usually this function is called when a lost known iBeacon has been found or when a know beacon cant' be found.
+     */
+    func updateBeaconStatus(beaconID: String, lost: Bool){
+        
+        var values = [String:String]()
+        
+        if lost{
+            values = ["switch_hdd": "1"]
+        }else{
+            values = ["switch_hdd": "0"]
+        }
+        
+        print("BEACON STATU UPDATED \(values)")
+        self.ref.child("users").child(beaconID).updateChildValues(values)
+    }
+    
+    /*******************************************/
+    
+    /*******************************************
+     FIREBASE
+     *******************************************/
     
     //completion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
     func getToken(completion: @escaping(String)->()) {
@@ -567,102 +724,6 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         }
     }
     
-    
-    /*********************************************
-     IBEACON MANAGING
-     *********************************************/
-    
-    /*
-     Cycles the users table and checks if the passed beacon has been lost by someone.
-     If the passed item is owned by the user, it swtich_hdd value is reset.
-     Else, the app notificates the main server that a lost item has been found in the current location.
-     */
-    
-    func registerBeacon(item: Item){
-        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
-        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
-        
-        self.ref.child("users").child(beaconID).setValue(
-            [
-                "latid":"0",
-                "longit":"0",
-                "mac":beaconID,
-                "name":item.name,
-                "owner":iphoneID!,
-                "switch_hdd": "0",
-                "tiposchermo": "Beacon-\(iphoneID!)",
-                "type":""
-            ]
-        ){(error:Error?, ref:DatabaseReference) in
-            if let error = error {
-                print("Data could not be saved: \(error).")
-            } else {
-                print("Data saved successfully!")
-            }
-        }
-    }
-    
-    func checkIfLost(item: Item, known: Bool){
-        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
-        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
-
-        let iBeaconsRef = self.ref.child("users")
-        
-        iBeaconsRef.observeSingleEvent(of: .value, with: { (snapshot) in
-            for child in snapshot.children {
-                if let childSnapshot = child as? DataSnapshot{
-                    let value = childSnapshot.value as? NSDictionary
-                    let mac = value?["mac"] as? String ?? ""
-                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
-                    
-                    if mac == beaconID && switch_hdd == "1" && !known{
-                        self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
-                        
-                        print("UNKNOWN BEACON FOUND, send notification")
-                    } else if mac == beaconID && switch_hdd == "1" && known{
-                        //Known lost iBeacon found while app was in background
-                        //Request the server to send a notification so that the user is aware of
-                        if !self.checkIfActive(){
-                           self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)", command: "MY_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
-                            self.locationManager.stopRangingBeacons(in: AppConstants.region)
-                            self.updateBeaconStatus(beaconID: beaconID, lost: false)
-                        }else{
-                            print("Found known \(beaconID), set switch_hdd to 0")
-                            self.locationManager.stopRangingBeacons(in: AppConstants.region)
-                            self.updateBeaconStatus(beaconID: beaconID, lost: false)
-                        }
-                    }
-                }
-            }
-        })
-        
-        //iBeaconsRef.removeAllObservers()
-    }
-    
-    /*
-     This function updates the iBeacon status on the database.
-     Usually this function is called when a lost known iBeacon has been found or when a know beacon cant' be found.
-     */
-    func updateBeaconStatus(beaconID: String, lost: Bool){
-        
-        var values = [String:String]()
-        
-        if lost{
-            values = ["switch_hdd": "1"]
-        }else{
-            values = ["switch_hdd": "0"]
-        }
-        
-        print("BEACON STATU UPDATED \(values)")
-        self.ref.child("users").child(beaconID).updateChildValues(values)
-    }
-    
-    /*******************************************/
-    
-    /*******************************************
-     FIREBASE
-     *******************************************/
-    
     func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String, antenna_name: String, antenna_phone: String) {
         print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
@@ -710,43 +771,5 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             }
         }
         
-    }
-}
-
-//Allerts
-extension MainViewController{
-    func createAlert(title: String, message: String, item: Item){
-        
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        //Textfield for the beacon name
-        alertController.addTextField { (textField) in
-            textField.text = "Insert beacon name here"
-        }
-        
-        //Deny pairing
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-            
-            alertController.dismiss(animated: true, completion: nil)
-        }))
-        
-        //Save the paired beacon
-        alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
-            item.name = alertController.textFields![0].text ?? "New"
-            
-            self.registerBeacon(item: item)
-            //this collection is used to keep track of the beacons that have been paired but not still displayed
-            //in the items view
-            self.ivc.itemsToBeAdded.append(item)
-            self.ivc.addItemToBeAdded(item: item)
-            
-            let viewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Items") as UIViewController
-            
-            self.locationManager.stopRangingBeacons(in: AppConstants.region)
-            
-            self.present(viewController, animated: false, completion: nil)
-        }))
-        
-        self.present(alertController, animated: true, completion: nil)
     }
 }

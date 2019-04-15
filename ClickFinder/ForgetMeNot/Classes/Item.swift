@@ -22,6 +22,7 @@
 
 import Foundation
 import CoreLocation
+import UIKit
 
 struct ItemConstant {
     static let nameKey = "name"
@@ -31,9 +32,9 @@ struct ItemConstant {
     static let minorKey = "minor"
 }
 
-class Item: NSObject, NSCoding {
+class Item: NSObject{
     var name: String
-    let icon: Int
+    var photo: UIImage
     let uuid: UUID
     let majorValue: CLBeaconMajorValue
     let minorValue: CLBeaconMinorValue
@@ -41,34 +42,34 @@ class Item: NSObject, NSCoding {
     // This property stores the last CLBeacon instance seen for this specific item, used for proximity informations
     var beacon: CLBeacon?
     
-    init(name: String, icon: Int, uuid: UUID, majorValue: Int, minorValue: Int) {
+    init(name: String, photo: UIImage, uuid: UUID, majorValue: Int, minorValue: Int) {
         self.name = name
-        self.icon = icon
+        self.photo = photo
         self.uuid = uuid
         self.majorValue = CLBeaconMajorValue(majorValue)
         self.minorValue = CLBeaconMinorValue(minorValue)
     }
     
-    // MARK: NSCoding
-    required init(coder aDecoder: NSCoder) {
-        let aName = aDecoder.decodeObject(forKey: ItemConstant.nameKey) as? String
-        name = aName ?? ""
-        
-        let aUUID = aDecoder.decodeObject(forKey: ItemConstant.uuidKey) as? UUID
-        uuid = aUUID ?? UUID()
-        
-        icon = aDecoder.decodeInteger(forKey: ItemConstant.iconKey)
-        majorValue = UInt16(aDecoder.decodeInteger(forKey: ItemConstant.majorKey))
-        minorValue = UInt16(aDecoder.decodeInteger(forKey: ItemConstant.minorKey))
-    }
-    
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: ItemConstant.nameKey)
-        aCoder.encode(icon, forKey: ItemConstant.iconKey)
-        aCoder.encode(uuid, forKey: ItemConstant.uuidKey)
-        aCoder.encode(Int(majorValue), forKey: ItemConstant.majorKey)
-        aCoder.encode(Int(minorValue), forKey: ItemConstant.minorKey)
-    }
+//    // MARK: NSCoding
+//    required init(coder aDecoder: NSCoder) {
+//        let aName = aDecoder.decodeObject(forKey: ItemConstant.nameKey) as? String
+//        name = aName ?? ""
+//
+//        let aUUID = aDecoder.decodeObject(forKey: ItemConstant.uuidKey) as? UUID
+//        uuid = aUUID ?? UUID()
+//
+//        icon = aDecoder.decodeInteger(forKey: ItemConstant.iconKey)
+//        majorValue = UInt16(aDecoder.decodeInteger(forKey: ItemConstant.majorKey))
+//        minorValue = UInt16(aDecoder.decodeInteger(forKey: ItemConstant.minorKey))
+//    }
+//
+//    func encode(with aCoder: NSCoder) {
+//        aCoder.encode(name, forKey: ItemConstant.nameKey)
+//        aCoder.encode(icon, forKey: ItemConstant.iconKey)
+//        aCoder.encode(uuid, forKey: ItemConstant.uuidKey)
+//        aCoder.encode(Int(majorValue), forKey: ItemConstant.majorKey)
+//        aCoder.encode(Int(minorValue), forKey: ItemConstant.minorKey)
+//    }
     
     //CLLocationManager, expects you to provide a CLBeaconRegion instance in order to begin monitoring a region.
     //This returns a new CLBeaconRegion instance derived from the current Item

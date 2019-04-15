@@ -30,7 +30,7 @@ import FirebaseInstanceID
 import UserNotifications
 import CoreLocation
 
-class ItemsViewController: UIViewController {
+class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
     
     //CORE LOCATION
     //Entry point into core location
@@ -208,11 +208,19 @@ class ItemsViewController: UIViewController {
         do {
             let result = try context.fetch(request)
             for data in result as! [NSManagedObject] {
+                
+                let imageData = Data(base64Encoded: data.value(forKey: "photo") as! String, options: Data.Base64DecodingOptions.ignoreUnknownCharacters)!
+                let decodedImage = UIImage(data: imageData)!
+                
+                let majorValue = data.value(forKey: "major") as! Int
+                let minorValue = data.value(forKey: "minor") as! Int
+                
                 let item = Item(name: data.value(forKey: "name") as! String,
-                                icon: data.value(forKey: "icon") as! Int,
+                                photo: decodedImage,
                                 uuid: UUID(uuidString: data.value(forKey: "uuid") as! String)!,
-                                majorValue: data.value(forKey: "major") as! Int,
-                                minorValue: data.value(forKey: "minor") as! Int)
+                                majorValue: majorValue,
+                                minorValue: minorValue)
+                
                 items.append(item)
                 nrOfItems = nrOfItems + 1
                 print(data.value(forKey: "uuid") as! String)
@@ -230,8 +238,12 @@ class ItemsViewController: UIViewController {
         do {
             let result = try context.fetch(request)
             for data in result as! [NSManagedObject] {
+                
+                let imageData = Data(base64Encoded: data.value(forKey: "photo") as! String, options: Data.Base64DecodingOptions.ignoreUnknownCharacters)!
+                let decodedImage = UIImage(data: imageData)!
+                
                 let item = Item(name: data.value(forKey: "name") as! String,
-                                icon: data.value(forKey: "icon") as! Int,
+                                photo: decodedImage,
                                 uuid: UUID(uuidString: data.value(forKey: "uuid") as! String)!,
                                 majorValue: data.value(forKey: "major") as! Int,
                                 minorValue: data.value(forKey: "minor") as! Int)
@@ -250,9 +262,12 @@ class ItemsViewController: UIViewController {
         let entity = NSEntityDescription.entity(forEntityName: "Items", in: context)
         let newItem = NSManagedObject(entity: entity!, insertInto: context)
         
+        let imageData = item.photo.pngData()!
+        let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
+        
         newItem.setValue(item.uuid.uuidString, forKey: "uuid")
         newItem.setValue(item.name, forKey: "name")
-        newItem.setValue(item.icon, forKey: "icon")
+        newItem.setValue(strBase64, forKey: "photo")
         newItem.setValue(Int(item.majorValue), forKey: "major")
         newItem.setValue(Int(item.minorValue), forKey: "minor")
         
@@ -294,9 +309,12 @@ extension ItemsViewController: AddBeacon {
         let entity = NSEntityDescription.entity(forEntityName: "Items", in: context)
         let newItem = NSManagedObject(entity: entity!, insertInto: context)
         
+        let imageData = item.photo.pngData()!
+        let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
+        
         newItem.setValue(item.uuid.uuidString, forKey: "uuid")
         newItem.setValue(item.name, forKey: "name")
-        newItem.setValue(item.icon, forKey: "icon")
+        newItem.setValue(strBase64, forKey: "photo")
         newItem.setValue(Int(item.majorValue), forKey: "major")
         newItem.setValue(Int(item.minorValue), forKey: "minor")
         
@@ -349,7 +367,6 @@ extension ItemsViewController : UITableViewDataSource {
                 let result = try context.fetch(request)
                 for data in result as! [NSManagedObject] {
                     if (data.value(forKey: "name") as! String).elementsEqual(items[indexPath.row].name)
-                        && data.value(forKey: "icon") as! Int == items[indexPath.row].icon
                         && (data.value(forKey: "uuid") as! String).elementsEqual(items[indexPath.row].uuid.uuidString)
                         && (data.value(forKey: "major") as! Int) == Int(items[indexPath.row].majorValue)
                         && (data.value(forKey: "minor") as! Int) == Int(items[indexPath.row].minorValue){
@@ -390,6 +407,7 @@ extension ItemsViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let item = items[indexPath.row]
+        
         let detailMessage = "UUID: \(item.uuid.uuidString)\nMajor: \(item.majorValue)\nMinor: \(item.minorValue)"
         let detailAlert = UIAlertController(title: "Details", message: detailMessage, preferredStyle: .alert)
         detailAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
