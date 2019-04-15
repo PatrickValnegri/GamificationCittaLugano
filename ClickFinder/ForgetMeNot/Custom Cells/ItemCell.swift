@@ -31,7 +31,7 @@ class ItemCell: UITableViewCell {
     var item: Item? = nil {
         didSet {
             if let item = item {
-                imgIcon.image = Icons(rawValue: item.icon)?.image()
+                imgIcon.image = item.photo
                 lblName.text = item.name
                 lblLocation.text = "Major: \(item.majorValue), Minor: \(item.minorValue)"
                 

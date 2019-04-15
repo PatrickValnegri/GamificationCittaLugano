@@ -21,12 +21,17 @@
  */
 
 import UIKit
+import FirebaseDatabase
 
 protocol AddBeacon {
     func addBeacon(item: Item)
 }
 
-class AddItemViewController: UIViewController {
+var detailItem = Item(name: "", photo: UIImage(), uuid: AppConstants.uuid, majorValue: 0, minorValue: 0)
+var flag = false
+var edit = false
+
+class AddItemViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate{
     
     @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var txtUUID: UITextField!
@@ -43,11 +48,47 @@ class AddItemViewController: UIViewController {
     let allIcons = Icons.allIcons
     var icon = Icons.bag
     
+    //Instance of ItemsViewController
+    let ivc = ItemsViewController(nibName: nil, bundle: nil)
+    //Instance of MainViewController
+    let mvc = MainViewController(nibName: nil, bundle: nil)
+    
+    //FIREBASE REALTIME DATABASE
+    var ref: DatabaseReference!
+    
+    //Image picker
+    var imagePicker: UIImagePickerController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //FIREBASE REALTIME DATABASE REFERENCE
+        ref = Database.database().reference()
+        
         btnAdd.isEnabled = false
+        
+        if flag{
+            flag = false
+            txtName.text = detailItem.name
+            txtUUID.text = detailItem.uuid.uuidString
+            txtMajor.text = "\(detailItem.majorValue)"
+            txtMinor.text = "\(detailItem.minorValue)"
+            
+            // Is name valid?
+            let nameValid = (txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count > 0)
+            
+            // Is UUID valid?
+            var uuidValid = false
+            let uuidString = txtUUID.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            if uuidString.count > 0 {
+                uuidValid = (uuidRegex.numberOfMatches(in: uuidString, options: [], range: NSMakeRange(0, uuidString.count)) > 0)
+            }
+            txtUUID.textColor = (uuidValid) ? .black : .red
+            
+            // Toggle btnAdd enabled based on valid user entry
+            btnAdd.isEnabled = (nameValid && uuidValid)
+        }
+        
         imgIcon.image = icon.image()
     }
     
@@ -80,30 +121,76 @@ class AddItemViewController: UIViewController {
         let minor = Int(txtMinor.text!) ?? 0
         let name = txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
-        let newItem = Item(name: name, icon: icon.rawValue, uuid: uuid, majorValue: major, minorValue: minor)
+        let newItem = Item(name: name, photo: imgIcon.image!, uuid: uuid, majorValue: major, minorValue: minor)
         
         delegate?.addBeacon(item: newItem)
-        dismiss(animated: true, completion: nil)
+        
+        //this collection is used to keep track of the beacons that have been paired but not still displayed in the items view
+        self.ivc.itemsToBeAdded.append(newItem)
+        self.ivc.addItemToBeAdded(item: newItem) //save it in coredata
+        
+        self.registerBeacon(item: newItem)
+        
+        let viewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Items") as UIViewController
+        
+        self.present(viewController, animated: false, completion: nil)
         
         notificationPublisher.sendNotification(
-            title: "Added a new iBeacon",
-            subtitle: "Monitoring started",
-            body: "clickFinderApp",
+            title: "Added a new iBeacon!",
+            subtitle: "Pairing successful.",
+            body: "ClickFinder",
             badge: 1,
             delayInterval: nil,
-            identifier: "added new beacon"
+            identifier: "added new beacon",
+            ring: false
         )
+        
+        //dismiss(animated: true, completion: nil)
+    }
+    
+    func registerBeacon(item: Item){
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+        
+        self.ref.child("users").child(beaconID).setValue(
+            [
+                "latid":"0",
+                "longit":"0",
+                "mac":beaconID,
+                "name":item.name,
+                "owner":iphoneID!,
+                "switch_hdd": "0",
+                "tiposchermo": "Beacon-\(iphoneID!)",
+                "type":""
+            ]
+        ){(error:Error?, ref:DatabaseReference) in
+            if let error = error {
+                print("Data could not be saved: \(error).")
+            } else {
+                print("Data saved successfully!")
+            }
+        }
     }
     
     @IBAction func btnCancel_Pressed(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
-}
-
-extension AddItemViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        icon = Icons.icon(forTag: indexPath.row)
-        imgIcon.image = icon.image()
+    
+    @IBAction func selectFromGallery(_ sender: Any) {
+    }
+    
+    @IBAction func takeBeaconPhoto(_ sender: Any) {
+        print("TAKE")
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .camera
+        
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        imagePicker.dismiss(animated: true, completion: nil)
+        imgIcon.image = info[.originalImage] as? UIImage
     }
 }
 

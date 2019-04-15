@@ -41,6 +41,8 @@
 	<string>This app needs permissions to always monitor and range iBeacons</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs permissions to always monitor and range iBeacons</string>
+    <key>NSCameraUsageDescription</key>
+    <string>ClickFinder requires access to your phone’s camera.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>
@@ -57,6 +59,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSCa</key>
+	<string></string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

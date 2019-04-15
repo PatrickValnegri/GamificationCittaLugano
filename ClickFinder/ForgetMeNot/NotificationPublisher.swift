@@ -12,11 +12,16 @@ import UserNotifications
 
 class NotificationPublisher: NSObject{
     
-    func sendNotification(title: String, subtitle: String, body: String, badge: Int?, delayInterval: Int?, identifier: String){
+    func sendNotification(title: String, subtitle: String, body: String, badge: Int?, delayInterval: Int?, identifier: String, ring: Bool){
         let notificationContent = UNMutableNotificationContent()
-        notificationContent.title = title
-        notificationContent.subtitle = subtitle
-        notificationContent.body = body
+        
+        if(!ring){
+            notificationContent.title = title
+            notificationContent.subtitle = subtitle
+            notificationContent.body = body
+        }
+        
+        notificationContent.sound = .default
         
         var delayTimeTrigger: UNTimeIntervalNotificationTrigger?
         
