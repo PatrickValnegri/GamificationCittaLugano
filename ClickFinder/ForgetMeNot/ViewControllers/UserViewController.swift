@@ -12,7 +12,7 @@ import FirebaseDatabase
 
 let storedUserKey = "storedUser"
 
-class AuthViewController: UIViewController {
+class UserViewController: UIViewController {
     
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var emailField: UITextField!
@@ -23,7 +23,7 @@ class AuthViewController: UIViewController {
     
     @IBOutlet weak var loginButton: UIButton!
     
-    var users = [User]()
+    var user: User = User(name: "", email: "", phonenumber: "", street: "", city: "", cap: "")
     
     //Firebase database reference
     var ref: DatabaseReference!
@@ -56,10 +56,10 @@ class AuthViewController: UIViewController {
         //UserDefaults.standard.synchronize()
         
         var usersData = [Data]()
-        for u in users {
-            let userData = NSKeyedArchiver.archivedData(withRootObject: u)
+        //for u in users {
+            let userData = NSKeyedArchiver.archivedData(withRootObject: user)
             usersData.append(userData)
-        }
+        //}
         UserDefaults.standard.set(usersData, forKey: storedUserKey)
         UserDefaults.standard.synchronize()
     }
@@ -70,11 +70,14 @@ class AuthViewController: UIViewController {
         //guard let userTmp = NSKeyedUnarchiver.unarchiveObject(with: storedUser) as? User else { return }
         
         guard let storedUsers = UserDefaults.standard.array(forKey: storedUserKey) as? [Data] else { return }
+        
         for userData in storedUsers {
             guard let item = NSKeyedUnarchiver.unarchiveObject(with: userData) as? User else { continue }
-            users.append(item)
-            print("Nome user: ",item.name)
-            
+            user = item
+            AppConstants.userName = user.name
+            AppConstants.userPhone = user.phonenumber
+            print("User name: ", user.name)
+            print("User phone: ", user.phonenumber)
         }
     }
     
@@ -82,13 +85,13 @@ class AuthViewController: UIViewController {
     @IBAction func loginTapped(_ sender: UIButton) {
         
         let username: String = usernameField.text!
-        let email: String = emailField.text!
-        let phonenumber: String = phonenumberField.text!
-        let street: String = streetField.text!
-        let city: String = cityField.text!
-        let cap: String = capField.text!
+        let email: String = emailField.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+        let phonenumber: String = phonenumberField.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+        let street: String = streetField.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+        let city: String = cityField.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cap: String = capField.text!.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        users.append(User(name: username, email: email, phonenumber: phonenumber, street: street, city: city, cap: cap))
+        user = User(name: username, email: email, phonenumber: phonenumber, street: street, city: city, cap: cap)
         
         persistUser() //salvato in locale
         //loadUser()
@@ -147,7 +150,7 @@ class AuthViewController: UIViewController {
     }
 }
 
-extension AuthViewController : UITextFieldDelegate {
+extension UserViewController : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true

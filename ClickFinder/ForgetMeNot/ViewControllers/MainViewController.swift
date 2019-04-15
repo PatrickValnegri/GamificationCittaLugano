@@ -17,6 +17,7 @@ import Alamofire
 import FirebaseInstanceID
 
 let storedItemsKey = "storedItems"
+var flag: Bool = true
 
 //extends itemsviewcontroller functionalities
 extension MainViewController: CLLocationManagerDelegate {
@@ -102,7 +103,6 @@ extension MainViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         print("ranging")
-        
         
         //Handling of the found beacons
         for beacon in beacons {
@@ -295,6 +295,9 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     //Instance of ItemsViewController
     let ivc = ItemsViewController(nibName: nil, bundle: nil)
 
+    //Instance of UserViewController
+    let uvc = UserViewController(nibName: nil, bundle: nil)
+    
     //PICKER VIEW
     @IBOutlet weak var iBeaconPicker: UIPickerView!
     
@@ -333,6 +336,20 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
 
     //SideBar menu
     @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    
+    //Homebutton sidebar
+    @IBAction func homeButttonTapped(_ sender: Any) {
+        //AppConstants.mainPageURL = URL(string: "https://www.ticinonews.ch/")!
+        loadMainPage()
+        
+    }
+    
+    @IBAction func refreshTapped(_ sender: Any) {
+        print("MainPageURL", AppConstants.mainPageURL!)
+        let url = AppConstants.mainPageURL!
+        mainPage.load(URLRequest(url: url))
+    }
+    
     
     var menuShowing = false
 
@@ -377,7 +394,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         
         registerUser() //first time registration or only update token
     
-//        sendNotification(titolo: "Ritrovamento beacon", mac: "C0D1AD35-1D5A-46C7-9495-31299AFC57D5", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45", gps: "000_000", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
+        //Send only one notification for debug
+        
+        if (flag == true) {
+            //sendNotification(titolo: "Ritrovamento beacon", mac: "CE83111B-908F-434D-B6EF-8849AB99BE92", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_158_45", gps: "000_000")
+            flag = false
+        }
+        
+//        regiID:" cukHvZ-mGus:APA91bFPIb27zC3yaZM1CS3WW8uOb1tGqRw8JEhrURaCybszOaxBn1cXJtFOtdnD-JcSycX7uDeG7zFqs3-AQWD3TbPq6d-gLCBTegYVlkJDm-lufvLzLsg8yPmbTmJafdiMRSeY5IBu"
 
     }
     
@@ -415,8 +439,9 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     UI ACTIONS & UI COMPONENTS
     **********************************************/
     
+    
+    
     @IBAction func openMenu(_ sender: Any) {
-        
         if (menuShowing) {
             leadingConstraint.constant = -85
         } else {
@@ -452,7 +477,8 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     func loadMainPage(){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         
-        let url = AppConstants.mainPageURL!
+        let url = URL(string: "https://www.ticinonews.ch/")!
+        //let url = AppConstants.mainPageURL!
         
         mainPage.load(URLRequest(url: url))
         mainPage.allowsBackForwardNavigationGestures = true
@@ -620,14 +646,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
                     let switch_hdd = value?["switch_hdd"] as? String ?? ""
                     
                     if mac == beaconID && switch_hdd == "1" && !known{
-                        self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)", command: "CHECK_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
+                        self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
                         
                         print("UNKNOWN BEACON FOUND, send notification")
                     } else if mac == beaconID && switch_hdd == "1" && known{
                         //Known lost iBeacon found while app was in background
                         //Request the server to send a notification so that the user is aware of
                         if !self.checkIfActive(){
-                           self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)", command: "MY_ALARM", regiID: "APA91bEeQpKqoHlK9aWR57A_J7q-StE87xOUwLMBCjXyEklqFOw5Q2MJ6EBjq-oVo8uff8KziQymiAfJ_4IGBA2W0-9d4VS2N8clgQGJozPNLRkIcYK-wds1OuEbpUQ3Qy0UFgoPrA9O", antenna_name: "Prova", antenna_phone: "0000000000")
+                           self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
                             self.locationManager.stopRangingBeacons(in: AppConstants.region)
                             self.updateBeaconStatus(beaconID: beaconID, lost: false)
                         }else{
@@ -667,21 +693,32 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
      FIREBASE
      *******************************************/
     
-    func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String, command: String, regiID: String, antenna_name: String, antenna_phone: String) {
+    func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String) {
         print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
         let time_to_live = 36000
         
+        let command = AppConstants.comandCheckAlarm
+        let regID = AppConstants.publicKeyServer
+        let url: String = ""
+        
+        //User info
+        uvc.loadUser()
+        let antenna_name = AppConstants.userName
+        let antenna_phone = AppConstants.userPhone
+        
         let notification: [String: Any] = [
             "title": titolo,
             "body": mac,
-            //"url": urlString,
+            "url": url,
             "command": command,//"CHECK_ALARM"
             "param": beacon_id,
             "value": gps, //GPS latitude + "_" + longitude
-            "from": regiID, //token destinatario
+            "from": regID, //token destinatario
             "antenna_name": antenna_name,
-            "antenna_phone": antenna_phone
+            "antenna_phone": antenna_phone,
+            "sound": "true",
+            "badge": "1"
         ]
         
         let message: [String: Any] = [
@@ -690,16 +727,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             "time_to_live": time_to_live,
             //"collapse_key": min,
             
-            "to": regiID,
-            "notification": notification
-            //"title":"Beacon trovato",
-            //"body":"ivan ha trovato il tuo beacon"
+            "to": AppConstants.publicKeyServer,
+            "notification": notification,
         ]
         
+        let authorization: String = "key=\(AppConstants.privateKeyServer)"
         let header: HTTPHeaders = [ "Content-Type": "application/json",
                                     "Accept": "application/json",
-                                    //"Authorization": "key=AIzaSyCu-EtxJSmRGA2ll2W66ugs5Rfy1oa3vZs"
-                                    "Authorization": "key=AAAAOQ9a1kc:APA91bFU3g7xfVMLAO7FOQepL1jLQnWqUZ0cU77efNoYoW5eIMiVDVidPOqswqlGetQZjVsq-FGpWDpo_VRtI2mFn4hrt6jp9opDRAa8mfZjrHqzw8SOTYxeXA9VB13xdH-y_8oRUp2jHOF2Az1BTOV6Z-BHjrbJkQ"
+                                    "Authorization": authorization
         ]
         
         AF.request(urlString, method: .post, parameters: message, encoding: JSONEncoding.default, headers: header).responseString {
@@ -737,20 +772,31 @@ extension MainViewController{
         //Save the paired beacon
         alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
             item.name = alertController.textFields![0].text ?? "New"
+            let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
             
-            self.registerBeacon(item: item)
-            //this collection is used to keep track of the beacons that have been paired but not still displayed
-            //in the items view
-            self.ivc.itemsToBeAdded.append(item)
-            self.ivc.addItemToBeAdded(item: item)
+            self.ref.child("users").observe(.value, with: { (snapshot) in
+                
+                if (snapshot.hasChild(beaconID)) { //Se già presente nel db
+                    
+                     self.showToast(message: "Beacon belongs to another person")
+                     alertController.dismiss(animated: true, completion: nil)
+                    
+                } else { //Se non è già presente nel db
+                
+                    self.registerBeacon(item: item)
+                    //this collection is used to keep track of the beacons that have been paired but not still displayed
+                    //in the items view
+                    self.ivc.itemsToBeAdded.append(item)
+                    self.ivc.addItemToBeAdded(item: item)
+                    
+                    let viewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Items") as UIViewController
+                    
+                    self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                    self.present(viewController, animated: false, completion: nil)
+                }
+            })
             
-            let viewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Items") as UIViewController
-            
-            self.locationManager.stopRangingBeacons(in: AppConstants.region)
-            
-            self.present(viewController, animated: false, completion: nil)
         }))
-        
         self.present(alertController, animated: true, completion: nil)
     }
 }

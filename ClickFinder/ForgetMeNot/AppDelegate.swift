@@ -51,7 +51,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        FirebaseApp.configure()
         
+        Messaging.messaging().delegate = self
+        
+        //requestNotificationAuthorization(application: application);
+        // [START register_for_notifications]
         if #available(iOS 10.0, *) {
             // For iOS 10 display notification (sent via APNS)
             UNUserNotificationCenter.current().delegate = self
@@ -66,17 +72,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             application.registerUserNotificationSettings(settings)
         }
         
-        FirebaseApp.configure()
-        
-        Messaging.messaging().delegate = self
         application.registerForRemoteNotifications()
         
-        requestNotificationAuthorization(application: application);
+        // [END register_for_notifications]
         
         connectToFcm()
         
         return true
     }
+    
+    
     
     // [START receive_message]
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
@@ -86,6 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
+        
         
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
@@ -99,14 +105,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //URL
         if let messageURL = userInfo[gcmMessageURL] {
+            //mvc.loadURL(notificationURL: "\(messageURL)")
             print("URL: \(messageURL)")
             AppConstants.mainPageURL = URL(string: "\(messageURL)")
-            print("mainPageURL: ", AppConstants.mainPageURL!)
+            //print("mainPageURL: ", AppConstants.mainPageURL!)
         }
 
         
         // Print full message.
         print("USER INFO: ", userInfo)
+        
+        
     }
     
     
@@ -119,6 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         
+        
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
             print("Message ID: \(messageID)")
@@ -136,8 +146,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let messageURL = userInfo[gcmMessageURL] {
             print("URL: \(messageURL)")
             AppConstants.mainPageURL = URL(string: "\(messageURL)")
-            print("mainPageURL: ", AppConstants.mainPageURL!)
+            //print("mainPageURL: ", AppConstants.mainPageURL!)
         }
+       
         
         completionHandler(UIBackgroundFetchResult.newData)
     }
@@ -145,12 +156,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //Abilita l'invio di messaggi
     func connectToFcm() {
-        // Won't connect since there is no token
-        /*
-        guard InstanceID.instanceID().instanceID != nil else {
-            return;
-        }
-        */
+
         // Won't connect since there is no token
         InstanceID.instanceID().instanceID { (result, error) in
             if let error = error {
@@ -265,7 +271,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         print(userInfo)
         
         // Change this to your preferred presentation option
-        completionHandler([.alert])
+        completionHandler([.alert, .sound, .badge])
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter,
@@ -284,6 +290,8 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     }
     // [END ios_10_message_handling]
 }
+
+
 
 
 

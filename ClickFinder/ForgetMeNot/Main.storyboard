@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="iIU-MU-MVB">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="iIU-MU-MVB">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -290,6 +290,7 @@
                                 </state>
                                 <connections>
                                     <action selector="btnAdd_Pressed:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="fs5-lm-k9X"/>
+                                    <segue destination="DrD-we-v90" kind="show" id="3fG-n8-ejQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DaX-fr-Koa">
@@ -300,6 +301,7 @@
                                 </state>
                                 <connections>
                                     <action selector="btnCancel_Pressed:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="ggK-xh-z5R"/>
+                                    <segue destination="DrD-we-v90" kind="show" id="h5m-xg-HRK"/>
                                 </connections>
                             </button>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="aVf-vF-akx">
@@ -390,6 +392,7 @@
                             <constraint firstItem="zSI-U7-bUo" firstAttribute="trailing" secondItem="Z1C-I8-X3w" secondAttribute="centerX" id="xTP-q0-7yJ"/>
                             <constraint firstItem="YXI-8z-rO2" firstAttribute="top" secondItem="DaX-fr-Koa" secondAttribute="bottom" id="y4S-7d-1rH"/>
                             <constraint firstItem="zSI-U7-bUo" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" id="yYR-Q3-t8A"/>
+                            <constraint firstItem="DaX-fr-Koa" firstAttribute="leading" secondItem="Yuu-IT-bmr" secondAttribute="trailing" constant="-187.5" id="zTn-yR-lPZ"/>
                             <constraint firstItem="20d-s1-fHt" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" constant="10" id="zo2-tA-LMu"/>
                             <constraint firstItem="aVf-vF-akx" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" id="zp4-Fp-E8N"/>
                         </constraints>
@@ -407,10 +410,10 @@
             </objects>
             <point key="canvasLocation" x="-73" y="2276"/>
         </scene>
-        <!--Auth View Controller-->
+        <!--User View Controller-->
         <scene sceneID="S5V-jY-OjK">
             <objects>
-                <viewController id="FMy-Nj-B3e" customClass="AuthViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="FMy-Nj-B3e" customClass="UserViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Eqr-aW-BtG"/>
                         <viewControllerLayoutGuide type="bottom" id="Zqb-ki-dZe"/>
@@ -427,6 +430,7 @@
                                 <state key="normal" title="Register"/>
                                 <connections>
                                     <action selector="loginTapped:" destination="FMy-Nj-B3e" eventType="touchUpInside" id="m3X-Jt-kma"/>
+                                    <segue destination="gfi-0E-BEB" kind="show" id="QMV-fO-QeB"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" restorationIdentifier="phonenumberField" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Phone number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TFW-jN-1iV" customClass="AuthTextField" customModule="clickFinder" customModuleProvider="target">
@@ -595,15 +599,46 @@
                                             <segue destination="DrD-we-v90" kind="show" id="tVO-UK-9Qp"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="homeButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sF2-h6-itC" customClass="FormButton" customModule="clickFinder" customModuleProvider="target">
+                                        <rect key="frame" x="5" y="104" width="75" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="9j7-Fc-5w5"/>
+                                        </constraints>
+                                        <state key="normal" title="Home">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="homeButttonTapped:" destination="gfi-0E-BEB" eventType="touchUpInside" id="UMD-C4-d3w"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="refreshButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="67S-60-IYD" customClass="FormButton" customModule="clickFinder" customModuleProvider="target">
+                                        <rect key="frame" x="5" y="152" width="75" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="kAo-fZ-b4g"/>
+                                        </constraints>
+                                        <state key="normal" title="Refresh">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="homeButttonTapped:" destination="gfi-0E-BEB" eventType="touchUpInside" id="m0e-qa-YRe"/>
+                                            <action selector="refreshTapped:" destination="gfi-0E-BEB" eventType="touchUpInside" id="4D9-MI-PYL"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="wQA-Tf-CZi" firstAttribute="trailing" secondItem="B7Y-0f-olO" secondAttribute="trailing" id="1xb-SM-8Eh"/>
+                                    <constraint firstItem="67S-60-IYD" firstAttribute="top" secondItem="sF2-h6-itC" secondAttribute="bottom" constant="8" id="2HA-nA-7q6"/>
                                     <constraint firstItem="wQA-Tf-CZi" firstAttribute="top" secondItem="B7Y-0f-olO" secondAttribute="bottom" constant="8" symbolic="YES" id="CXz-17-ztv"/>
+                                    <constraint firstAttribute="trailing" secondItem="sF2-h6-itC" secondAttribute="trailing" constant="5" id="UXW-In-y3B"/>
                                     <constraint firstItem="wQA-Tf-CZi" firstAttribute="leading" secondItem="B7Y-0f-olO" secondAttribute="leading" id="ZEz-tY-HeX"/>
                                     <constraint firstItem="B7Y-0f-olO" firstAttribute="leading" secondItem="TJY-w8-nsE" secondAttribute="leading" constant="5" id="c7Y-IZ-8Ii"/>
                                     <constraint firstAttribute="width" constant="85" id="dN3-GE-dIc"/>
+                                    <constraint firstAttribute="trailing" secondItem="67S-60-IYD" secondAttribute="trailing" constant="5" id="fSD-b3-CoT"/>
+                                    <constraint firstItem="67S-60-IYD" firstAttribute="leading" secondItem="TJY-w8-nsE" secondAttribute="leading" constant="5" id="gmL-q9-LEH"/>
                                     <constraint firstItem="B7Y-0f-olO" firstAttribute="top" secondItem="TJY-w8-nsE" secondAttribute="top" constant="8" id="ksc-oc-4Y0"/>
+                                    <constraint firstItem="sF2-h6-itC" firstAttribute="leading" secondItem="TJY-w8-nsE" secondAttribute="leading" constant="5" id="ohd-zJ-XLB"/>
+                                    <constraint firstItem="sF2-h6-itC" firstAttribute="top" secondItem="wQA-Tf-CZi" secondAttribute="bottom" constant="8" id="rZG-7s-zDk"/>
                                     <constraint firstAttribute="trailing" secondItem="B7Y-0f-olO" secondAttribute="trailing" constant="5" id="tIc-Dj-itU"/>
                                 </constraints>
                             </view>
@@ -632,6 +667,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="Nza-qe-Tt2">
                         <barButtonItem key="leftBarButtonItem" title="menuVertical" image="menu_128" id="frp-5Q-TEb">
+                            <inset key="imageInsets" minX="-35" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="openMenu:" destination="gfi-0E-BEB" id="lzz-Ke-JQZ"/>
@@ -682,7 +718,7 @@
         <image name="rangeBeacons" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="d3t-b7-qZx"/>
         <segue reference="tVO-UK-9Qp"/>
-        <segue reference="wPy-hY-FIZ"/>
     </inferredMetricsTieBreakers>
 </document>

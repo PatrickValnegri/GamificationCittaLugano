@@ -48,8 +48,7 @@ class ItemsViewController: UIViewController {
     @IBOutlet weak var status: UILabel!
     
     //CORE DATA
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
-    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate    
     
     //FIREBASE REALTIME DATABASE
     var ref: DatabaseReference!
