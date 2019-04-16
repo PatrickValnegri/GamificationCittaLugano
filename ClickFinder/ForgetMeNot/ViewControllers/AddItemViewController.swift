@@ -116,7 +116,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
     @IBAction func btnAdd_Pressed(_ sender: UIButton) {
         // Create new beacon item
         let uuidString = txtUUID.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        guard let uuid = UUID(uuidString: uuidString) else { return }
+        guard let uuid = UUID(uuidString: uuidString.uppercased()) else { return }
         let major = Int(txtMajor.text!) ?? 0
         let minor = Int(txtMinor.text!) ?? 0
         let name = txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)

@@ -540,7 +540,7 @@
                                     <constraint firstAttribute="width" constant="65" id="D28-RQ-Ijm"/>
                                     <constraint firstAttribute="height" constant="65" id="Fb9-Ii-AX0"/>
                                 </constraints>
-                                <state key="normal" backgroundImage="rangeBeacons"/>
+                                <state key="normal" backgroundImage="ic_launcher"/>
                                 <connections>
                                     <action selector="searchIBeacon:" destination="gfi-0E-BEB" eventType="touchUpInside" id="JnU-0S-S89"/>
                                 </connections>
@@ -687,10 +687,11 @@
         <image name="LineGrey" width="321" height="1"/>
         <image name="camera" width="128" height="128"/>
         <image name="home" width="128" height="128"/>
+        <image name="ic_launcher" width="300" height="300"/>
         <image name="menu_128" width="128" height="128"/>
-        <image name="rangeBeacons" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="sbC-My-dth"/>
         <segue reference="d3t-b7-qZx"/>
         <segue reference="tVO-UK-9Qp"/>
     </inferredMetricsTieBreakers>
