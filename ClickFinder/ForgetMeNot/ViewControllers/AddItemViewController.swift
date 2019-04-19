@@ -22,6 +22,7 @@
 
 import UIKit
 import FirebaseDatabase
+import CoreData
 
 protocol AddBeacon {
     func addBeacon(item: Item)
@@ -39,6 +40,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
     @IBOutlet weak var txtMinor: UITextField!
     @IBOutlet weak var imgIcon: UIImageView!
     @IBOutlet weak var btnAdd: UIButton!
+    @IBOutlet weak var btnEdit: UIButton!
     
     private let notificationPublisher = NotificationPublisher()
     
@@ -53,11 +55,31 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
     //Instance of MainViewController
     let mvc = MainViewController(nibName: nil, bundle: nil)
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate    
+    
     //FIREBASE REALTIME DATABASE
     var ref: DatabaseReference!
     
     //Image picker
     var imagePicker: UIImagePickerController!
+    
+    //Item
+    var item: Item?
+    var isEdit: Bool = false
+    var currentIndex: Int = -1
+    
+//    init(item: Item, currentIndex: Int) {
+//        self.item = item
+//        self.isEdit = true
+//        self.currentIndex = currentIndex
+//        super.init(nibName: nil, bundle: nil)
+//    }
+//    
+//    //default constructor
+//    required init?(coder aDecoder: NSCoder) {
+//        self.item = nil
+//        super.init(coder: aDecoder)
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,8 +88,25 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         ref = Database.database().reference()
         
         btnAdd.isEnabled = false
+        btnEdit.isHidden = true
+        
+        ivc.loadItems()
+        
+        if isEdit {
+            txtName.text = item?.name
+            txtUUID.text = item?.uuid.uuidString
+            txtMajor.text = "\(item!.majorValue)"
+            txtMinor.text = "\(item!.minorValue)"
+            
+            btnAdd.isHidden = true
+            btnEdit.isHidden = false
+            
+            isEdit = false
+        }
+        
         
         if flag{
+            
             flag = false
             txtName.text = detailItem.name
             txtUUID.text = detailItem.uuid.uuidString
@@ -111,6 +150,47 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         
         // Toggle btnAdd enabled based on valid user entry
         btnAdd.isEnabled = (nameValid && uuidValid)
+        btnEdit.isEnabled = (nameValid && uuidValid)
+    }
+    
+    @IBAction func btnEdit_Pressed(_ sender: UIButton) {
+        
+        let uuidString = txtUUID.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        guard let uuid = UUID(uuidString: uuidString.uppercased()) else { return }
+        let major = Int(txtMajor.text!) ?? 0
+        let minor = Int(txtMinor.text!) ?? 0
+        let name = txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        
+        let editedItem = Item(name: name, photo: imgIcon.image!, uuid: uuid, majorValue: major, minorValue: minor)
+        print("Indice da modificare", currentIndex)
+        print("Capacity lista", ivc.items.isEmpty)
+        print("Edited name", editedItem.name)
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
+        let context = appDelegate.persistentContainer.viewContext
+        request.predicate = NSPredicate(format: "name = %@", ivc.items[currentIndex].name)
+        do
+        {
+            let test = try context.fetch(request)
+            
+                let editedItem = test[0] as! NSManagedObject
+                editedItem.setValue(name, forKey: "name")
+                do {
+                    try context.save()
+                }
+                catch
+                {
+                    print(error)
+                }
+        }
+        catch
+        {
+            print(error)
+        }
+        
+        indexToEdit = currentIndex
+        ivc.items[currentIndex] = editedItem
+        print("PROVA", ivc.items[currentIndex].name)
     }
     
     @IBAction func btnAdd_Pressed(_ sender: UIButton) {
@@ -126,8 +206,12 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         delegate?.addBeacon(item: newItem)
         
         //this collection is used to keep track of the beacons that have been paired but not still displayed in the items view
-        self.ivc.itemsToBeAdded.append(newItem)
-        self.ivc.addItemToBeAdded(item: newItem) //save it in coredata
+        //Da fare solo dopo un pairing
+        if (AppConstants.isPairing) {
+            self.ivc.itemsToBeAdded.append(newItem)
+            self.ivc.addItemToBeAdded(item: newItem) //save it in coredata
+            AppConstants.isPairing = false
+        }
         
         self.registerBeacon(item: newItem)
         

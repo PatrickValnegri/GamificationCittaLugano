@@ -115,7 +115,7 @@ extension MainViewController: CLLocationManagerDelegate {
                     if let known = ivc.items.first(where:{$0.majorValue == major && $0.minorValue == minor}){
                         print("PHONE FOUND")
                         notificationPublisher.sendNotification(
-                            title: "Left region",
+                            title: "\(known.majorValue)",
                             subtitle: region.identifier,
                             body: "This is a background test local notification",
                             badge: 0,
@@ -591,6 +591,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
                 } else { //Se non è già presente nel db
                     detailItem = item
                     flag = true
+                    AppConstants.isPairing = true
                     
                     let addItemViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addItem") as UIViewController
                     
@@ -634,14 +635,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
                     let switch_hdd = value?["switch_hdd"] as? String ?? ""
                     
                     if mac == beaconID && switch_hdd == "1" && !known{
-                        self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
+                        self.sendNotificationFirebase(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
                         
                         print("UNKNOWN BEACON FOUND, send notification")
                     } else if mac == beaconID && switch_hdd == "1" && known{
                         //Known lost iBeacon found while app was in background
                         //Request the server to send a notification so that the user is aware of
                         if !self.checkIfActive(){
-                           self.sendNotification(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
+                           self.sendNotificationFirebase(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
                             self.locationManager.stopRangingBeacons(in: AppConstants.region)
                             //self.updateBeaconStatus(beaconID: beaconID, lost: false)
                         }else{
@@ -729,7 +730,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         }
     }
     
-    func sendNotification(titolo: String, mac: String, beacon_id: String, gps: String) {
+    func sendNotificationFirebase(titolo: String, mac: String, beacon_id: String, gps: String) {
         print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
         let time_to_live = 36000

@@ -30,6 +30,8 @@ import FirebaseInstanceID
 import UserNotifications
 import CoreLocation
 
+var indexToEdit: Int = -1
+
 class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
     
     //CORE LOCATION
@@ -78,7 +80,8 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
         
         for item in itemsToBeAdded{
             addBeacon(item: item)
-            printItem(item: item)
+            print("Item: ", item.name)
+            //printItem(item: item)
         }
         
         itemsToBeAdded = [Item]()
@@ -88,12 +91,14 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
         
         //Update the list of items, new beacons may have been paired
         loadItems()
+        self.tableView.reloadData()
         
         //authenticate()
     
         //getUsers()
         
         //registerUser()
+        
     }
     
 //    @IBAction func pairIBeacon(_ sender: Any) {
@@ -300,6 +305,8 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
 
 extension ItemsViewController: AddBeacon {
     func addBeacon(item: Item) {
+        
+        print("Item salvato", item.name)
         items.append(item)
         
         let context = appDelegate.persistentContainer.viewContext
@@ -355,6 +362,7 @@ extension ItemsViewController : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
+        //Rimozione beacon
         if editingStyle == .delete {
             locationManager.stopRangingBeacons(in: AppConstants.region)
             
@@ -365,6 +373,7 @@ extension ItemsViewController : UITableViewDataSource {
             do {
                 let result = try context.fetch(request)
                 for data in result as! [NSManagedObject] {
+                    //Rimozione beacon da SQLite
                     if (data.value(forKey: "name") as! String).elementsEqual(items[indexPath.row].name)
                         && (data.value(forKey: "uuid") as! String).elementsEqual(items[indexPath.row].uuid.uuidString)
                         && (data.value(forKey: "major") as! Int) == Int(items[indexPath.row].majorValue)
@@ -372,6 +381,10 @@ extension ItemsViewController : UITableViewDataSource {
                         
                         print(data.value(forKey: "name") as! String)
                         context.delete(data)
+                        
+                        //Rimozione beacon da Firebase
+                        let beaconID = "\(items[indexPath.row].uuid.uuidString)_\(items[indexPath.row].majorValue)_\(items[indexPath.row].minorValue)"
+                         ref.child("users").child(beaconID).removeValue()
                     }
                 }
             } catch {
@@ -398,10 +411,15 @@ extension ItemsViewController : UITableViewDataSource {
             locationManager.startRangingBeacons(in: AppConstants.region)
         }
     }
+    
+    
+    
+    
 }
 
 // MARK: UITableViewDelegate
 extension ItemsViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -410,7 +428,25 @@ extension ItemsViewController: UITableViewDelegate {
         let detailMessage = "UUID: \(item.uuid.uuidString)\nMajor: \(item.majorValue)\nMinor: \(item.minorValue)"
         let detailAlert = UIAlertController(title: "Details", message: detailMessage, preferredStyle: .alert)
         detailAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        
+        let editAction = UIAlertAction(title: "Edit", style: .default, handler: { _ -> Void in
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "addItem") as! AddItemViewController
+            
+            nextViewController.item = item
+            nextViewController.currentIndex = indexPath.row
+            nextViewController.isEdit = true
+            
+            self.present(nextViewController, animated: true, completion: nil)
+        })
+        detailAlert.addAction(editAction)
+        
         self.present(detailAlert, animated: true, completion: nil)
+        
     }
+    
+    
+    
 }
 

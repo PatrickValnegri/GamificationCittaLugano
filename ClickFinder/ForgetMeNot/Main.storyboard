@@ -290,6 +290,9 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DaX-fr-Koa">
                                 <rect key="frame" x="187.5" y="621" width="187.5" height="46"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="46" id="DJz-pA-6mO"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" title="Cancel" backgroundImage="Button_BlueOutline">
                                     <color key="titleColor" red="0.1084953174" green="0.46072936060000003" blue="0.73895782229999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -316,6 +319,23 @@
                                 </state>
                                 <connections>
                                     <action selector="takeBeaconPhoto:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="9vq-NM-YFc"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JiG-xr-pcc">
+                                <rect key="frame" x="0.0" y="621" width="187.5" height="46"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="46" id="7nd-y3-ASM"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <state key="normal" title="Edit" backgroundImage="Button_BlueOutline">
+                                    <color key="titleColor" red="0.1084953174" green="0.46072936060000003" blue="0.73895782229999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <state key="disabled">
+                                    <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnEdit_Pressed:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="RYF-2i-Hnb"/>
+                                    <segue destination="DrD-we-v90" kind="show" id="iBc-Tf-0pr"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -348,10 +368,12 @@
                             <constraint firstAttribute="trailing" secondItem="cSh-YH-7NP" secondAttribute="trailing" id="ccH-MI-ytt"/>
                             <constraint firstAttribute="trailingMargin" secondItem="dzU-fJ-903" secondAttribute="trailing" constant="-19" id="dkU-a8-Bu6"/>
                             <constraint firstAttribute="trailing" secondItem="p8h-Qv-Eu7" secondAttribute="trailing" id="eks-DV-Q8n"/>
+                            <constraint firstItem="DaX-fr-Koa" firstAttribute="leading" secondItem="JiG-xr-pcc" secondAttribute="trailing" id="exv-LV-ZFS"/>
                             <constraint firstItem="QOR-02-Aky" firstAttribute="top" secondItem="1VR-na-IE8" secondAttribute="top" id="gha-8x-PSL"/>
                             <constraint firstItem="QOR-02-Aky" firstAttribute="trailing" secondItem="vjW-D5-fkz" secondAttribute="trailing" id="h3d-0w-NuP"/>
                             <constraint firstItem="Vhb-PR-IoD" firstAttribute="top" secondItem="vjW-D5-fkz" secondAttribute="bottom" id="hBt-0Q-LvK"/>
                             <constraint firstItem="Yuu-IT-bmr" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" id="hyj-Zf-IHr"/>
+                            <constraint firstItem="YXI-8z-rO2" firstAttribute="top" secondItem="JiG-xr-pcc" secondAttribute="bottom" id="kgw-6T-yBz"/>
                             <constraint firstItem="vjW-D5-fkz" firstAttribute="leading" secondItem="LZV-VN-Xih" secondAttribute="leading" id="lRq-Pf-kGW"/>
                             <constraint firstItem="Tt7-KM-ve9" firstAttribute="top" secondItem="20d-s1-fHt" secondAttribute="bottom" id="lxF-Tf-ep6"/>
                             <constraint firstItem="QOR-02-Aky" firstAttribute="bottom" secondItem="1VR-na-IE8" secondAttribute="bottom" id="nCC-Cx-oPm"/>
@@ -363,16 +385,17 @@
                             <constraint firstItem="QOR-02-Aky" firstAttribute="leading" secondItem="1VR-na-IE8" secondAttribute="leading" id="pt7-ga-hVg"/>
                             <constraint firstItem="p8h-Qv-Eu7" firstAttribute="top" secondItem="LZV-VN-Xih" secondAttribute="bottom" id="qYc-59-y9k"/>
                             <constraint firstItem="vjW-D5-fkz" firstAttribute="trailing" secondItem="Z1C-I8-X3w" secondAttribute="centerX" id="qfD-2b-CHQ"/>
+                            <constraint firstItem="JiG-xr-pcc" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" id="rax-Tf-SXv"/>
                             <constraint firstItem="1VR-na-IE8" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" id="s0d-Rh-lAv"/>
                             <constraint firstItem="zSI-U7-bUo" firstAttribute="trailing" secondItem="Z1C-I8-X3w" secondAttribute="centerX" id="xTP-q0-7yJ"/>
                             <constraint firstItem="YXI-8z-rO2" firstAttribute="top" secondItem="DaX-fr-Koa" secondAttribute="bottom" id="y4S-7d-1rH"/>
                             <constraint firstItem="zSI-U7-bUo" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" id="yYR-Q3-t8A"/>
-                            <constraint firstItem="DaX-fr-Koa" firstAttribute="leading" secondItem="Yuu-IT-bmr" secondAttribute="trailing" constant="-187.5" id="zTn-yR-lPZ"/>
                             <constraint firstItem="20d-s1-fHt" firstAttribute="leading" secondItem="Z1C-I8-X3w" secondAttribute="leading" constant="10" id="zo2-tA-LMu"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="btnAdd" destination="zSI-U7-bUo" id="VHO-ze-p8o"/>
+                        <outlet property="btnEdit" destination="JiG-xr-pcc" id="HHQ-SP-BKs"/>
                         <outlet property="imgIcon" destination="sjf-ej-bja" id="tYm-jl-iE4"/>
                         <outlet property="txtMajor" destination="vjW-D5-fkz" id="FWH-0a-0QZ"/>
                         <outlet property="txtMinor" destination="dvF-dh-4ZJ" id="ww1-ZT-3oR"/>
@@ -691,8 +714,7 @@
         <image name="menu_128" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="sbC-My-dth"/>
-        <segue reference="d3t-b7-qZx"/>
-        <segue reference="tVO-UK-9Qp"/>
+        <segue reference="wPy-hY-FIZ"/>
+        <segue reference="3fG-n8-ejQ"/>
     </inferredMetricsTieBreakers>
 </document>
