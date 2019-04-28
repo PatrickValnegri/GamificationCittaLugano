@@ -160,6 +160,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         let major = Int(txtMajor.text!) ?? 0
         let minor = Int(txtMinor.text!) ?? 0
         let name = txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        //TODO aggiungere type e photo
         
         let editedItem = Item(name: name, photo: imgIcon.image!, uuid: uuid, majorValue: major, minorValue: minor)
         print("Indice da modificare", currentIndex)
@@ -168,7 +169,14 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
         let context = appDelegate.persistentContainer.viewContext
-        request.predicate = NSPredicate(format: "name = %@", ivc.items[currentIndex].name)
+        
+        //Cerca quelli con major e minor che devono essere edidati
+        let p1 = NSPredicate(format: "major == %@", Int(ivc.items[currentIndex].majorValue) as NSNumber)
+        let p2 = NSPredicate(format: "minor == %@", Int(ivc.items[currentIndex].minorValue) as NSNumber)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p1, p2])
+        
+        //Aggiornamento su coredata
+        request.predicate = predicate
         do
         {
             let test = try context.fetch(request)
@@ -187,6 +195,23 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         {
             print(error)
         }
+        
+        //Aggiornamento su firebase
+        let beaconID = "\(uuid.uuidString)_\(Int(major))_\(Int(minor))"
+        self.ref.child("users").observe(.value, with: { (snapshot) in
+            
+            if (snapshot.hasChild(beaconID)) {
+                self.ref.child("users").child(beaconID).updateChildValues(["name":name]) { //TODO aggiungere type e photo
+                    (error:Error?, ref:DatabaseReference) in
+                    if let error = error {
+                        print("Item not edited: \(error).")
+                    } else {
+                        print("Item edited successfully!")
+                    }
+                }
+            }
+        })
+        
         
         indexToEdit = currentIndex
         ivc.items[currentIndex] = editedItem

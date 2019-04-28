@@ -49,11 +49,8 @@ class UserViewController: UIViewController {
         loginButton.isEnabled = true;
     }
     
+    //Salvare utente in userdetails
     func persistUser() {
-        // let userData = NSKeyedArchiver.archivedData(withRootObject: user!)
-        
-        //UserDefaults.standard.set(userData, forKey: storedUserKey)
-        //UserDefaults.standard.synchronize()
         
         var usersData = [Data]()
         //for u in users {
@@ -64,10 +61,8 @@ class UserViewController: UIViewController {
         UserDefaults.standard.synchronize()
     }
     
-    
+    //Caricare utente da userdetails
     func loadUser() {
-        // guard let storedUser = UserDefaults.standard.data(forKey: storedUserKey) else { return }
-        //guard let userTmp = NSKeyedUnarchiver.unarchiveObject(with: storedUser) as? User else { return }
         
         guard let storedUsers = UserDefaults.standard.array(forKey: storedUserKey) as? [Data] else { return }
         
@@ -135,8 +130,6 @@ class UserViewController: UIViewController {
                 print("User saved successfully!")
             }
         }
-    
-    
     }
     
     @IBAction func cancelRegistration(_ sender: Any) {

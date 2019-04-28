@@ -420,6 +420,9 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         ref = Database.database().reference()
         
         registerUser() //first time registration or only update token
+        
+        //sendNotificationFirebase(titolo: "Prova", mac: "76EE64EC-54C6-46E3-82FD-A897A42F6F21", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_11_12", gps: "000_000")
+        
     }
     
     @objc func appMovedToBackground() {
@@ -494,8 +497,8 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     func loadMainPage(){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
         
-        let url = URL(string: "https://www.ticinonews.ch/")!
-        //let url = AppConstants.mainPageURL!
+        //let url = URL(string: "https://www.ticinonews.ch/")!
+        let url = AppConstants.mainPageURL!
         
         mainPage.load(URLRequest(url: url))
         mainPage.allowsBackForwardNavigationGestures = true

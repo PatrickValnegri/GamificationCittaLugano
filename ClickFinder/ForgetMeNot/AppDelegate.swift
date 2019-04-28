@@ -33,6 +33,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let gcmMessageURL = "gcm.notification.url"
     let gcmMessageTime = "gcm.notification.time"
     
+    //let mvc = MainViewController(nibName: nil, bundle: nil)
+    
     private func requestNotificationAuthorization(application: UIApplication){
         let center = UNUserNotificationCenter.current()
         let options: UNAuthorizationOptions = UNAuthorizationOptions([.alert, .badge, .sound])
@@ -56,6 +58,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Messaging.messaging().delegate = self
         
+        
+        
+        /*
         //requestNotificationAuthorization(application: application);
         // [START register_for_notifications]
         if #available(iOS 10.0, *) {
@@ -75,14 +80,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         application.registerForRemoteNotifications()
         
         // [END register_for_notifications]
+         */
         
-        connectToFcm()
+        //connectToFcm() //TODO non necessario
         
+        UNUserNotificationCenter.current().delegate = self
+        
+        // request permission from user to send notification
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { authorized, error in
+            if authorized {
+                DispatchQueue.main.async(execute: {
+                    application.registerForRemoteNotifications()
+                })
+            }
+        })
+        
+        
+        // When the app launch after user tap on notification (originally was not running / not in background)
+        if(launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] != nil){
+            // your code here
+            print("NOTIFICA APERTA")
+        }
+
         return true
     }
     
     
-    
+    /*
     // [START receive_message]
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         // If you are receiving a notification message while your app is in the background,
@@ -148,11 +172,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AppConstants.mainPageURL = URL(string: "\(messageURL)")
             //print("mainPageURL: ", AppConstants.mainPageURL!)
         }
-       
         
         completionHandler(UIBackgroundFetchResult.newData)
     }
     // [END receive_message]
+     */
     
     //Abilita l'invio di messaggi
     func connectToFcm() {
@@ -236,7 +260,7 @@ extension AppDelegate: MessagingDelegate {
         // Note: This callback is fired at each app startup and whenever a new token is generated.
     }
     // [END refresh_token]
-    
+    /*
     // [START ios_10_data_message]
     // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
     // To enable direct data messages, you can set Messaging.messaging().shouldEstablishDirectChannel to true.
@@ -245,11 +269,82 @@ extension AppDelegate: MessagingDelegate {
         UIApplication.shared.applicationIconBadgeNumber += 1
     }
     // [END ios_10_data_message]
+ */
+}
+ 
+
+
+@available(iOS 10, *)
+extension AppDelegate: UNUserNotificationCenterDelegate{
     
+    // This function will be called when the app receive notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        let userInfo = notification.request.content.userInfo
+        
+        // Print message ID.
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+        
+        // Print full message.
+        print(userInfo)
+        
+        // Change this to your preferred presentation option
+        completionHandler([.alert, .sound, .badge])
+    }
+    
+    
+    // This function will be called right after user tap on the notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        //body of messagge
+        let userInfo = response.notification.request.content.userInfo
+        
+        let application = UIApplication.shared
+        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "notificationViewController") as! NotificationViewController
+        
+        //Foreground tap
+        if(application.applicationState == .active){
+            print("user tapped the notification bar when the app is in foreground")
+            
+            // Print message URL
+            if let messageURL = userInfo[gcmMessageURL] {
+                print("\(messageURL)")
+                //AppConstants.notificationURL =  "\(messageURL)"
+                nextViewController.urlString = "\(messageURL)"
+            }
+            
+        }
+        
+        //Background tap
+        if(application.applicationState == .inactive){
+            print("user tapped the notification bar when the app is in background")
+            
+            // Print message URL
+            if let messageURL = userInfo[gcmMessageURL] {
+                print("\(messageURL)")
+                //AppConstants.notificationURL = "\(messageURL)"
+                nextViewController.urlString = "\(messageURL)"
+            }
+            
+        }
+        
+        // Change root view controller to a specific viewcontrollerm
+        
+        self.window?.rootViewController?.present(nextViewController, animated: true, completion: nil)
+        
+ 
+        // tell the app that we have finished processing the user’s action / response
+        completionHandler()
+    }
 }
 
+/*
+
 // [START ios_10_message_handling]
-//Dove vengono gestite le notifiche mentre l'app é aperta
 @available(iOS 10, *)
 extension AppDelegate : UNUserNotificationCenterDelegate {
     
@@ -291,7 +386,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     // [END ios_10_message_handling]
 }
 
-
+*/
 
 
 

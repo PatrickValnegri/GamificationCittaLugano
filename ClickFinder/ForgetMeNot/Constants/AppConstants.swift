@@ -15,6 +15,8 @@ class AppConstants {
     //static let uuid = UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!
     static let uuid = UUID(uuidString: "699EBC80-E1F3-11E3-9A0F-0CF3EE3BC012")!
     static var isPairing = false
+
+    static var notificationURL = ""
     
     static let region = CLBeaconRegion(proximityUUID: uuid, identifier: uuid.uuidString)
     
