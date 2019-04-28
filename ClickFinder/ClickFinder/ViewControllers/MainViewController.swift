@@ -19,41 +19,41 @@ import FirebaseInstanceID
 let storedItemsKey = "storedItems"
 
 extension MainViewController: CLLocationManagerDelegate {
-    
+
     func setUpLocationManager(){
         //prompt the user for access to location services if they haven’t granted it already
         locationManager.requestAlwaysAuthorization()
-        
+
         AppConstants.region.notifyOnEntry = true;
         AppConstants.region.notifyOnExit = true;
         AppConstants.region.notifyEntryStateOnDisplay = true;
-        
+
         //This sets the CLLocationManager delegate to self so you’ll receive delegate callbacks.
         if CLLocationManager.locationServicesEnabled() && CLLocationManager.isRangingAvailable() && CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
         }
     }
-    
+
     func startMeasuringData(){
         locationManager.startUpdatingLocation()
         locationManager.startMonitoring(for: AppConstants.region)
         locationManager.startRangingBeacons(in: AppConstants.region)
     }
-    
+
     func stopRanging(){
         locationManager.stopRangingBeacons(in: AppConstants.region)
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else { return }
-        
+
         self.currentLocation.latitude = locValue.latitude
         self.currentLocation.longitude = locValue.longitude
 //        print(locValue.latitude)
 //        print(locValue.longitude)
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         //ivc.loadItems()
 //        let userDefaults = UserDefaults.standard
@@ -64,7 +64,7 @@ extension MainViewController: CLLocationManagerDelegate {
 //        for item in ivc.items {
 //            printItem(item: item)
 //        }
-        
+
         if(!checkIfActive()){
             notificationPublisher.sendNotification(
                 title: "Entered region",
@@ -75,14 +75,14 @@ extension MainViewController: CLLocationManagerDelegate {
                 identifier: "exit notification",
                 ring: false
             )
-            
+
             print("Entered region")
-            
+
             //locationManager.startUpdatingLocation()
             locationManager.startRangingBeacons(in: AppConstants.region)
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         if(!checkIfActive()){
             notificationPublisher.sendNotification(
@@ -94,22 +94,22 @@ extension MainViewController: CLLocationManagerDelegate {
                 identifier: "exit notification",
                 ring: false
             )
-            
+
             print("Left region")
-            
+
             //locationManager.stopUpdatingLocation()
             locationManager.stopRangingBeacons(in: AppConstants.region)
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         print("ranging")
-        
+
         //Handling of the found beacons
         for beacon in beacons {
-            if(!checkIfActive()){
+            //if(!checkIfActive()){
                 if(Int(truncating: beacon.major) > AppConstants.pairingValue){
-                    
+
                     let major = UInt16(truncating: beacon.major)-UInt16(AppConstants.pairingValue)
                     let minor = UInt16(truncating: beacon.minor)
                     if let known = ivc.items.first(where:{$0.majorValue == major && $0.minorValue == minor}){
@@ -125,168 +125,244 @@ extension MainViewController: CLLocationManagerDelegate {
                         )
                     }
                 }
-            }
-            
+            //}
+
             if ivc.items.isEmpty {
                 print("Unknown iBeacon found")
                 handleUnknownIBeacons(beacon: beacon)
             }else{
                 if( !checkIfActive() ){
                     print("BACKGROUND")
-                    
+
                     if let item = ivc.items.first(where:{$0.majorValue == UInt16(truncating: beacon.major) && $0.minorValue == UInt16(truncating: beacon.minor)}){
-                        
+
                         checkIfLost(item: item, known: true)
-                        
+
                     } else {
                         print("Unknown iBeacon found")
                         handleUnknownIBeacons(beacon: beacon)
                     }
-                    
+
                 }else{
                     print("FOREGROUND")
                     if itemToLookFor != nil{
                         print("beacon selected")
                         if itemToLookFor!.majorValue == UInt16(truncating: beacon.major) && itemToLookFor!.minorValue == UInt16(truncating: beacon.minor){
-                            
+
                             print("Found known Beacon")
-                            
+
                             locationManager.stopRangingBeacons(in: AppConstants.region)
-                            
+
                             foundDate = Date()
-                            
+
                             itemToLookFor!.beacon = beacon
-                            
-//                            let endDate = Date()
-//                            let elapsed = Int(endDate.timeIntervalSince(toastStartDate))
-//
-//                            if elapsed > 5{
-                                showToast(message: "\(itemToLookFor!.name) \n\(itemToLookFor!.nameForProximity(beacon.proximity))")
-                                toastStartDate = Date()
-//                            }
-                
+
+                            showToast(message: "\(itemToLookFor!.name) \n\(itemToLookFor!.nameForProximity(beacon.proximity))")
+                            toastStartDate = Date()
+
                             checkIfLost(item: itemToLookFor!, known: true)
+
+                            //reset item to look for so that the app keeps looking for other beacons
+                            itemToLookFor = nil
+
+                            locationManager.startRangingBeacons(in: AppConstants.region)
                         }else{
                             print("Unknown iBeacon found")
                             handleUnknownIBeacons(beacon: beacon)
                         }
-                        
+
                         let now = Date()
-                        
-                        if Int(now.timeIntervalSince(foundDate)) > 15{
+
+                        if Int(now.timeIntervalSince(foundDate)) > AppConstants.notificationDelay{
                             print("15 seconds, selected beacon has not been found")
-                            
-                            locationManager.stopRangingBeacons(in: AppConstants.region)
-                            
+
+                            //locationManager.stopRangingBeacons(in: AppConstants.region)
+
                             searchIsOn = false
-                            
                             let beaconID = "\(itemToLookFor!.uuid)_\(itemToLookFor!.majorValue)_\(itemToLookFor!.minorValue)"
-                            
                             showToast(message: "Beacon not found, server notified!")
-                            
                             updateBeaconStatus(beaconID: beaconID, lost: true)
+
+                            //reset item to look for so that the app keeps looking for other beacons
+                            itemToLookFor = nil
+                            locationManager.startRangingBeacons(in: AppConstants.region)
+                        }
+                    }else{
+                        if let item = ivc.items.first(where:{$0.majorValue == UInt16(truncating: beacon.major) && $0.minorValue == UInt16(truncating: beacon.minor)}){
+
+                            if Int((foundKnownDate.timeIntervalSince(foundDate))) > AppConstants.notificationDelay{
+                                checkNotSelectedKnownItem(item: item)
+                                //checkIfLost(item: item, known: true)
+                                foundDate = Date()
+                            }
+
+                            foundKnownDate = Date()
+
+                        } else {
+                            print("Unknown iBeacon found")
+                            handleUnknownIBeacons(beacon: beacon)
                         }
                     }
                 }
             }
         }
-        
+
         //if no beacons have been found
         if beacons.isEmpty{
             let now = Date()
-            
+
             //notify the server that the user selected beacon is missing
             if(itemToLookFor != nil && searchIsOn == true){
-                if Int(now.timeIntervalSince(foundDate)) > 15{
+                if Int(now.timeIntervalSince(foundDate)) > AppConstants.notificationDelay{
                     searchIsOn = false
-                    
+
                     locationManager.stopRangingBeacons(in: AppConstants.region)
 
                     print("15 seconds, selected beacon is missing")
-                    
-                    foundDate = Date()
-                    
-                    let beaconID = "\(itemToLookFor!.uuid)_\(itemToLookFor!.majorValue)_\(itemToLookFor!.minorValue)"
-                    
-                    showToast(message: "Beacon not found, server notified!")
 
+                    foundDate = Date()
+
+                    let beaconID = "\(itemToLookFor!.uuid)_\(itemToLookFor!.majorValue)_\(itemToLookFor!.minorValue)"
+
+                    itemToLookFor = nil
+
+                    showToast(message: "Beacon not found, server notified!")
                     updateBeaconStatus(beaconID: beaconID, lost: true)
+
+                    locationManager.startRangingBeacons(in: AppConstants.region)
+
                 }
             }
         }
     }
-    
+
     private func handleUnknownIBeacons(beacon: CLBeacon){
         var newBeacon : CLBeacon?
-        
+
         //major value > 32000 -> the pairing button has been pressed
         if Int(truncating: beacon.major) > AppConstants.pairingValue{
-            print("Pairing iBeacon found")
+            //print("Pairing iBeacon found")
             newBeacon = beacon
         } else {
-            let item = Item(name: "New", photo: UIImage(), uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor))
+            let item = Item(name: "New", photo: UIImage(), uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor), type: AppConstants.types[0])
             let endDate = Date()
             let elapsed = Int(endDate.timeIntervalSince(startDate))
-            
+
             //print("\(elapsed) + \(beacon.major) + \(beacon.minor)")
-            
+
             if  elapsed > 60 { // delay to avoid backend overloading
                 //print("alreadyRangedItems array cleaned")
                 startDate = Date()
-                alreadyRangedItems.removeAll(keepingCapacity: false)
+                alreadyRangedUnknownItems.removeAll(keepingCapacity: false)
             }
-            
+
             var found = false
-            for itemN in alreadyRangedItems{
+            for itemN in alreadyRangedUnknownItems{
                 if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
                     found = true
                 }
             }
-            
+
             if found == false{
-                alreadyRangedItems.append(item)
-                print(alreadyRangedItems)
-                
+                alreadyRangedUnknownItems.append(item)
+                //print(alreadyRangedUnknownItems)
+
                 checkIfLost(item: item, known: false)
             }
         }
-        
-        print(pairingIsOn)
-        
+
         if pairingIsOn == true {
-            print("Pairing the new iBeacon")
+            //print("Pairing the new iBeacon")
             if(newBeacon != nil){
-                self.pairingIsOn = false
-                
+
+                let end = Date()
+
+                //self.pairingIsOn = false
+
                 let major = Int(truncating: newBeacon!.major)-AppConstants.pairingValue //Pairing done
-                
-                let item = Item(name: "New", photo: UIImage(), uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor))
-                
+
+                let item = Item(name: "New", photo: UIImage(), uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor), type: AppConstants.types[0])
+
                 var flag = false
-                
+
+                let elapsed2 = Int(end.timeIntervalSince(pairingStartDate))
+                print(elapsed2)
+                if elapsed2 > 15{ // delay to avoid backend overloading
+                    print("alreadyRangedItems array cleaned")
+                    pairingStartDate = Date()
+                    alreadyRangedPairingItems.removeAll(keepingCapacity: false)
+                }
+
+                for itemN in alreadyRangedPairingItems{
+                    if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
+                        flag = true
+                    }
+                }
+
                 for itemN in ivc.items{
                     if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
                         flag = true
                     }
                 }
-                
+
                 for itemN in ivc.itemsToBeAdded{
                     if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
                         flag = true
                     }
                 }
-                
+
                 if flag == false{
-                    print("ALERT")
-                    createAlert(title: "New beacon found!", message: itemAsString(item: item), item: item)
+                    alreadyRangedPairingItems.append(item)
+                    checkIfBelongs(item: item)
                 }
-                
+
                 flag = true
             }
-            
+
         }
     }
-    
+
+    private func checkIfBelongs(item: Item){
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+
+        self.ref.child("users").observe(.value, with: { (snapshot) in
+            if (snapshot.hasChild(beaconID)) { //Se già presente nel db
+                print("Beacon belongs to another person")
+                self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                self.showToast(message: "Beacon belongs to another person")
+                self.pairingIsOn = true
+                self.locationManager.startRangingBeacons(in: AppConstants.region)
+            }else{
+                print("NewBeaconFound")
+                AppVariables.pairingIsOn = false
+                self.pairingIsOn = false
+                self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                self.createAlert(title: "New beacon found!", message: itemAsString(item: item), item: item)
+            }
+        })
+    }
+
+    func checkNotSelectedKnownItem(item: Item){
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+        let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+
+        let iBeaconsRef = self.ref.child("users")
+
+        iBeaconsRef.observeSingleEvent(of: .value, with: { (snapshot) in
+            for child in snapshot.children {
+                if let childSnapshot = child as? DataSnapshot{
+                    let value = childSnapshot.value as? NSDictionary
+                    let mac = value?["mac"] as? String ?? ""
+                    let switch_hdd = value?["switch_hdd"] as? String ?? ""
+
+                    if mac == beaconID && switch_hdd == "1"{
+                        self.sendNotificationFirebase(titolo: "Ritrovamento mio beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
+                    }
+                }
+            }
+        })
+    }
+
     private func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         switch status {
         case .notDetermined:
@@ -313,134 +389,181 @@ extension MainViewController: CLLocationManagerDelegate {
 class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     /******************** FIELDS *******************/
 
+    var delegate: ItemsViewController?
     //Instance of ItemsViewController
     let ivc = ItemsViewController(nibName: nil, bundle: nil)
 
     //Instance of UserViewController
     let uvc = UserViewController(nibName: nil, bundle: nil)
-    
+
     //PICKER VIEW
     @IBOutlet weak var iBeaconPicker: UIPickerView!
-    
-    //used to cache already ranged unkown iBeacons -> avoid backend overloading
-    var alreadyRangedItems = [Item]()
-    
+
+    //used to cache already ranged known/unkown iBeacons -> avoid backend overloading
+    var alreadyRangedUnknownItems = [Item]()
+    var alreadyRangedKnownItems = [Item]()
+    var alreadyRangedPairingItems = [Item]()
+
     var itemToLookFor: Item? = nil
-    
+
     //TIME
     var startDate = Date()
+    var pairingStartDate = Date()
     var toastStartDate = Date()
     var foundDate = Date()
-    
+    var foundKnownDate = Date()
+
     //CORE DATA
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+
     //CORE LOCATION
     //Entry point into core location
     let locationManager = CLLocationManager()
     //current location coordinates
     var currentLocation = Coordinate(latitude: 0, longitude: 0)
-    
+
     //LOCAL NOTIFICATIONS PUBLISHER
     private let notificationPublisher = NotificationPublisher()
-    
+
     //FIREBASE REALTIME DATABASE
     var ref: DatabaseReference!
-    
-    //PAIRING FLAG
+
+    //FLAGS
     var searchIsOn = false
     var pairingIsOn = false
-    
+    var menuShowing = false
+
     //UI Connections
     @IBOutlet weak var search: UIButton!
     @IBOutlet weak var mainPage: WKWebView!
+    var currentPage: URL?
 
     //SideBar menu
     @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
-    
+
     //Homebutton sidebar
     @IBAction func homeButttonTapped(_ sender: Any) {
-        //AppConstants.mainPageURL = URL(string: "https://www.ticinonews.ch/")!
-        loadMainPage()
-        
+        if ivc.items.isEmpty {
+            loadPairing()
+//            loadMainPage(url: AppConstants.pairingPage)
+//            pairingIsOn = true
+//            search.isHidden = true
+//            locationManager.startRangingBeacons(in: AppConstants.region)
+
+        }else{
+            loadSearching()
+//            loadMainPage(url: AppConstants.mainPageURL)
+//            pairingIsOn = false
+//            search.isHidden = false
+//            locationManager.startRangingBeacons(in: AppConstants.region)
+        }
     }
-    
+
+    @IBAction func listaTapped(_ sender: Any) {
+        locationManager.stopRangingBeacons(in: AppConstants.region)
+    }
+
+    @IBAction func userTapped(_ sender: Any) {
+        locationManager.stopRangingBeacons(in: AppConstants.region)
+    }
+
     @IBAction func refreshTapped(_ sender: Any) {
         print("MainPageURL", AppConstants.mainPageURL!)
         let url = AppConstants.mainPageURL!
         mainPage.load(URLRequest(url: url))
     }
-    
-    
-    var menuShowing = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-        self.navigationController?.setNavigationBarHidden(false, animated: true)
-        
+
+        ivc.loadItems()
+
+        if ivc.items.isEmpty || AppVariables.pairingIsOn == true{
+            loadPairing()
+        }else{
+            loadSearching()
+        }
+
+        itemToLookFor = nil
+//        self.navigationController?.setNavigationBarHidden(true, animated: true)
+//        self.navigationController?.setNavigationBarHidden(false, animated: true)
+
         leadingConstraint.constant = -85
-        
+
         //Connect picker:
         iBeaconPicker.delegate = self
         iBeaconPicker.dataSource = self
-        
         iBeaconPicker.isHidden = true
-        
-        loadMainPage()
-        
-        //CLBEACON REAGION
+
+        //CLBEACON REGION
         //Allow beacon reagion to notify if the device entered or exited from it
         AppConstants.region.notifyEntryStateOnDisplay = true
         AppConstants.region.notifyOnEntry = true
         AppConstants.region.notifyOnExit = true
-        
-        //LOAD DATA
-        ivc.loadItems()
-        
-        for itemN in ivc.items{
-            let region = CLBeaconRegion(proximityUUID: AppConstants.uuid, major: itemN.majorValue + UInt16(AppConstants.pairingValue), minor: itemN.minorValue, identifier: AppConstants.uuid.uuidString)
-            
-            locationManager.startMonitoring(for: region)
-        }
-        
-        locationManager.startUpdatingLocation()
-        locationManager.startMonitoring(for: AppConstants.region)
-        
+
         //Observe the app status
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
-        
         notificationCenter.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-        
-        //CORE LOCATION
-        setUpLocationManager()
-        
+
         //FIREBASE REALTIME DATABASE REFERENCE
         ref = Database.database().reference()
-        
+
         registerUser() //first time registration or only update token
-        
-        //sendNotificationFirebase(titolo: "Prova", mac: "76EE64EC-54C6-46E3-82FD-A897A42F6F21", beacon_id: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5_11_12", gps: "000_000")
-        
+
+        //CORE LOCATION
+        setUpLocationManager()
+
+        //LOAD DATA
+
+        for itemN in ivc.items{
+            let region = CLBeaconRegion(proximityUUID: AppConstants.uuid, major: itemN.majorValue + UInt16(AppConstants.pairingValue), minor: itemN.minorValue, identifier: AppConstants.uuid.uuidString)
+
+            //SE NON DOVESSE PIÙ FUNZIONARE, CANCELLARE QUESTA PARTE DI CODICE
+            region.notifyEntryStateOnDisplay = true
+            region.notifyOnEntry = true
+            region.notifyOnExit = true
+            //
+            locationManager.startMonitoring(for: region)
+        }
+
+        locationManager.startUpdatingLocation()
+        locationManager.startRangingBeacons(in: AppConstants.region)
+        locationManager.startMonitoring(for: AppConstants.region)
     }
-    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        self.locationManager.startRangingBeacons(in: AppConstants.region)
+    }
+
     @objc func appMovedToBackground() {
         print("ClickFineder is now in background")
-        
+
         pairingIsOn = false
-    
+
         locationManager.startUpdatingLocation()
         locationManager.startMonitoring(for: AppConstants.region)
     }
-    
+
     @objc func appMovedToForeground(){
         print("ClickFineder is now in foreground")
 
-        locationManager.stopRangingBeacons(in: AppConstants.region)
-        locationManager.stopMonitoring(for: AppConstants.region)
+        locationManager.startRangingBeacons(in: AppConstants.region)
+        locationManager.startMonitoring(for: AppConstants.region)
     }
-    
+
     /*
      Returns true if the app is in the foreground, false if it is not.
      */
@@ -454,13 +577,11 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             return false
         }
     }
-    
+
     /*********************************************
     UI ACTIONS & UI COMPONENTS
     **********************************************/
-    
-    
-    
+
     @IBAction func openMenu(_ sender: Any) {
         if (menuShowing) {
             leadingConstraint.constant = -85
@@ -472,76 +593,97 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         }
         menuShowing = !menuShowing
     }
-    
+
     @IBAction func searchIBeacon(_ sender: Any) {
-        if !ivc.items.isEmpty{
+//        if !ivc.items.isEmpty{
             iBeaconPicker.isHidden = !iBeaconPicker.isHidden
-            
+
             if iBeaconPicker.isHidden{
                 foundDate = Date()
-                
-                pairingIsOn = true
+
+//                pairingIsOn = true
                 searchIsOn = true
                 locationManager.startRangingBeacons(in: AppConstants.region)
             } else {
                 locationManager.stopRangingBeacons(in: AppConstants.region)
             }
-        }else{
-            showToast(message: "No paired beacons detected")
-            pairingIsOn = true
-            locationManager.startRangingBeacons(in: AppConstants.region)
-        }
+//        }
+//        else{
+//            showToast(message: "No paired beacons detected")
+//            pairingIsOn = true
+//            locationManager.startRangingBeacons(in: AppConstants.region)
+//        }
     }
-    
+
     //Funzione che carica la view principale
-    func loadMainPage(){
+    func loadMainPage(url: URL?){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
-        
+
         //let url = URL(string: "https://www.ticinonews.ch/")!
-        let url = AppConstants.mainPageURL!
-        
-        mainPage.load(URLRequest(url: url))
+        //let url = AppConstants.mainPageURL!
+
+        mainPage.load(URLRequest(url: url!))
         mainPage.allowsBackForwardNavigationGestures = true
     }
-    
+
     //Funzione per caricare url di inviato nella risposta del server
     func loadURL(notificationURL: String){
         mainPage.scrollView.contentInsetAdjustmentBehavior = UIScrollView.ContentInsetAdjustmentBehavior.never
-        
+
         let url = URL(string: notificationURL)!
         AppConstants.mainPageURL = url
         mainPage.load(URLRequest(url: url))
         mainPage.allowsBackForwardNavigationGestures = true
     }
-    
+
     func hidePicker(){
         iBeaconPicker.removeFromSuperview()
     }
-    
+
     func showPicker(){
         self.view.addSubview(iBeaconPicker)
     }
-    
+
     // The number of columns(components) in the picker
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
+
     // The number of rows in the picker
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return ivc.items.count
     }
-    
+
     // The data to return for the row and component (column)
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return ivc.items[row].name
     }
-    
+
     //
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         itemToLookFor = ivc.items[row]
     }
-    
+
+    func loadPairing(){
+        print("pairing loaded")
+
+        let url = AppConstants.pairingPage!
+        mainPage.load(URLRequest(url: url))
+        pairingIsOn = true
+        search.isHidden = true
+        //locationManager.startRangingBeacons(in: AppConstants.region)
+    }
+
+    func loadSearching(){
+        print("searching loaded")
+
+        let url = AppConstants.mainPageURL!
+        mainPage.load(URLRequest(url: url))
+
+        pairingIsOn = false
+        search.isHidden = false
+        //locationManager.startRangingBeacons(in: AppConstants.region)
+    }
     /*
      This function creates a new toast with the given message
      */
@@ -564,82 +706,72 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             toastLabel.removeFromSuperview()
         })
     }
-    
+
     func createAlert(title: String, message: String, item: Item){
-        
+
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
+
         //Textfield for the beacon name
         alertController.addTextField { (textField) in
             textField.placeholder = "Insert beacon name here"
         }
-        
+
         //Deny pairing
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
             alertController.dismiss(animated: true, completion: nil)
+            self.pairingIsOn = true
+            AppVariables.pairingIsOn = false
+            self.locationManager.startRangingBeacons(in: AppConstants.region)
         }))
-        
+
         //Save the paired beacon
         alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
             item.name = alertController.textFields![0].text ?? "New"
-            
-            let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
-            
-            self.ref.child("users").observe(.value, with: { (snapshot) in
-                
-                if (snapshot.hasChild(beaconID)) { //Se già presente nel db
-                    self.showToast(message: "Beacon belongs to another person")
-                    alertController.dismiss(animated: true, completion: nil)
-                    
-                } else { //Se non è già presente nel db
-                    detailItem = item
-                    flag = true
-                    AppConstants.isPairing = true
-                    
-                    let addItemViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addItem") as UIViewController
-                    
-                    self.locationManager.stopRangingBeacons(in: AppConstants.region)
-                    
-                    //self.navigationController?.pushViewController(aivc, animated: true)
-                    self.present(addItemViewController, animated: false, completion: nil)
-                }
-            })
+
+            detailItem = item
+            flag = true
+
+            self.locationManager.stopRangingBeacons(in: AppConstants.region)
+
+            let addItemViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addItem") as! AddItemViewController
+            self.navigationController?.pushViewController(addItemViewController, animated: true)
+
         }))
-        
+
         self.present(alertController, animated: true, completion: nil)
     }
-    
+
     @objc func handleSelectBeaconImageView(){
         print("Select image from gallery")
     }
-    
+
     /*********************************************/
     /*********************************************
      IBEACON MANAGING
      *********************************************/
-    
+
     /*
      Cycles the users table and checks if the passed beacon has been lost by someone.
      If the passed item is owned by the user, it swtich_hdd value is reset.
      Else, the app notificates the main server that a lost item has been found in the current location.
      */
-    
+
     func checkIfLost(item: Item, known: Bool){
         let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
 
         let iBeaconsRef = self.ref.child("users")
-        
+
         iBeaconsRef.observeSingleEvent(of: .value, with: { (snapshot) in
             for child in snapshot.children {
                 if let childSnapshot = child as? DataSnapshot{
                     let value = childSnapshot.value as? NSDictionary
                     let mac = value?["mac"] as? String ?? ""
                     let switch_hdd = value?["switch_hdd"] as? String ?? ""
-                    
+
                     if mac == beaconID && switch_hdd == "1" && !known{
                         self.sendNotificationFirebase(titolo: "Ritrovamento beacon", mac: iphoneID!, beacon_id: beaconID, gps: "\(self.currentLocation.latitude)_\(self.currentLocation.longitude)")
-                        
+
                         print("UNKNOWN BEACON FOUND, send notification")
                     } else if mac == beaconID && switch_hdd == "1" && known{
                         //Known lost iBeacon found while app was in background
@@ -650,46 +782,46 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
                             //self.updateBeaconStatus(beaconID: beaconID, lost: false)
                         }else{
                             print("Found known \(beaconID), set switch_hdd to 0")
-                            self.locationManager.stopRangingBeacons(in: AppConstants.region)
                             self.updateBeaconStatus(beaconID: beaconID, lost: false)
+                            self.itemToLookFor = nil
                         }
                     }
                 }
             }
         })
     }
-    
+
     /*
      This function updates the iBeacon status on the database.
      Usually this function is called when a lost known iBeacon has been found or when a know beacon cant' be found.
      */
     func updateBeaconStatus(beaconID: String, lost: Bool){
-        
+
         var values = [String:String]()
-        
+
         if lost{
             values = ["switch_hdd": "1"]
         }else{
             values = ["switch_hdd": "0"]
         }
-        
+
         print("BEACON STATU UPDATED \(values)")
         self.ref.child("users").child(beaconID).updateChildValues(values)
     }
-    
+
     /*******************************************/
-    
+
     /*******************************************
      FIREBASE
      *******************************************/
-    
+
     //completion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
     func getToken(completion: @escaping(String)->()) {
         InstanceID.instanceID().instanceID { (result, error) in
             var tokenID: String = ""
             if let error = error {
                 print("Error fetching remote instance ID: \(error)")
-                
+
             } else if let result = result {
                 print("Remote instance ID token: \(result.token)")
                 tokenID = result.token
@@ -697,18 +829,18 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             completion(tokenID);
         }
     }
-    
+
     func registerUser(){
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
-        
+
         getToken { (token: String) in
             let tokenID: String = token
             let tipoSchermo: String = "iOS_LAC_regId_"+tokenID
             print("TOKEN", tokenID)
             print("IPHONE ID",iphoneID!)
-            
+
             self.ref.child("users").observe(.value, with: { (snapshot) in
-                
+
                 if (snapshot.hasChild(iphoneID!)) { //se l'utente esiste già nel database
                     self.ref.child("users").child(iphoneID!).updateChildValues(["tiposchermo":tipoSchermo]) {
                         (error:Error?, ref:DatabaseReference) in
@@ -719,7 +851,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
                         }
                     }
                 } else { //se l'utente non esiste nel database
-                    
+
                     self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
                         (error:Error?, ref:DatabaseReference) in
                         if let error = error {
@@ -732,21 +864,21 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             })
         }
     }
-    
+
     func sendNotificationFirebase(titolo: String, mac: String, beacon_id: String, gps: String) {
         print("Notifica inviata")
         let urlString: String = "https://fcm.googleapis.com/fcm/send"
         let time_to_live = 36000
-        
+
         let command = AppConstants.comandCheckAlarm
         let regID = AppConstants.publicKeyServer
         let url: String = ""
-        
+
         //User info
         uvc.loadUser()
-        let antenna_name = AppConstants.userName
-        let antenna_phone = AppConstants.userPhone
-        
+        let antenna_name = AppVariables.userName
+        let antenna_phone = AppVariables.userPhone
+
         let notification: [String: Any] = [
             "title": titolo,
             "body": mac,
@@ -760,34 +892,34 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             "sound": "true",
             "badge": "1"
         ]
-        
+
         let message: [String: Any] = [
             "priority": "high",
             "content_available": true,
             "time_to_live": time_to_live,
             //"collapse_key": min,
-            
+
             "to": AppConstants.publicKeyServer,
             "notification": notification,
         ]
-        
+
         let authorization: String = "key=\(AppConstants.privateKeyServer)"
         let header: HTTPHeaders = [ "Content-Type": "application/json",
                                     "Accept": "application/json",
                                     "Authorization": authorization
         ]
-        
+
         AF.request(urlString, method: .post, parameters: message, encoding: JSONEncoding.default, headers: header).responseString {
             response in
             switch response.result {
             case .success:
                 print("SUCCESS: ", response)
-                
+
                 break
             case .failure(let error):
                 print("FAILURE: ", error)
             }
         }
-        
+
     }
 }

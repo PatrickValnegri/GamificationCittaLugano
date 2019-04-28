@@ -69,8 +69,8 @@ class UserViewController: UIViewController {
         for userData in storedUsers {
             guard let item = NSKeyedUnarchiver.unarchiveObject(with: userData) as? User else { continue }
             user = item
-            AppConstants.userName = user.name
-            AppConstants.userPhone = user.phonenumber
+            AppVariables.userName = user.name
+            AppVariables.userPhone = user.phonenumber
             print("User name: ", user.name)
             print("User phone: ", user.phonenumber)
         }

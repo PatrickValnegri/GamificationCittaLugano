@@ -231,15 +231,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
     
     // MARK: - Core Data Saving support
-    
     func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
@@ -313,8 +310,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
             // Print message URL
             if let messageURL = userInfo[gcmMessageURL] {
                 print("\(messageURL)")
-                //AppConstants.notificationURL =  "\(messageURL)"
+                //AppConstants.notificationURL = "\(messageURL)"
                 nextViewController.urlString = "\(messageURL)"
+            }
+            
+            if let time = userInfo[gcmMessageTime] {
+                print("\(time)")
             }
             
         }
@@ -330,12 +331,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
                 nextViewController.urlString = "\(messageURL)"
             }
             
+            if let time = userInfo[gcmMessageTime] {
+                print("\(time)")
+            }
+            
         }
         
+        
+        print("Aprerta notifica")
         // Change root view controller to a specific viewcontrollerm
-        
         self.window?.rootViewController?.present(nextViewController, animated: true, completion: nil)
-        
  
         // tell the app that we have finished processing the user’s action / response
         completionHandler()
