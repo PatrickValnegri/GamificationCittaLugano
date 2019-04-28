@@ -306,7 +306,7 @@
                                 </state>
                                 <connections>
                                     <action selector="btnCancel_Pressed:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="ggK-xh-z5R"/>
-                                    <segue destination="gfi-0E-BEB" kind="show" id="el5-DH-gjP"/>
+                                    <segue destination="DrD-we-v90" kind="show" id="hUD-su-9Vu"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QOR-02-Aky">
@@ -754,13 +754,22 @@
                                     <action selector="returnToHome:" destination="ynu-Wn-iap" eventType="touchUpInside" id="4UE-DG-592"/>
                                 </connections>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sjF-kA-3RK">
+                                <rect key="frame" x="234" y="87" width="125" height="178"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="125" id="uo9-Y0-cKc"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="iDI-wb-0Iz" secondAttribute="trailing" id="1K3-J4-9NK"/>
+                            <constraint firstItem="sjF-kA-3RK" firstAttribute="top" secondItem="uAL-IJ-moD" secondAttribute="bottom" constant="22" id="6af-Pp-m2E"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="leading" secondItem="OZR-Qh-Nqu" secondAttribute="leading" id="7M8-0U-fSO"/>
+                            <constraint firstItem="sjF-kA-3RK" firstAttribute="trailing" secondItem="OZR-Qh-Nqu" secondAttribute="trailingMargin" id="7Sf-YK-NGq"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="bottom" secondItem="zI4-Hk-bLK" secondAttribute="top" id="G5q-mB-9hf"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="top" secondItem="Cjf-ND-oqr" secondAttribute="bottom" id="WWc-Cv-Tc4"/>
+                            <constraint firstItem="zI4-Hk-bLK" firstAttribute="top" secondItem="sjF-kA-3RK" secondAttribute="bottom" constant="402" id="eHE-fP-vQs"/>
                             <constraint firstItem="uAL-IJ-moD" firstAttribute="top" secondItem="Cjf-ND-oqr" secondAttribute="bottom" constant="8" id="oO5-Pq-Uzl"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="leading" secondItem="OZR-Qh-Nqu" secondAttribute="leading" id="qdj-4Z-ioj"/>
                             <constraint firstItem="uAL-IJ-moD" firstAttribute="trailing" secondItem="OZR-Qh-Nqu" secondAttribute="trailingMargin" constant="10" id="wMg-8z-9Xb"/>
@@ -777,12 +786,13 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="beaconPhoto" destination="sjF-kA-3RK" id="ohT-Ak-JzQ"/>
                         <outlet property="webView" destination="iDI-wb-0Iz" id="Lw9-y5-GVx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KBu-lO-tLo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1135" y="776"/>
+            <point key="canvasLocation" x="-1135.2" y="775.86206896551732"/>
         </scene>
     </scenes>
     <resources>
@@ -798,7 +808,8 @@
         <image name="menu_128" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="el5-DH-gjP"/>
+        <segue reference="sbC-My-dth"/>
+        <segue reference="d3t-b7-qZx"/>
         <segue reference="iBc-Tf-0pr"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -371,11 +371,15 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         // Is name valid?
         let nameValid = (txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count > 0)
         pickerView.isHidden = true
-
-        btnAdd.isHidden = false
+        
         btnCancel.isHidden = false
-        btnEdit.isHidden = false
-
+        
+        if(!isEdit){
+            btnAdd.isHidden = false
+        }else{
+            btnEdit.isHidden = false
+        }
+        
         btnAdd.isEnabled = (nameValid && txtType.text != nil)
 
         self.view.endEditing(true)
@@ -389,11 +393,11 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
     //type label
     @objc func typeTapped(){
         pickerView.isHidden = false
-        btnAdd.isHidden = true
+        
         btnCancel.isHidden = true
+        btnAdd.isHidden = true
         btnEdit.isHidden = true
     }
-
 }
 
 extension AddItemViewController: UICollectionViewDataSource {

@@ -13,6 +13,7 @@ import WebKit
 class NotificationViewController: UIViewController, WKNavigationDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var beaconPhoto: UIImageView!
     
     var urlString: String = ""
     

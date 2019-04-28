@@ -35,12 +35,6 @@ extension MainViewController: CLLocationManagerDelegate {
         }
     }
 
-    func startMeasuringData(){
-        locationManager.startUpdatingLocation()
-        locationManager.startMonitoring(for: AppConstants.region)
-        locationManager.startRangingBeacons(in: AppConstants.region)
-    }
-
     func stopRanging(){
         locationManager.stopRangingBeacons(in: AppConstants.region)
     }
@@ -535,6 +529,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
         self.navigationController?.setNavigationBarHidden(true, animated: true)
+        self.locationManager.stopRangingBeacons(in: AppConstants.region)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -544,8 +539,8 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        self.locationManager.startRangingBeacons(in: AppConstants.region)
+        super.viewDidAppear(true)
+        //self.locationManager.startRangingBeacons(in: AppConstants.region)
     }
 
     @objc func appMovedToBackground() {

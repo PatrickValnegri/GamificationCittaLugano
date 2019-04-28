@@ -34,10 +34,6 @@ var indexToEdit: Int = -1
 
 class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
 
-    //CORE LOCATION
-    //Entry point into core location
-    let locationManager = CLLocationManager()
-
     //UI LIST OF ITEMS
     @IBOutlet weak var tableView: UITableView!
 
@@ -370,8 +366,6 @@ extension ItemsViewController : UITableViewDataSource {
 
         //Rimozione beacon
         if editingStyle == .delete {
-            self.locationManager.stopRangingBeacons(in: AppConstants.region)
-
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
             let context = self.appDelegate.persistentContainer.viewContext
 
@@ -413,8 +407,6 @@ extension ItemsViewController : UITableViewDataSource {
             } catch {
                 print("Failed to save context");
             }
-
-            self.locationManager.startRangingBeacons(in: AppConstants.region)
         }
     }
 
