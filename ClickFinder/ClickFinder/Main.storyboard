@@ -345,7 +345,6 @@
                                 </state>
                                 <connections>
                                     <action selector="btnEdit_Pressed:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="RYF-2i-Hnb"/>
-                                    <segue destination="DrD-we-v90" kind="show" id="iBc-Tf-0pr"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -808,8 +807,7 @@
         <image name="menu_128" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="sbC-My-dth"/>
         <segue reference="d3t-b7-qZx"/>
-        <segue reference="iBc-Tf-0pr"/>
+        <segue reference="hUD-su-9Vu"/>
     </inferredMetricsTieBreakers>
 </document>

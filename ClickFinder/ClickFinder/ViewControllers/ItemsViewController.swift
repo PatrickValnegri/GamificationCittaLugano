@@ -93,6 +93,7 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
 
     }
 
+    //TODO non funziona dopo edit
     @IBAction func homeTapped(_ sender: Any) {
         let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mainView") as! MainViewController
         self.navigationController?.pushViewController(mainViewController, animated: true)
@@ -435,6 +436,9 @@ extension ItemsViewController: UITableViewDelegate {
             nextViewController.currentIndex = indexPath.row
             nextViewController.isEdit = true
 
+            //self.navigationController?.popViewController(animated: true)
+            self.dismiss(animated: true, completion: nil)
+            
             self.present(nextViewController, animated: true, completion: nil)
         })
         detailAlert.addAction(editAction)

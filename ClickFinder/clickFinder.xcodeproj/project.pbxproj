@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5C8B20A2226FA20100551469 /* AppVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8B20A1226FA20100551469 /* AppVariables.swift */; };
 		5CA611152247B46F00D55FAA /* Coordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA611142247B46F00D55FAA /* Coordinate.swift */; };
-		5CB6156E227591920035C6F3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5CB6156D227591920035C6F3 /* GoogleService-Info.plist */; };
 		5CC3FA50223E9AF5001ACF74 /* clickFinder.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5CC3FA4E223E9AF5001ACF74 /* clickFinder.xcdatamodeld */; };
 		5CCD5D60224FB88C00D844D2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CCD5D5F224FB88C00D844D2 /* MainViewController.swift */; };
 		5CF5E7812231B63E005590D7 /* NotificationPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CF5E7802231B63E005590D7 /* NotificationPublisher.swift */; };
@@ -27,6 +26,7 @@
 		CD2A72CE223C08E2009EF5EB /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CD223C08E2009EF5EB /* AuthTextField.swift */; };
 		CD2A72D0223C0900009EF5EB /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2A72CF223C08FF009EF5EB /* UserViewController.swift */; };
 		CDE8C69722734D4400F802AB /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE8C69622734D4400F802AB /* NotificationViewController.swift */; };
+		CDE8C69C2275C57900F802AB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE8C69B2275C57900F802AB /* GoogleService-Info.plist */; };
 		FB9CC95C1AD701910038DF33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9CC95B1AD701910038DF33 /* AppDelegate.swift */; };
 		FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9621AD701910038DF33 /* Images.xcassets */; };
 		FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB9CC9891AD702CC0038DF33 /* Main.storyboard */; };
@@ -35,7 +35,6 @@
 /* Begin PBXFileReference section */
 		5C8B20A1226FA20100551469 /* AppVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVariables.swift; sourceTree = "<group>"; };
 		5CA611142247B46F00D55FAA /* Coordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinate.swift; sourceTree = "<group>"; };
-		5CB6156D227591920035C6F3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5CC3FA4F223E9AF5001ACF74 /* clickFinder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = clickFinder.xcdatamodel; sourceTree = "<group>"; };
 		5CCD5D5F224FB88C00D844D2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		5CF5E7802231B63E005590D7 /* NotificationPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPublisher.swift; sourceTree = "<group>"; };
@@ -54,6 +53,7 @@
 		CD2A72CF223C08FF009EF5EB /* UserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
 		CD2A9F54224263840091C5B7 /* clickFinder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = clickFinder.entitlements; sourceTree = "<group>"; };
 		CDE8C69622734D4400F802AB /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		CDE8C69B2275C57900F802AB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D625BEF4EB907F42A93F4A2C /* Pods-clickFinder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.release.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.release.xcconfig"; sourceTree = "<group>"; };
 		F910B8F5B77C365574ED8785 /* Pods-clickFinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clickFinder.debug.xcconfig"; path = "Target Support Files/Pods-clickFinder/Pods-clickFinder.debug.xcconfig"; sourceTree = "<group>"; };
 		FB9CC9561AD701910038DF33 /* clickFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = clickFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,7 +189,7 @@
 		FB9CC9591AD701910038DF33 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				5CB6156D227591920035C6F3 /* GoogleService-Info.plist */,
+				CDE8C69B2275C57900F802AB /* GoogleService-Info.plist */,
 				FB9CC95A1AD701910038DF33 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -267,7 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C00360541E39747F00234FCD /* LaunchScreen.storyboard in Resources */,
-				5CB6156E227591920035C6F3 /* GoogleService-Info.plist in Resources */,
+				CDE8C69C2275C57900F802AB /* GoogleService-Info.plist in Resources */,
 				FB9CC98A1AD702CC0038DF33 /* Main.storyboard in Resources */,
 				FB9CC9631AD701910038DF33 /* Images.xcassets in Resources */,
 			);

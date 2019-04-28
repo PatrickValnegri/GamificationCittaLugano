@@ -134,7 +134,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
             btnAdd.isHidden = true
             btnEdit.isHidden = false
 
-            isEdit = false
+            //isEdit = false
         }
 
 
@@ -180,10 +180,10 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         txtUUID.textColor = (uuidValid) ? .black : .red
 
         // Toggle btnAdd enabled based on valid user entry
-        if(!isEdit){
-            btnAdd.isEnabled = (nameValid && uuidValid)
+        if(isEdit){
+            btnEdit.isEnabled = (nameValid && uuidValid)
         }else{
-        btnEdit.isEnabled = (nameValid && uuidValid)
+            btnAdd.isEnabled = (nameValid && uuidValid)
         }
     }
 
@@ -215,6 +215,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p1, p2])
 
         //Aggiornamento su coredata
+        //TODO NON FUNZIONA FARE 2 EDIT
         request.predicate = predicate
         do
         {
@@ -256,6 +257,13 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         indexToEdit = currentIndex
         ivc.items[currentIndex] = editedItem
         print("PROVA", ivc.items[currentIndex].name)
+        isEdit = false
+        
+        
+        self.dismiss(animated: true, completion: nil)
+        let itemsViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "itemsController") as UIViewController
+        self.present(itemsViewController, animated: true)
+         
     }
 
 
@@ -380,7 +388,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
             btnEdit.isHidden = false
         }
         
-        btnAdd.isEnabled = (nameValid && txtType.text != nil)
+        //btnAdd.isEnabled = (nameValid && txtType.text != nil)
 
         self.view.endEditing(true)
     }
