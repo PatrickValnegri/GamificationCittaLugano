@@ -31,6 +31,20 @@ var detailItem = Item(name: "", photo: UIImage(), uuid: AppConstants.uuid, major
 var flag = false
 var edit = false
 
+extension UIImage {
+    enum JPEGQuality: CGFloat {
+        case lowest  = 0
+        case low     = 0.25
+        case medium  = 0.5
+        case high    = 0.75
+        case highest = 1
+    }
+    
+    func jpeg(_ jpegQuality: JPEGQuality) -> Data? {
+        return jpegData(compressionQuality: jpegQuality.rawValue)
+    }
+}
+
 class AddItemViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     @IBOutlet weak var txtName: UITextField!
@@ -101,7 +115,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
             txtUUID.textColor = (uuidValid) ? .black : .red
             
             // Toggle btnAdd enabled based on valid user entry
-            btnAdd.isEnabled = (nameValid && uuidValid)
+            btnAdd.isEnabled = (nameValid && uuidValid && txtType.text?.isEmpty ?? false)
         }
         
         imgIcon.image = icon.image()
@@ -125,7 +139,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         txtUUID.textColor = (uuidValid) ? .black : .red
         
         // Toggle btnAdd enabled based on valid user entry
-        btnAdd.isEnabled = (nameValid && uuidValid && txtType.text != nil)
+        btnAdd.isEnabled = (nameValid && uuidValid && txtType.text?.isEmpty ?? false)
     }
     
     
@@ -148,30 +162,29 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         
         self.registerBeacon(item: newItem)
         
-        notificationPublisher.sendNotification(
-            title: "Added a new iBeacon!",
-            subtitle: "Pairing successful.",
-            body: "ClickFinder",
-            badge: 1,
-            delayInterval: nil,
-            identifier: "added new beacon",
-            ring: false
-        )
+//        notificationPublisher.sendNotification(
+//            title: "Added a new iBeacon!",
+//            subtitle: "Pairing successful.",
+//            body: "ClickFinder",
+//            badge: 1,
+//            delayInterval: nil,
+//            identifier: "added new beacon",
+//            ring: false
+//        )
         
-        //        let viewController:ItemsViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Items") as! ItemsViewController
-        //
-        //        //self.navigationController?.pushViewController(viewController, animated: true)
-        //        self.present(viewController, animated: true, completion: nil)
-        //        dismiss(animated: true, completion: nil)
+        let itemsViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "itemsController") as UIViewController
+        self.navigationController?.pushViewController(itemsViewController, animated: true)
+        //self.present(itemsViewController, animated: false, completion: nil)
     }
     
     func registerBeacon(item: Item){
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
         let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
         
-        
-//        let imageData = item.photo.pngData()!
-//        let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
+        //Compress the image
+        let imageData = item.photo.jpegData(compressionQuality: 0.25)!
+        //Encode to base64
+        let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
         
         self.ref.child("users").child(beaconID).setValue(
             [
@@ -183,7 +196,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
                 "switch_hdd": "0",
                 "tiposchermo": "Beacon-\(iphoneID!)",
                 "type": item.type,
-                //"photo": strBase64
+                "photo": strBase64
             ]
         ){(error:Error?, ref:DatabaseReference) in
             if let error = error {

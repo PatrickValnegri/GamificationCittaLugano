@@ -13,7 +13,7 @@
         <!--Items View Controller-->
         <scene sceneID="4ht-gZ-6ag">
             <objects>
-                <viewController storyboardIdentifier="Items" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DrD-we-v90" customClass="ItemsViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="itemsController" id="DrD-we-v90" customClass="ItemsViewController" customModule="clickFinder" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ecM-Jk-Gw9"/>
                         <viewControllerLayoutGuide type="bottom" id="0wD-kp-5MZ"/>
@@ -120,7 +120,7 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="home"/>
                                 <connections>
-                                    <segue destination="gfi-0E-BEB" kind="show" id="9nP-WF-5JU"/>
+                                    <action selector="homeTapped:" destination="DrD-we-v90" eventType="touchUpInside" id="Sft-FG-PGP"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -296,7 +296,6 @@
                                 </state>
                                 <connections>
                                     <action selector="btnAdd_pressed:" destination="0Ms-gS-rEA" eventType="touchUpInside" id="ngy-YO-3PO"/>
-                                    <segue destination="DrD-we-v90" kind="show" id="1wM-Uu-5gU"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DaX-fr-Koa">
@@ -688,8 +687,7 @@
         <!--Navigation Controller-->
         <scene sceneID="a2n-Ov-c1W">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fuP-hL-kxp" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="iIU-MU-MVB" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="navController" automaticallyAdjustsScrollViewInsets="NO" id="iIU-MU-MVB" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="GBV-Ed-0k6">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -703,6 +701,7 @@
                         <segue destination="gfi-0E-BEB" kind="relationship" relationship="rootViewController" id="7aw-Nb-6C2"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fuP-hL-kxp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2074.4000000000001" y="1535.9820089955024"/>
         </scene>
@@ -720,7 +719,6 @@
         <image name="menu_128" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="9nP-WF-5JU"/>
-        <segue reference="tVO-UK-9Qp"/>
+        <segue reference="el5-DH-gjP"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -241,7 +241,7 @@ extension MainViewController: CLLocationManagerDelegate {
         
         //major value > 32000 -> the pairing button has been pressed
         if Int(truncating: beacon.major) > AppConstants.pairingValue{
-            print("Pairing iBeacon found")
+            //print("Pairing iBeacon found")
             newBeacon = beacon
         } else {
             let item = Item(name: "New", photo: UIImage(), uuid: beacon.proximityUUID, majorValue: Int(truncating: beacon.major), minorValue: Int(truncating: beacon.minor), type: AppConstants.types[0])
@@ -265,22 +265,39 @@ extension MainViewController: CLLocationManagerDelegate {
             
             if found == false{
                 alreadyRangedUnknownItems.append(item)
-                print(alreadyRangedUnknownItems)
+                //print(alreadyRangedUnknownItems)
                 
                 checkIfLost(item: item, known: false)
             }
         }
         
         if pairingIsOn == true {
-            print("Pairing the new iBeacon")
+            //print("Pairing the new iBeacon")
             if(newBeacon != nil){
-                self.pairingIsOn = false
+                
+                let end = Date()
+                
+                //self.pairingIsOn = false
                 
                 let major = Int(truncating: newBeacon!.major)-AppConstants.pairingValue //Pairing done
                 
                 let item = Item(name: "New", photo: UIImage(), uuid: newBeacon!.proximityUUID, majorValue: major, minorValue: Int(truncating: newBeacon!.minor), type: AppConstants.types[0])
                 
                 var flag = false
+                
+                let elapsed2 = Int(end.timeIntervalSince(pairingStartDate))
+                print(elapsed2)
+                if elapsed2 > 15{ // delay to avoid backend overloading
+                    print("alreadyRangedItems array cleaned")
+                    pairingStartDate = Date()
+                    alreadyRangedPairingItems.removeAll(keepingCapacity: false)
+                }
+                
+                for itemN in alreadyRangedPairingItems{
+                    if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
+                        flag = true
+                    }
+                }
                 
                 for itemN in ivc.items{
                     if ( (itemN.majorValue == item.majorValue) && (itemN.minorValue == item.minorValue) ){
@@ -295,14 +312,32 @@ extension MainViewController: CLLocationManagerDelegate {
                 }
                 
                 if flag == false{
-                    print("ALERT")
-                    createAlert(title: "New beacon found!", message: itemAsString(item: item), item: item)
+                    alreadyRangedPairingItems.append(item)
+                    checkIfBelongs(item: item)
                 }
                 
                 flag = true
             }
             
         }
+    }
+    
+    private func checkIfBelongs(item: Item){
+        let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+        
+        self.ref.child("users").observe(.value, with: { (snapshot) in
+            if (snapshot.hasChild(beaconID)) { //Se già presente nel db
+                print("Beacon belongs to another person")
+                self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                self.showToast(message: "Beacon belongs to another person")
+                self.pairingIsOn = true
+                self.locationManager.startRangingBeacons(in: AppConstants.region)
+            }else{
+                print("NewBeaconFound")
+                self.locationManager.stopRangingBeacons(in: AppConstants.region)
+                self.createAlert(title: "New beacon found!", message: itemAsString(item: item), item: item)
+            }
+        })
     }
     
     private func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -344,11 +379,13 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     //used to cache already ranged known/unkown iBeacons -> avoid backend overloading
     var alreadyRangedUnknownItems = [Item]()
     var alreadyRangedKnownItems = [Item]()
+    var alreadyRangedPairingItems = [Item]()
     
     var itemToLookFor: Item? = nil
     
     //TIME
     var startDate = Date()
+    var pairingStartDate = Date()
     var toastStartDate = Date()
     var foundDate = Date()
     var foundKnownDate = Date()
@@ -416,6 +453,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        ivc.loadItems()
+        
+        if ivc.items.isEmpty || AppVariables.pairingIsOn == true{
+            loadPairing()
+        }else{
+            loadSearching()
+        }
+        
         itemToLookFor = nil
 //        self.navigationController?.setNavigationBarHidden(true, animated: true)
 //        self.navigationController?.setNavigationBarHidden(false, animated: true)
@@ -447,13 +492,6 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         setUpLocationManager()
         
         //LOAD DATA
-        ivc.loadItems()
-        
-        if ivc.items.isEmpty || AppVariables.pairingIsOn == true{
-            loadPairing()
-        }else{
-            loadSearching()
-        }
         
         for itemN in ivc.items{
             let region = CLBeaconRegion(proximityUUID: AppConstants.uuid, major: itemN.majorValue + UInt16(AppConstants.pairingValue), minor: itemN.minorValue, identifier: AppConstants.uuid.uuidString)
@@ -606,19 +644,22 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     func loadPairing(){
         print("pairing loaded")
 
-        loadMainPage(url: AppConstants.pairingPage)
+        let url = AppConstants.pairingPage!
+        mainPage.load(URLRequest(url: url))
         pairingIsOn = true
         search.isHidden = true
-        locationManager.startRangingBeacons(in: AppConstants.region)
+        //locationManager.startRangingBeacons(in: AppConstants.region)
     }
     
     func loadSearching(){
         print("searching loaded")
 
-        loadMainPage(url: AppConstants.mainPageURL)
+        let url = AppConstants.mainPageURL!
+        mainPage.load(URLRequest(url: url))
+        
         pairingIsOn = false
         search.isHidden = false
-        locationManager.startRangingBeacons(in: AppConstants.region)
+        //locationManager.startRangingBeacons(in: AppConstants.region)
     }
     /*
      This function creates a new toast with the given message
@@ -655,38 +696,24 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         //Deny pairing
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
             alertController.dismiss(animated: true, completion: nil)
-            
             self.pairingIsOn = true
             AppVariables.pairingIsOn = false
+            self.locationManager.startRangingBeacons(in: AppConstants.region)
         }))
         
         //Save the paired beacon
         alertController.addAction(UIAlertAction(title: "Pair", style: .default, handler: { (action) in
             item.name = alertController.textFields![0].text ?? "New"
             
-            let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
+            detailItem = item
+            flag = true
+            AppVariables.pairingIsOn = false
             
-            self.ref.child("users").observe(.value, with: { (snapshot) in
-                
-                if (snapshot.hasChild(beaconID)) { //Se già presente nel db
-                    self.showToast(message: "Beacon belongs to another person")
-                    alertController.dismiss(animated: true, completion: nil)
-                    self.pairingIsOn = true
-                    AppVariables.pairingIsOn = false
-                    
-                } else { //Se non è già presente nel db
-                    detailItem = item
-                    flag = true
-                    AppVariables.pairingIsOn = false
+            self.locationManager.stopRangingBeacons(in: AppConstants.region)
 
-                    let addItemViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addItem") as UIViewController
-                    
-                    self.locationManager.stopRangingBeacons(in: AppConstants.region)
-                    
-                    //self.navigationController?.pushViewController(aivc, animated: true)
-                    self.present(addItemViewController, animated: false, completion: nil)
-                }
-            })
+            let addItemViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addItem") as! AddItemViewController
+            self.navigationController?.pushViewController(addItemViewController, animated: true)
+                
         }))
         
         self.present(alertController, animated: true, completion: nil)
@@ -848,8 +875,8 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         
         //User info
         uvc.loadUser()
-        let antenna_name = AppConstants.userName
-        let antenna_phone = AppConstants.userPhone
+        let antenna_name = AppVariables.userName
+        let antenna_phone = AppVariables.userPhone
         
         let notification: [String: Any] = [
             "title": titolo,

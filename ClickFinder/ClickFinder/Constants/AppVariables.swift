@@ -11,4 +11,7 @@ import Foundation
 class AppVariables{
     static var pairingIsOn = false
     static var mainPage = AppConstants.pairingPage
+    
+    static var userName: String = ""
+    static var userPhone: String = ""
 }

@@ -92,6 +92,11 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
         //registerUser()
     }
     
+    @IBAction func homeTapped(_ sender: Any) {
+        let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mainView") as! MainViewController
+        self.navigationController?.pushViewController(mainViewController, animated: true)
+    }
+    
     func authenticate() {
          Auth.auth().signInAnonymously { (user, error) in
              if let error = error {
@@ -186,6 +191,7 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
         nrOfItems = 0
         
         request.returnsObjectsAsFaults = false
+        
         do {
             let result = try context.fetch(request)
             for data in result as! [NSManagedObject] {
@@ -306,7 +312,9 @@ extension ItemsViewController: AddBeacon {
         let entity = NSEntityDescription.entity(forEntityName: "Items", in: context)
         let newItem = NSManagedObject(entity: entity!, insertInto: context)
         
-        let imageData = item.photo.pngData()!
+        //Compress the image
+        let imageData = item.photo.jpegData(compressionQuality: 0.25)!
+        //Encode to base64
         let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
         
         newItem.setValue(item.uuid.uuidString, forKey: "uuid")
@@ -326,7 +334,7 @@ extension ItemsViewController: AddBeacon {
         
         tableView.reloadData()
         
-        //save the context with new data
+        //Save the Core Data context
         do{
             try context.save()
         } catch {
