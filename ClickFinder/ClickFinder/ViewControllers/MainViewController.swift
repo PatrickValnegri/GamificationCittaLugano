@@ -436,6 +436,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
 
     //Homebutton sidebar
+    /* NON usato
     @IBAction func homeButttonTapped(_ sender: Any) {
         if ivc.items.isEmpty {
             loadPairing()
@@ -452,6 +453,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
 //            locationManager.startRangingBeacons(in: AppConstants.region)
         }
     }
+     */
 
     @IBAction func listaTapped(_ sender: Any) {
         locationManager.stopRangingBeacons(in: AppConstants.region)
@@ -461,19 +463,15 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         locationManager.stopRangingBeacons(in: AppConstants.region)
     }
 
-    @IBAction func refreshTapped(_ sender: Any) {
-        print("MainPageURL", AppConstants.mainPageURL!)
-        let url = AppConstants.mainPageURL!
-        mainPage.load(URLRequest(url: url))
-    }
-
     override func viewDidLoad() {
+        print("CIAO")
         super.viewDidLoad()
 
         ivc.loadItems()
 
         if ivc.items.isEmpty || AppVariables.pairingIsOn == true{
             loadPairing()
+            print("load pairing")
         }else{
             loadSearching()
         }
@@ -504,6 +502,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         ref = Database.database().reference()
 
         registerUser() //first time registration or only update token
+        //La prima registrazione la fa quando il token è pronto -> prossimo refresh
 
         //CORE LOCATION
         setUpLocationManager()

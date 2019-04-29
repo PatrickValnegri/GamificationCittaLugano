@@ -54,6 +54,8 @@ class ItemsViewController: UIViewController, UIImagePickerControllerDelegate{
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
 
         //Navigation controller:
         //self.navigationController?.setNavigationBarHidden(true, animated: true)

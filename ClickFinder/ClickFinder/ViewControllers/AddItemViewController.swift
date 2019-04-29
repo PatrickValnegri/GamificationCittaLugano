@@ -202,13 +202,24 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
         
         let editedItem = Item(name: name, photo: imgIcon.image!, uuid: uuid, majorValue: major, minorValue: minor, type: type)
-        print("Indice da modificare", currentIndex)
-        print("Capacity lista", ivc.items.isEmpty)
         print("Edited name", editedItem.name)
 
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
         let context = appDelegate.persistentContainer.viewContext
 
+        request.returnsObjectsAsFaults = false
+        do {
+            let result = try context.fetch(request)
+            for data in result as! [NSManagedObject] {
+                print("DATO: ",data.value(forKey: "name") as! String)
+            }
+            
+        } catch {
+            
+            print("Failed")
+        }
+
+        
         //Cerca quelli con major e minor che devono essere edidati
         let p1 = NSPredicate(format: "major == %@", Int(ivc.items[currentIndex].majorValue) as NSNumber)
         let p2 = NSPredicate(format: "minor == %@", Int(ivc.items[currentIndex].minorValue) as NSNumber)
@@ -216,6 +227,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
 
         //Aggiornamento su coredata
         //TODO NON FUNZIONA FARE 2 EDIT
+        //rimuovere vecchio e mettere quello nuovo
         request.predicate = predicate
         do
         {
@@ -236,34 +248,46 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         {
             print(error)
         }
+        
+        
+        request.returnsObjectsAsFaults = false
+        do {
+            let result = try context.fetch(request)
+            for data in result as! [NSManagedObject] {
+                print("DATO DOPO EDIT: ",data.value(forKey: "name") as! String)
+            }
+            
+        } catch {
+            print("Failed")
+        }
 
+    
         //Aggiornamento su firebase
         let beaconID = "\(uuid.uuidString)_\(Int(major))_\(Int(minor))"
-        self.ref.child("users").observe(.value, with: { (snapshot) in
-
-            if (snapshot.hasChild(beaconID)) {
-                self.ref.child("users").child(beaconID).updateChildValues(["name":name, "type":type, "photo":strBase64]) {
-                    (error:Error?, ref:DatabaseReference) in
-                    if let error = error {
-                        print("Item not edited: \(error).")
-                    } else {
-                        print("Item edited successfully!")
-                    }
-                }
+        
+        self.ref.child("users").child(beaconID).updateChildValues(["name":name, "type":type, "photo":strBase64])
+        {(error:Error?, ref:DatabaseReference) in
+            if let error = error {
+                print("Data could not be saved: \(error).")
+            } else {
+                print("Data saved successfully!")
             }
-        })
-
+        }
         
         indexToEdit = currentIndex
         ivc.items[currentIndex] = editedItem
-        print("PROVA", ivc.items[currentIndex].name)
+        //print("PROVA", ivc.items[currentIndex].name)
         isEdit = false
         
-        
         self.dismiss(animated: true, completion: nil)
-        let itemsViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "itemsController") as UIViewController
-        self.present(itemsViewController, animated: true)
-         
+        let VC1 = self.storyboard!.instantiateViewController(withIdentifier: "itemsController") as! ItemsViewController
+        //Bisogna instanziare la navbar per far funzionare il pulsante home, ma la bisogna nascondere in questo viewController
+        let navController = UINavigationController(rootViewController: VC1)
+        navController.isNavigationBarHidden = true
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        //show window
+        appDelegate.window?.rootViewController = navController
+        
     }
 
 
