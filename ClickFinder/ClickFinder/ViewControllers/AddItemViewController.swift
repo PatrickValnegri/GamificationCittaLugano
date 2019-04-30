@@ -33,6 +33,12 @@ extension UIImage {
     }
 }
 
+/*
+ Class AddItemViewController -> It is used to implement the following functionalities:
+    - Managing the insertion/registration of a new iBeacon
+    - Managing the editing of an existing iBeacon
+    - Managing device Camera + Gallery
+ */
 class AddItemViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
 
     @IBOutlet weak var txtName: UITextField!
@@ -72,19 +78,6 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
     var isEdit: Bool = false
     var currentIndex: Int = -1
 
-//    init(item: Item, currentIndex: Int) {
-//        self.item = item
-//        self.isEdit = true
-//        self.currentIndex = currentIndex
-//        super.init(nibName: nil, bundle: nil)
-//    }
-//
-//    //default constructor
-//    required init?(coder aDecoder: NSCoder) {
-//        self.item = nil
-//        super.init(coder: aDecoder)
-//    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -101,10 +94,6 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         pickerView.dataSource = self
         pickerView.isHidden = true
         pickerView.showsSelectionIndicator = true
-        
-        //disable
-        
-
 
         btnAdd.isEnabled = false
         btnEdit.isHidden = true
@@ -127,9 +116,9 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
             //isEdit = false
         }
 
-
+        //This flag is set by the ItemsViewController when the user requests the pairing of a new iBeacon
         if flag{
-
+            //Fill in all the fields with the pairing iBeacon related data
             flag = false
             txtName.text = detailItem.name
             txtUUID.text = detailItem.uuid.uuidString
@@ -151,12 +140,17 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
             btnAdd.isEnabled = (nameValid && uuidValid && txtType.text?.isEmpty ?? false)
         }
     }
+    
+    /*********************************************
+     UI ACTIONS & UI COMPONENTS
+     **********************************************/
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Dismiss keyboard
         self.view.endEditing(true)
     }
 
+    //Checks if the user inserted data is valid
     @IBAction func textFieldEditingChanged(_ sender: UITextField) {
         // Is name valid?
         let nameValid = (txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count > 0)
@@ -168,9 +162,6 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
             uuidValid = (uuidRegex.numberOfMatches(in: uuidString, options: [], range: NSMakeRange(0, uuidString.count)) > 0)
         }
         
-        //txtUUID.textColor = (uuidValid) ? .black : .red
-
-        // Toggle btnAdd enabled based on valid user entry
         if(isEdit){
             btnEdit.isEnabled = (nameValid && uuidValid)
         }else{
@@ -178,8 +169,8 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         }
     }
 
+    //EDIT ITEM
     @IBAction func btnEdit_Pressed(_ sender: UIButton) {
-        
         txtUUID.isUserInteractionEnabled = false
         txtMajor.isEnabled = false
         txtMinor.isEnabled = false
@@ -197,17 +188,16 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         let strBase64 =  imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
         
         let editedItem = Item(name: name, photo: imgIcon.image!, uuid: uuid, majorValue: major, minorValue: minor, type: type)
-        print("Edited name", editedItem.name)
 
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
         let context = appDelegate.persistentContainer.viewContext
         
-        //Cerca quello con major e minor che deve essere edidato
+        //Major and minor value to look for in Core Data
         let p1 = NSPredicate(format: "major == %@", Int(ivc.items[currentIndex].majorValue) as NSNumber)
         let p2 = NSPredicate(format: "minor == %@", Int(ivc.items[currentIndex].minorValue) as NSNumber)
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p1, p2])
 
-        //Aggiornamento su coredata
+        //Update on CoreData
         request.predicate = predicate
         do
         {
@@ -230,7 +220,7 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         }
 
     
-        //Aggiornamento su firebase
+        //Update on Firebase
         let beaconID = "\(uuid.uuidString)_\(Int(major))_\(Int(minor))"
         
         self.ref.child("users").child(beaconID).updateChildValues(["name":name, "type":type, "photo":strBase64])
@@ -244,23 +234,20 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         
         indexToEdit = currentIndex
         ivc.items[currentIndex] = editedItem
-        //print("PROVA", ivc.items[currentIndex].name)
+        
         isEdit = false
         
         self.dismiss(animated: true, completion: nil)
         let VC1 = self.storyboard!.instantiateViewController(withIdentifier: "itemsController") as! ItemsViewController
-        //Bisogna instanziare la navbar per far funzionare il pulsante home, ma la bisogna nascondere in questo viewController
         let navController = UINavigationController(rootViewController: VC1)
         navController.isNavigationBarHidden = true
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        //show window
+
         appDelegate.window?.rootViewController = navController
-        
     }
-
-
+    
+    //ADD ITEM
     @IBAction func btnAdd_pressed(_ sender: Any) {
-        
         txtUUID.isEnabled = false
         txtMajor.isEnabled = false
         txtMinor.isEnabled = false
@@ -279,27 +266,92 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         delegate?.addBeacon(item: newItem)
 
         //this collection is used to keep track of the beacons that have been paired but not still displayed in the items view
-        //Da fare solo dopo un pairing
         self.ivc.itemsToBeAdded.append(newItem)
         self.ivc.addItemToBeAdded(item: newItem) //save it in coredata
 
         self.registerBeacon(item: newItem)
 
-//        notificationPublisher.sendNotification(
-//            title: "Added a new iBeacon!",
-//            subtitle: "Pairing successful.",
-//            body: "ClickFinder",
-//            badge: 1,
-//            delayInterval: nil,
-//            identifier: "added new beacon",
-//            ring: false
-//        )
-
         let itemsViewController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "itemsController") as UIViewController
         self.navigationController?.pushViewController(itemsViewController, animated: true)
-        //self.present(itemsViewController, animated: false, completion: nil)
     }
-
+    
+    //Image pickers (Camera & Gallery)
+    @IBAction func btnCancel_Pressed(_ sender: UIButton) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func selectFromGallery(_ sender: Any) {
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @IBAction func takeBeaconPhoto(_ sender: Any) {
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .camera
+        
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        imagePicker.dismiss(animated: true, completion: nil)
+        imgIcon.image = info[.originalImage] as? UIImage
+    }
+    
+    //Type Picker
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return AppConstants.types.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return AppConstants.types[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        txtType.text = AppConstants.types[row]
+        
+        // Is name valid?
+        let nameValid = (txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count > 0)
+        pickerView.isHidden = true
+        
+        btnCancel.isHidden = false
+        
+        if(!isEdit){
+            btnAdd.isHidden = false
+        }else{
+            btnEdit.isHidden = false
+        }
+        
+        self.view.endEditing(true)
+    }
+    
+    @objc func cancelPicker(){
+        pickerView.isHidden = true
+        txtType.text?.removeAll()
+    }
+    
+    //Type label
+    @objc func typeTapped(){
+        //Dismiss the keyboard
+        self.view.endEditing(true)
+        
+        pickerView.isHidden = false
+        
+        btnCancel.isHidden = true
+        btnAdd.isHidden = true
+        btnEdit.isHidden = true
+    }
+    
+    /*********************************************
+     COREDATA & FIREBASE
+     **********************************************/
     func registerBeacon(item: Item){
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
         let beaconID = "\(item.uuid.uuidString)_\(Int(item.majorValue))_\(Int(item.minorValue))"
@@ -328,80 +380,6 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
                 print("Data saved successfully!")
             }
         }
-    }
-
-    //Image pickers (Camera & Gallery)
-    @IBAction func btnCancel_Pressed(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
-    }
-
-    @IBAction func selectFromGallery(_ sender: Any) {
-        imagePicker =  UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
-
-        present(imagePicker, animated: true, completion: nil)
-    }
-
-    @IBAction func takeBeaconPhoto(_ sender: Any) {
-        print("TAKE")
-        imagePicker =  UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .camera
-
-        present(imagePicker, animated: true, completion: nil)
-    }
-
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        imagePicker.dismiss(animated: true, completion: nil)
-        imgIcon.image = info[.originalImage] as? UIImage
-    }
-
-    //Type Picker
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return AppConstants.types.count
-    }
-
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return AppConstants.types[row]
-    }
-
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        txtType.text = AppConstants.types[row]
-
-        // Is name valid?
-        let nameValid = (txtName.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count > 0)
-        pickerView.isHidden = true
-        
-        btnCancel.isHidden = false
-        
-        if(!isEdit){
-            btnAdd.isHidden = false
-        }else{
-            btnEdit.isHidden = false
-        }
-        
-        //btnAdd.isEnabled = (nameValid && txtType.text != nil)
-
-        self.view.endEditing(true)
-    }
-
-    @objc func cancelPicker(){
-        pickerView.isHidden = true
-        txtType.text?.removeAll()
-    }
-
-    //type label
-    @objc func typeTapped(){
-        pickerView.isHidden = false
-        
-        btnCancel.isHidden = true
-        btnAdd.isHidden = true
-        btnEdit.isHidden = true
     }
 }
 
