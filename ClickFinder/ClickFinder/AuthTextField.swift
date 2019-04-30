@@ -1,9 +1,10 @@
 //
 //  AuthTextField.swift
-//  clickFinder
 //
-//  Created by Patrick on 10.03.19.
-//  Copyright © 2019 Ray Wenderlich. All rights reserved.
+//  ClickFinder
+//
+//  Created by Ivan Pavic (ivan.pavic@student.supsi.ch) and Patrick Valnegri(patrick.valnegri@student.supsi.ch) on 10.03.2019.
+//  Copyright © 2019. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +21,6 @@ class AuthTextField: UITextField {
         super.init(coder: aDecoder)
         setupField()
     }
-    
     
     private func setupField() {
         borderStyle = .none
@@ -42,6 +42,5 @@ class AuthTextField: UITextField {
         leftView = indentView
         leftViewMode = .always
     }
-    
 }
 

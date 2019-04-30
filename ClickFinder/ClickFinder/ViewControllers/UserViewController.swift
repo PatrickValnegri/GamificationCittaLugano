@@ -1,9 +1,10 @@
 //
-//  AuthViewController.swift
-//  clickFinder
+//  UserViewCotnroller.swift
 //
-//  Created by Patrick on 10.03.19.
-//  Copyright © 2019 Ray Wenderlich. All rights reserved.
+//  ClickFinder
+//
+//  Created by Ivan Pavic (ivan.pavic@student.supsi.ch) and Patrick Valnegri(patrick.valnegri@student.supsi.ch) on 02.04.19.
+//  Copyright © 2019. All rights reserved.
 //
 
 import Foundation

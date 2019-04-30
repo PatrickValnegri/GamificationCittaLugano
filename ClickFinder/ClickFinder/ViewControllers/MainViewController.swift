@@ -1,9 +1,10 @@
 //
 //  MainViewController.swift
-//  clickFinder
 //
-//  Created by Ivan Pavic on 30.03.19.
-//  Copyright © 2019 Ray Wenderlich. All rights reserved.
+//  ClickFinder
+//
+//  Created by Ivan Pavic (ivan.pavic@student.supsi.ch) and Patrick Valnegri(patrick.valnegri@student.supsi.ch) on 30.03.19.
+//  Copyright © 2019. All rights reserved.
 //
 
 import Foundation
@@ -397,7 +398,7 @@ extension MainViewController: CLLocationManagerDelegate {
 }
 
 /*
- Class MainViewController: it is used to implement the following functionalities:
+ Class MainViewController -> it is used to implement the following functionalities:
     -Beacon ranging, monitoring and pairing
     -Location updating
     -Webview displaying the main page and the pairing page of the app

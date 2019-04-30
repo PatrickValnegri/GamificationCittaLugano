@@ -1,13 +1,17 @@
 //
-//  Person.swift
-//  clickFinder
+//  User.swift
 //
-//  Created by Patrick on 12.03.19.
-//  Copyright © 2019 Ray Wenderlich. All rights reserved.
+//  ClickFinder
+//
+//  Created by Ivan Pavic (ivan.pavic@student.supsi.ch) and Patrick Valnegri(patrick.valnegri@student.supsi.ch) on 12.03.19.
+//  Copyright © 2019. All rights reserved.
 //
 
 import Foundation
 
+/*
+ User registration fields
+ */
 struct UserConstant {
     static let nameKey = "name"
     static let emailKey = "email"
@@ -17,7 +21,9 @@ struct UserConstant {
     static let capKey = "cap"
 }
 
-
+/*
+ Classe User representing a real user
+ */
 class User: NSObject, NSCoding {
     
     let name: String
@@ -58,9 +64,5 @@ class User: NSObject, NSCoding {
         aCoder.encode(street, forKey: UserConstant.stretKey)
         aCoder.encode(city, forKey: UserConstant.cityKey)
         aCoder.encode(cap, forKey: UserConstant.capKey)
-        
     }
-    
-    
-    
 }

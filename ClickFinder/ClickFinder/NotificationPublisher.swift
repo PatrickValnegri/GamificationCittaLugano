@@ -1,15 +1,22 @@
 //
 //  NotificationPublisher.swift
-//  clickFinder
 //
-//  Created by Ivan Pavic on 07.03.19.
-//  Copyright © 2019 Ray Wenderlich. All rights reserved.
+//  ClickFinder
+//
+//  Created by Ivan Pavic (ivan.pavic@student.supsi.ch) and Patrick Valnegri(patrick.valnegri@student.supsi.ch) on 07.03.19.
+//  Copyright © 2019. All rights reserved.
 //
 
 import UIKit
 import Foundation
 import UserNotifications
 
+/*
+ Class NotificationPublisher.
+ This class manages local notifications and it's sendNotification function
+ is called repeatedly to simulate the phone's ringing when a the pairing phisycal
+ button of a registered beacon is pressed.
+ */
 class NotificationPublisher: NSObject{
     
     func sendNotification(title: String, subtitle: String, body: String, badge: Int?, delayInterval: Int?, identifier: String, ring: Bool){
@@ -59,7 +66,6 @@ extension NotificationPublisher: UNUserNotificationCenterDelegate{
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        
         let identifier = response.actionIdentifier
         
         switch identifier {
