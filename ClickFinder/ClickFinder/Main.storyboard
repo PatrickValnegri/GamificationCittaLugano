@@ -32,7 +32,7 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="84" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="xmN-h3-Bwd">
-                                <rect key="frame" x="0.0" y="177" width="375" height="490"/>
+                                <rect key="frame" x="0.0" y="133" width="375" height="534"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Item" id="OYN-rB-xAB" customClass="ItemCell" customModule="clickFinder" customModuleProvider="target">
@@ -93,7 +93,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lvh-qG-Pvo">
-                                <rect key="frame" x="0.0" y="132" width="375" height="42"/>
+                                <rect key="frame" x="0.0" y="88" width="375" height="42"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="rvr-Li-G4j"/>
@@ -108,13 +108,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y9u-Pu-7PL">
-                                <rect key="frame" x="340" y="133" width="19" height="36"/>
+                                <rect key="frame" x="340" y="89" width="19" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <color key="textColor" red="0.1084953174" green="0.46072936060000003" blue="0.73895782229999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Nz-61-OPD">
-                                <rect key="frame" x="328" y="80" width="31" height="37"/>
+                                <rect key="frame" x="328" y="36" width="31" height="37"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="31" id="cdY-Co-s7T"/>
                                 </constraints>
@@ -728,14 +728,27 @@
                                     <constraint firstAttribute="width" constant="125" id="uo9-Y0-cKc"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="our-6C-mzf">
+                                <rect key="frame" x="294" y="582" width="65" height="65"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="65" id="8LN-kc-VY1"/>
+                                    <constraint firstAttribute="width" constant="65" id="dfc-n3-47r"/>
+                                </constraints>
+                                <state key="normal" image="icon_phone"/>
+                                <connections>
+                                    <action selector="callBtn_tapped:" destination="ynu-Wn-iap" eventType="touchUpInside" id="trS-c5-27U"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="iDI-wb-0Iz" secondAttribute="trailing" id="1K3-J4-9NK"/>
+                            <constraint firstItem="our-6C-mzf" firstAttribute="trailing" secondItem="sjF-kA-3RK" secondAttribute="trailing" id="5GJ-Tu-LKo"/>
                             <constraint firstItem="sjF-kA-3RK" firstAttribute="top" secondItem="uAL-IJ-moD" secondAttribute="bottom" constant="22" id="6af-Pp-m2E"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="leading" secondItem="OZR-Qh-Nqu" secondAttribute="leading" id="7M8-0U-fSO"/>
                             <constraint firstItem="sjF-kA-3RK" firstAttribute="trailing" secondItem="OZR-Qh-Nqu" secondAttribute="trailingMargin" id="7Sf-YK-NGq"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="bottom" secondItem="zI4-Hk-bLK" secondAttribute="top" id="G5q-mB-9hf"/>
+                            <constraint firstAttribute="bottom" secondItem="our-6C-mzf" secondAttribute="bottom" constant="20" symbolic="YES" id="Isf-DE-lrC"/>
                             <constraint firstItem="iDI-wb-0Iz" firstAttribute="top" secondItem="Cjf-ND-oqr" secondAttribute="bottom" id="WWc-Cv-Tc4"/>
                             <constraint firstItem="zI4-Hk-bLK" firstAttribute="top" secondItem="sjF-kA-3RK" secondAttribute="bottom" constant="402" id="eHE-fP-vQs"/>
                             <constraint firstItem="uAL-IJ-moD" firstAttribute="top" secondItem="Cjf-ND-oqr" secondAttribute="bottom" constant="8" id="oO5-Pq-Uzl"/>
@@ -755,6 +768,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="beaconPhoto" destination="sjF-kA-3RK" id="ohT-Ak-JzQ"/>
+                        <outlet property="phoneBtn" destination="our-6C-mzf" id="rc5-P8-oCT"/>
                         <outlet property="webView" destination="iDI-wb-0Iz" id="Lw9-y5-GVx"/>
                     </connections>
                 </viewController>
@@ -773,10 +787,11 @@
         <image name="camera" width="128" height="128"/>
         <image name="home" width="128" height="128"/>
         <image name="ic_launcher" width="300" height="300"/>
+        <image name="icon_phone" width="128" height="128"/>
         <image name="menu_128" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="7aw-Nb-6C2"/>
-        <segue reference="tVO-UK-9Qp"/>
+        <segue reference="hUD-su-9Vu"/>
     </inferredMetricsTieBreakers>
 </document>

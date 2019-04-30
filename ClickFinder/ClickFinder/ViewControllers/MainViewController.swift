@@ -60,15 +60,15 @@ extension MainViewController: CLLocationManagerDelegate {
 //        }
 
         if(!checkIfActive()){
-            notificationPublisher.sendNotification(
-                title: "Entered region",
-                subtitle: region.identifier,
-                body: "This is a background test local notification",
-                badge: 1,
-                delayInterval: nil,
-                identifier: "exit notification",
-                ring: false
-            )
+//            notificationPublisher.sendNotification(
+//                title: "Entered region",
+//                subtitle: region.identifier,
+//                body: "This is a background test local notification",
+//                badge: 1,
+//                delayInterval: nil,
+//                identifier: "exit notification",
+//                ring: false
+//            )
 
             print("Entered region")
 
@@ -79,15 +79,15 @@ extension MainViewController: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         if(!checkIfActive()){
-            notificationPublisher.sendNotification(
-                title: "Left region",
-                subtitle: region.identifier,
-                body: "This is a background test local notification",
-                badge: 1,
-                delayInterval: nil,
-                identifier: "exit notification",
-                ring: false
-            )
+//            notificationPublisher.sendNotification(
+//                title: "Left region",
+//                subtitle: region.identifier,
+//                body: "This is a background test local notification",
+//                badge: 1,
+//                delayInterval: nil,
+//                identifier: "exit notification",
+//                ring: false
+//            )
 
             print("Left region")
 
@@ -464,7 +464,6 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     }
 
     override func viewDidLoad() {
-        print("CIAO")
         super.viewDidLoad()
 
         ivc.loadItems()
@@ -503,6 +502,8 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
 
         registerUser() //first time registration or only update token
         //La prima registrazione la fa quando il token è pronto -> prossimo refresh
+        
+        //sendNotificationFirebase(titolo: "Prova", mac: "76EE64EC-54C6-46E3-82FD-A897A42F6F21", beacon_id: "699EBC80-E1F3-11E3-9A0F-0CF3EE3BC012_4_12", gps: "000_000")
 
         //CORE LOCATION
         setUpLocationManager()

@@ -32,6 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let gcmMessageIDKey = "gcm.message_id"
     let gcmMessageURL = "gcm.notification.url"
     let gcmMessageTime = "gcm.notification.time"
+    let gcmMessageParam = "gcm.notification.param"
+    let gcmMessagePhone = "gcm.notification.antenna_phone"
     
     //let mvc = MainViewController(nibName: nil, bundle: nil)
     
@@ -57,8 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         
         Messaging.messaging().delegate = self
-        
-        
+
         
         /*
         //requestNotificationAuthorization(application: application);
@@ -301,7 +302,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         let application = UIApplication.shared
         
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "notificationViewController") as! NotificationViewController
+        let notificationViewController = storyBoard.instantiateViewController(withIdentifier: "notificationViewController") as! NotificationViewController
         
         //Foreground tap
         if(application.applicationState == .active){
@@ -309,38 +310,55 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
             
             // Print message URL
             if let messageURL = userInfo[gcmMessageURL] {
-                print("\(messageURL)")
+                //print("\(messageURL)")
                 //AppConstants.notificationURL = "\(messageURL)"
-                nextViewController.urlString = "\(messageURL)"
+                notificationViewController.urlString = "\(messageURL)"
+            }
+            
+            // param (lost beacon)
+            if let messageParam = userInfo[gcmMessageParam] {
+                notificationViewController.urlParam = "\(messageParam)"
+            }
+            
+            // antenna phone
+            if let messageAntennaPhone = userInfo[gcmMessagePhone] {
+                notificationViewController.urlAntennaPhone = "\(messageAntennaPhone)"
             }
             
             if let time = userInfo[gcmMessageTime] {
                 print("\(time)")
             }
-            
         }
         
         //Background tap
         if(application.applicationState == .inactive){
             print("user tapped the notification bar when the app is in background")
             
-            // Print message URL
+            // message URL
             if let messageURL = userInfo[gcmMessageURL] {
-                print("\(messageURL)")
+                //print("\(messageURL)")
                 //AppConstants.notificationURL = "\(messageURL)"
-                nextViewController.urlString = "\(messageURL)"
+                notificationViewController.urlString = "\(messageURL)"
+            }
+            
+            // param (lost beacon)
+            if let messageParam = userInfo[gcmMessageParam] {
+                notificationViewController.urlParam = "\(messageParam)"
+            }
+            
+            // antenna phone
+            if let messageAntennaPhone = userInfo[gcmMessagePhone] {
+                notificationViewController.urlAntennaPhone = "\(messageAntennaPhone)"
             }
             
             if let time = userInfo[gcmMessageTime] {
                 print("\(time)")
             }
-            
         }
         
         
-        print("Aprerta notifica")
         // Change root view controller to a specific viewcontrollerm
-        self.window?.rootViewController?.present(nextViewController, animated: true, completion: nil)
+        self.window?.rootViewController?.present(notificationViewController, animated: true, completion: nil)
  
         // tell the app that we have finished processing the user’s action / response
         completionHandler()

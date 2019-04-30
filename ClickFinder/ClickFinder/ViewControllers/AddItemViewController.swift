@@ -114,6 +114,9 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         pickerView.dataSource = self
         pickerView.isHidden = true
         pickerView.showsSelectionIndicator = true
+        
+        //disable
+        
 
 
         btnAdd.isEnabled = false
@@ -177,7 +180,8 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         if uuidString.count > 0 {
             uuidValid = (uuidRegex.numberOfMatches(in: uuidString, options: [], range: NSMakeRange(0, uuidString.count)) > 0)
         }
-        txtUUID.textColor = (uuidValid) ? .black : .red
+        
+        //txtUUID.textColor = (uuidValid) ? .black : .red
 
         // Toggle btnAdd enabled based on valid user entry
         if(isEdit){
@@ -188,6 +192,10 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
     }
 
     @IBAction func btnEdit_Pressed(_ sender: UIButton) {
+        
+        txtUUID.isUserInteractionEnabled = false
+        txtMajor.isEnabled = false
+        txtMinor.isEnabled = false
 
         let uuidString = txtUUID.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard let uuid = UUID(uuidString: uuidString.uppercased()) else { return }
@@ -206,28 +214,13 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
 
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Items")
         let context = appDelegate.persistentContainer.viewContext
-
-        request.returnsObjectsAsFaults = false
-        do {
-            let result = try context.fetch(request)
-            for data in result as! [NSManagedObject] {
-                print("DATO: ",data.value(forKey: "name") as! String)
-            }
-            
-        } catch {
-            
-            print("Failed")
-        }
-
         
-        //Cerca quelli con major e minor che devono essere edidati
+        //Cerca quello con major e minor che deve essere edidato
         let p1 = NSPredicate(format: "major == %@", Int(ivc.items[currentIndex].majorValue) as NSNumber)
         let p2 = NSPredicate(format: "minor == %@", Int(ivc.items[currentIndex].minorValue) as NSNumber)
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [p1, p2])
 
         //Aggiornamento su coredata
-        //TODO NON FUNZIONA FARE 2 EDIT
-        //rimuovere vecchio e mettere quello nuovo
         request.predicate = predicate
         do
         {
@@ -247,18 +240,6 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
         catch
         {
             print(error)
-        }
-        
-        
-        request.returnsObjectsAsFaults = false
-        do {
-            let result = try context.fetch(request)
-            for data in result as! [NSManagedObject] {
-                print("DATO DOPO EDIT: ",data.value(forKey: "name") as! String)
-            }
-            
-        } catch {
-            print("Failed")
         }
 
     
@@ -292,6 +273,11 @@ class AddItemViewController: UIViewController, UINavigationControllerDelegate, U
 
 
     @IBAction func btnAdd_pressed(_ sender: Any) {
+        
+        txtUUID.isEnabled = false
+        txtMajor.isEnabled = false
+        txtMinor.isEnabled = false
+        
         AppVariables.pairingIsOn = false
         // Create new beacon item
         let uuidString = txtUUID.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
