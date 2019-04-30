@@ -28,5 +28,8 @@ class AppConstants {
 
     static let pairingValue = 39168
 
-    static let notificationDelay = 15
+    static let notificationDelay = 1200
+    static let knownNotificationDelay = 20
+    static let pairingDelay = 30
+    static let notFoundDelay = 15
 }
