@@ -123,6 +123,8 @@ class UserViewController: UIViewController {
                 "address": address,
                 "latid": "0",
                 "longid": "0",
+                "mac": iphoneID!,
+                "switch_hdd": "0"
             ]
         ){(error:Error?, ref:DatabaseReference) in
             if let error = error {

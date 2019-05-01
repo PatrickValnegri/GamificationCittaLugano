@@ -35,8 +35,8 @@ class NotificationViewController: UIViewController, WKNavigationDelegate, UINavi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //If antenna phone is null or antenna name is utente button call is not visible
-        if (urlAntennaPhone == "null"  || urlAntennaName == "utente") {
+        //If antenna phone is null or antenna name is utente or empty button call is not visible
+        if (urlAntennaPhone == "null"  || urlAntennaName == "utente" || urlAntennaName == "") {
             phoneBtn.isHidden = true
         }
     }

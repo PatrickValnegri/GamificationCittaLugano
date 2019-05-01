@@ -502,9 +502,6 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         //FIREBASE REALTIME DATABASE REFERENCE
         ref = Database.database().reference()
 
-        //TODO La prima registrazione la fa quando il token è pronto -> prossimo refresh
-        registerUser() //first time registration or only update token
-
         //CORE LOCATION
         setUpLocationManager()
 
@@ -525,6 +522,9 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         locationManager.startUpdatingLocation()
         locationManager.startRangingBeacons(in: AppConstants.region)
         locationManager.startMonitoring(for: AppConstants.region)
+        
+        //first time registration or only update token
+        registerUser()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -536,17 +536,21 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         self.navigationController?.setNavigationBarHidden(false, animated: true)
+        
+        
 
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         //self.locationManager.startRangingBeacons(in: AppConstants.region)
+        
+        
     }
 
     @objc func appMovedToBackground() {
         print("ClickFineder is now in background")
-
+        
         pairingIsOn = false
 
         locationManager.startUpdatingLocation()
@@ -734,17 +738,37 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
      *******************************************/
 
     //completion: @escaping(String)->() per estrarre il valore da una closure quando é pronto
-    func getToken(completion: @escaping(String)->()) {
-        InstanceID.instanceID().instanceID { (result, error) in
-            var tokenID: String = ""
-            if let error = error {
-                print("Error fetching remote instance ID: \(error)")
+     func getToken(completion: @escaping(String)->()) {
+        print("HELLOOO")
+        
+        DispatchQueue.global().async {
+        var subscribed = false
+            
+        //wait until token is ready
+        while !subscribed {
+             let semaphore = DispatchSemaphore(value: 0)
+            
+                InstanceID.instanceID().instanceID { (result, error) in
+                    var tokenID: String = ""
+                    if let error = error {
+                        print("Error fetching remote instance ID: \(error)")
 
-            } else if let result = result {
-                print("Remote instance ID token: \(result.token)")
-                tokenID = result.token
+                    } else if let result = result {
+                        print("Remote instance ID token: \(result.token)")
+                        tokenID = result.token
+                        subscribed = true
+                    
+                        Messaging.messaging().subscribe(toTopic: "all")
+                    }
+                    semaphore.signal()
+                    completion(tokenID);
+                }
+            
+            
+                // Set a 3 seconds timeout
+                let dispatchTime = DispatchTime.now() + DispatchTimeInterval.seconds(3)
+                _ = semaphore.wait(timeout: dispatchTime)
             }
-            completion(tokenID);
         }
     }
     /*
@@ -754,8 +778,10 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
         
         print("Iphone id: ", iphoneID!)
-
+    
+        
         getToken { (token: String) in
+            
             let tokenID: String = token
             let tipoSchermo: String = "iOS_LAC_regId_"+tokenID
             
