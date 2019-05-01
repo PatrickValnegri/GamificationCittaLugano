@@ -17,16 +17,26 @@ class NotificationViewController: UIViewController, WKNavigationDelegate, UINavi
     @IBOutlet weak var beaconPhoto: UIImageView!
     @IBOutlet weak var phoneBtn: UIButton!
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate //delegate of AppDelegate
+    //delegate of AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    //notification url
     var urlString: String = ""
+    
+    //beacon lost
     var urlParam: String = ""
+    
+    //antenna phone
     var urlAntennaPhone: String = ""
+    
+    //antenna name
+    var urlAntennaName: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (urlAntennaPhone == "null") {
+        //If antenna phone is null or antenna name is utente button call is not visible
+        if (urlAntennaPhone == "null"  || urlAntennaName == "utente") {
             phoneBtn.isHidden = true
         }
     }
@@ -39,7 +49,8 @@ class NotificationViewController: UIViewController, WKNavigationDelegate, UINavi
     @IBAction func returnToHome(_ sender: Any) {
         dismiss(animated: true, completion: nil)
         let VC1 = self.storyboard!.instantiateViewController(withIdentifier: "mainView") as! MainViewController
-        let navController = UINavigationController(rootViewController: VC1) // Creating a navigation controller with VC1 at the root of the navigation stack.
+        let navController = UINavigationController(rootViewController: VC1)
+        
         self.present(navController, animated:true, completion: nil)
         
     }

@@ -78,6 +78,7 @@ extension MainViewController: CLLocationManagerDelegate {
      This function is called every time a beacon has been ranged
     */
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        print("ranging")
         for beacon in beacons {
             /*
              This first part of the didRangeBeacons function is used to implement the "Search my phone"
@@ -116,7 +117,6 @@ extension MainViewController: CLLocationManagerDelegate {
                     }
                 }else{
                     //If a the app is active
-                    
                     //HANDLING OF THE SELECTED BEACON (with the search button)
                     if itemToLookFor != nil{
                         if itemToLookFor!.majorValue == UInt16(truncating: beacon.major) && itemToLookFor!.minorValue == UInt16(truncating: beacon.minor){
@@ -137,8 +137,12 @@ extension MainViewController: CLLocationManagerDelegate {
                         }
 
                         let now = Date()
+                        
+                        let elapsedNotFound = Int(now.timeIntervalSince(foundDate))
 
-                        if Int(now.timeIntervalSince(foundDate)) > AppConstants.notFoundDelay{
+                        print(elapsedNotFound)
+                        
+                        if elapsedNotFound > AppConstants.notFoundDelay{
                             searchIsOn = false
                             let beaconID = "\(itemToLookFor!.uuid)_\(itemToLookFor!.majorValue)_\(itemToLookFor!.minorValue)"
                             showToast(message: "Beacon not found, server notified!")
@@ -170,7 +174,7 @@ extension MainViewController: CLLocationManagerDelegate {
 
             //notify the server that the beacon selected by the user is missing
             if(itemToLookFor != nil && searchIsOn == true){
-                if Int(now.timeIntervalSince(foundDate)) > AppConstants.notificationDelay{
+                if Int(now.timeIntervalSince(foundDate)) > AppConstants.notFoundDelay{
                     foundDate = Date()
                     searchIsOn = false
 
@@ -498,10 +502,8 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
         //FIREBASE REALTIME DATABASE REFERENCE
         ref = Database.database().reference()
 
+        //TODO La prima registrazione la fa quando il token è pronto -> prossimo refresh
         registerUser() //first time registration or only update token
-        //La prima registrazione la fa quando il token è pronto -> prossimo refresh
-        
-        //sendNotificationFirebase(titolo: "Prova", mac: "76EE64EC-54C6-46E3-82FD-A897A42F6F21", beacon_id: "699EBC80-E1F3-11E3-9A0F-0CF3EE3BC012_4_12", gps: "000_000")
 
         //CORE LOCATION
         setUpLocationManager()
@@ -671,7 +673,7 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
     }
     
     /*
-     This function creates a new toast with the given message
+     c
      */
     func showToast(message : String) {
         let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 75, y: self.view.frame.size.height-100, width: 150, height: 60))
@@ -745,17 +747,21 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
             completion(tokenID);
         }
     }
-
+    /*
+     This function is used to register a user first time inside database or update token if the user is already register into the database
+     */
     func registerUser(){
         let iphoneID = UIDevice.current.identifierForVendor?.uuidString
+        
+        print("Iphone id: ", iphoneID!)
 
         getToken { (token: String) in
             let tokenID: String = token
             let tipoSchermo: String = "iOS_LAC_regId_"+tokenID
             
-            self.ref.child("users").observe(.value, with: { (snapshot) in
-
-                if (snapshot.hasChild(iphoneID!)) { //se l'utente esiste già nel database
+            self.ref.child("users").observeSingleEvent(of: .value, with: { (snapshot) in
+                //User is already inside database -> update only token
+                if (snapshot.hasChild(iphoneID!)) {
                     self.ref.child("users").child(iphoneID!).updateChildValues(["tiposchermo":tipoSchermo]) {
                         (error:Error?, ref:DatabaseReference) in
                         if let error = error {
@@ -764,14 +770,14 @@ class MainViewController: UIViewController, WKNavigationDelegate, UIPickerViewDe
                             print("Token updated successfully!")
                         }
                     }
-                } else { //se l'utente non esiste nel database
-
+                 //User is not registered inside database -> register a new user
+                } else {
                     self.ref.child("users").child(iphoneID!).setValue(["tiposchermo":tipoSchermo, "switch_hdd": "0", "mac": iphoneID!]) {
                         (error:Error?, ref:DatabaseReference) in
                         if let error = error {
-                            print("Data could not be saved: \(error).")
+                            print("User registration could not be saved: \(error).")
                         } else {
-                            print("Data saved successfully!")
+                            print("User registered successfully!")
                         }
                     }
                 }
